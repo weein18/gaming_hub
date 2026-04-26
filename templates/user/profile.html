@@ -41,7 +41,7 @@
 
         <div style="display: flex; flex-direction: column; gap: 20px;">
             <div class="match-card" style="padding: 30px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                <img src="{{ url_for('static', filename='img/team_logos/' + user.favorite_team.lower().replace(' ', '_') + '.png') }}">
+                <img src="{{ url_for('static', filename='img/team_logos/' + (user.favorite_team.lower() if user.favorite_team else 'default') + '.png') }}" alt="logo">
                 <div>
                     <div style="font-size: 0.6rem; color: var(--primary); font-weight: 800; letter-spacing: 2px;">REPRESENTING</div>
                     <div style="font-size: 2rem; font-weight: 900;">{{ user.favorite_team }}</div>

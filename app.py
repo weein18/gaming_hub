@@ -288,7 +288,7 @@ def predict(match_id):
 #     return redirect(request.referrer or url_for('matches'))
 
 @app.route('/admin/manage-matches')
-@login_required
+# @login_required
 def manage_matches(): 
     # if current_user.username != 'weein18':
     #     flash("Access Denied!")
