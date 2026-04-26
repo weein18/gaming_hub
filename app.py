@@ -9,6 +9,9 @@ from itsdangerous import URLSafeTimedSerializer
 
 
 
+if not os.path.exists('instance'):
+    os.makedirs('instance')
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gaming_hub_secret_key_99'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
