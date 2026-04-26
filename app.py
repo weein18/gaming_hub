@@ -289,18 +289,18 @@ def predict(match_id):
 
 @app.route('/admin/manage-matches')
 @login_required
-def manage_matches():
-    if current_user.username != 'weein18':
-        flash("Access Denied!")
-        return redirect(url_for('index'))  
-    active_matches = Match.query.filter_by(status='Upcoming').all()
-    return render_template('admin/manage_matches.html', matches=active_matches)
+def manage_matches(): 
+    # if current_user.username != 'weein18':
+    #     flash("Access Denied!")
+        # return redirect(url_for('index'))  
+        # active_matches = Match.query.filter_by(status='Upcoming').all()
+        return render_template('admin/manage_matches.html',)
 
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required
 def close_match(match_id):
-    if current_user.username != 'weein18':
-        return "Unauthorized", 403
+    # if current_user.username != 'weein18':
+    #     return "Unauthorized", 403
     final_score = request.form.get('final_score')
     match = db.session.get(Match, match_id)   
     if match and final_score:
