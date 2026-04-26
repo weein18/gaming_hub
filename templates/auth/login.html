@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Login | Elite Hub{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h2>WELCOME BACK</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="USERNAME" required>
+        <input type="password" name="password" placeholder="PASSWORD" required>
+        <button type="submit">LOGIN</button>
+        <div style="margin-top: 20px; text-align: center;">
+    <a href="#" style="color: #e30613; font-size: 0.7rem; text-decoration: none; font-weight: 800; letter-spacing: 1px;">
+        FORGOT PASSWORD?
+    </a>
+</div>
+    </form>
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Create one</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="padding-top: 130px; max-width: 1100px;">
+    
+    <div style="text-align: center; margin-bottom: 60px;">
+        <div style="display: inline-block; padding: 5px 15px; background: rgba(227,6,19,0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px; border-radius: 4px;">
+            OFFICIAL EVENT HUB
+        </div>
+        <h1 style="font-size: 3.5rem; margin: 0; text-transform: uppercase; letter-spacing: -2px;">{{ tournament_name.replace('-', ' ') }}</h1>
+        <h2 style="font-size: 1.5rem; margin: 0; text-transform: uppercase; letter-spacing: -1px;">First Game Day</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+        {% for match in matches %}
+        <div class="match-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); background: rgba(10,10,10,0.4) !important;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 120px 1fr; align-items: center; padding: 40px 20px; background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent);">
+                
+                <div style="text-align: right; display: flex; flex-direction: row-reverse; align-items: center; gap: 30px;">
+                    <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.02); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">
+                        <img src="{{ url_for('static', filename='img/team_logos/' + match.team1 + '.png') }}" 
+                             style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));"
+                             onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
+                    </div>
+                    <h3 style="font-size: 2rem; margin: 0; letter-spacing: -1px;">{{ match.team1 }}</h3>
+                </div>
+
+                <div style="text-align: center;">
+                    <div style="font-size: 0.7rem; color: var(--primary); font-weight: 900; letter-spacing: 2px; margin-bottom: 5px;">VS</div>
+                    <div style="font-size: 0.9rem; font-weight: 800; color: #444;">{{ match.time }}</div>
+                </div>
+
+                <div style="text-align: left; display: flex; align-items: center; gap: 30px;">
+                    <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.02); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">
+                        <img src="{{ url_for('static', filename='img/team_logos/' + match.team2 + '.png') }}" 
+                             style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));"
+                             onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
+                    </div>
+                    <h3 style="font-size: 2rem; margin: 0; letter-spacing: -1px;">{{ match.team2 }}</h3>
+                </div>
+            </div>
+
+            <div style="padding: 30px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.03);">
+                <p style="text-align: center; font-size: 0.6rem; font-weight: 800; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;">Secure your prediction</p>
+                
+                <form action="{{ url_for('predict', match_id=match.id) }}" method="POST" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    {% set current_pred = user_preds.get(match.id) %}
+                    {% for score in ['2-0', '2-1', '1-2', '0-2'] %}
+                    <button name="predicted_score" value="{{ score }}" 
+                            class="bet-btn {% if current_pred == score %}active-pred{% endif %}"
+                            style="width: 100%; {% if current_pred == score %} background: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(227,6,19,0.4); {% endif %}">
+                        {{ score }}
+                    </button>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Плавное свечение для активного прогноза */
+    .active-pred {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

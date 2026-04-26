@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="padding-top: 130px; max-width: 900px;">
+    
+    <div style="text-align: center; margin-bottom: 60px;">
+        <h1 style="font-size: 3.5rem; letter-spacing: -2px; margin: 0;">HOW IT <span class="highlight">WORKS</span></h1>
+        <p style="color: #666; font-size: 0.8rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;">Master the Elite Hub System</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+        
+        <div class="match-card" style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; align-items: center; padding: 40px;">
+            <div style="font-size: 3rem; font-weight: 900; color: rgba(227,6,19,0.2);">01</div>
+            <div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.5rem; color: var(--primary);">CHOOSE A BATTLE</h3>
+                <p style="color: #888; line-height: 1.6; margin: 0;">Go to the <a href="{{ url_for('matches') }}" style="color: #fff;">Matches</a> section. We track all major S-Tier tournaments like BLAST, IEM, and PGL. Pick the event you want to predict.</p>
+            </div>
+        </div>
+
+        <div class="match-card" style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; align-items: center; padding: 40px; border-left: 4px solid var(--primary);">
+            <div style="font-size: 3rem; font-weight: 900; color: rgba(227,6,19,0.2);">02</div>
+            <div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.5rem; color: #fff;">MAKE YOUR PREDICTION</h3>
+                <p style="color: #888; line-height: 1.6; margin: 0;">Select the exact score (2-0, 2-1, etc.) for the upcoming matches. Every prediction costs nothing but gives you a chance to earn massive XP.</p>
+            </div>
+        </div>
+
+        <div class="match-card" style="display: grid; grid-template-columns: 80px 1fr; gap: 30px; align-items: center; padding: 40px;">
+            <div style="font-size: 3rem; font-weight: 900; color: rgba(227,6,19,0.2);">03</div>
+            <div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.5rem; color: var(--primary);">EARN XP & RANK UP</h3>
+                <p style="color: #888; line-height: 1.6; margin: 0;">When the match ends, our system checks your result. Correct predictions grant <strong>100 XP</strong>. Accumulate XP to move from Silver to Global Elite!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="text-align: center; margin-top: 60px;">
+        <a href="{{ url_for('index') }}" class="liquid-btn" style="padding: 20px 60px;">I'M READY TO START</a>
+    </div>
+
+</div>
+{% endblock %}

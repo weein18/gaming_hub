@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="padding-top: 120px; max-width: 900px; margin: 0 auto;">
+    <h1 class="highlight">MANAGE ACTIVE MATCHES</h1>
+    
+    <div style="margin-top: 30px;">
+        {% for match in matches %}
+        <div class="match-card" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; margin-bottom: 15px;">
+            <div style="flex: 1;">
+                <span style="color: var(--primary); font-weight: bold;">{{ match.tournament_name }}</span><br>
+                <span style="font-size: 1.2rem;">{{ match.team1 }} vs {{ match.team2 }}</span>
+            </div>
+
+            <form action="{{ url_for('close_match', match_id=match.id) }}" method="POST" style="display: flex; gap: 10px;">
+                <input type="text" name="final_score" placeholder="Score (e.g. 2-1)" 
+                       style="background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; width: 120px;" required>
+                
+                <button type="submit" class="liquid-btn" style="background: #28a745; padding: 10px 20px;">
+                    FINISH & DISTRIBUTE XP
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #666;">No upcoming matches to manage.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

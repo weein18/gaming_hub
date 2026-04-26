@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="hero-container">
+    <div class="hero-content">
+        <div style="display: inline-block; padding: 5px 15px; background: rgba(227,6,19,0.1); border-left: 3px solid var(--primary); color: var(--primary); font-size: 0.7rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase;">
+            Become an Elite Predictor
+        </div>
+        
+        <h1 class="hero-title">
+            TRACK. <br>
+            <span class="highlight">PREDICT.</span> <br>
+            DOMINATE.
+        </h1>
+        
+        <p class="hero-subtitle">
+            Join the most advanced hub for esports fans. Predict match scores, earn XP, and climb the global rankings.
+        </p>
+
+        <div class="hero-btns">
+            <a href="{{ url_for('matches') }}" class="liquid-btn" style="padding: 18px 45px; font-size: 1rem;">PLAY NOW</a>
+            <a href="{{url_for('how_it_works')}}" class="outline-btn">HOW IT WORKS</a>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="floating-card" style="width: 400px; padding: 40px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05);">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <p style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">Platform Live Data</p>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+                    <span style="font-size: 0.8rem; color: #888; font-weight: 600;">TOTAL PLAYERS</span>
+                    <span style="font-size: 2.5rem; font-weight: 900; line-height: 1;">{{ stats.total_users }}</span>
+                </div>
+                <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
+                    <div style="width: 75%; height: 100%; background: var(--primary); box-shadow: 0 0 15px var(--primary);"></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
+                <div style="text-align: center;">
+                    <div style="color: var(--primary); font-size: 1.5rem; font-weight: 900;">{{ stats.active_matches }}</div>
+                    <div style="font-size: 0.55rem; color: #444; font-weight: 800; letter-spacing: 1px;">ACTIVE EVENTS</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="color: #fff; font-size: 1.5rem; font-weight: 900;">{{ stats.total_predictions }}</div>
+                    <div style="font-size: 0.55rem; color: #444; font-weight: 800; letter-spacing: 1px;">PREDICTIONS MADE</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="features" class="features-grid">
+    <div class="f-card">
+        <i class="fas fa-bolt" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
+        <h3 style="margin-bottom: 15px;">FAST ENTRY</h3>
+        <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Predict results in two clicks and track your accuracy in real-time.</p>
+    </div>
+    <div class="f-card" style="border-top: 2px solid var(--primary);">
+        <i class="fas fa-trophy" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
+        <h3 style="margin-bottom: 15px;">GLOBAL RANKING</h3>
+        <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Earn XP for every correct score and reach the Global Elite rank.</p>
+    </div>
+    <div class="f-card">
+        <i class="fas fa-shield-alt" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
+        <h3 style="margin-bottom: 15px;">SECURE DATA</h3>
+        <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Your gaming identity is protected with our encrypted system.</p>
+    </div>
+</section>
+
+<div class="container" style="padding-top: 100px; padding-bottom: 100px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
+        <h2 style="font-size: 2rem; margin: 0;">UPCOMING <span class="highlight">MATCHES</span></h2>
+        <a href="{{ url_for('matches') }}" style="color: var(--primary); text-decoration: none; font-weight: 800; font-size: 0.7rem; letter-spacing: 2px;">EXPLORE ALL →</a>
+    </div>
+
+    <div class="matches-grid">
+        {% for match in featured_matches %}
+        <div class="match-card">
+            <div style="font-size: 0.6rem; color: #444; margin-bottom: 15px; font-weight: 800;">{{ match.tournament_name }}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+                <span style="font-size: 1.2rem; font-weight: 800; flex: 1;">{{ match.team1 }}</span>
+                <span class="vs" style="margin: 0 20px;">VS</span>
+                <span style="font-size: 1.2rem; font-weight: 800; flex: 1;">{{ match.team2 }}</span>
+            </div>
+            <div style="color: #666; font-size: 0.75rem; margin-bottom: 20px;">{{ match.date }} | {{ match.time }}</div>
+            <a href="{{ url_for('tournament', name=match.tournament_name.lower().replace(' ', '-')) }}" class="liquid-btn" style="width: 100%; box-sizing: border-box;">VIEW EVENT</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

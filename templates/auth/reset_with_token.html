@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="display: flex; justify-content: center; padding-top: 120px;">
+    <div class="glass-card" style="width: 100%; max-width: 400px; padding: 40px;">
+        <h2 style="margin-bottom: 20px;">NEW <span class="highlight">PASSWORD</span></h2>
+        <form method="POST">
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>NEW PASSWORD</label>
+                <input type="password" name="password" class="glass-input" required>
+            </div>
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label>CONFIRM PASSWORD</label>
+                <input type="password" name="confirm_password" class="glass-input" required>
+            </div>
+            <button type="submit" class="liquid-btn" style="width: 100%;">RESET NOW</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

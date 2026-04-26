@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="padding-top: 120px; text-align: center;">
+    <h1 class="highlight">ACTIVE TOURNAMENTS</h1>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 40px;">
+        {% for tour in tournaments %}
+        <a href="{{ url_for('tournament', name=tour.url) }}" class="match-card" style="text-decoration: none; padding: 30px; display: block;">
+            <h2 style="margin: 0; font-size: 1.2rem;">{{ tour.display.upper() }}</h2>
+            <span style="font-size: 0.7rem; color: var(--primary); font-weight: 800;">ENTER ARENA</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

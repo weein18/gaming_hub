@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="display: flex; justify-content: center; align-items: flex-start; padding-top: 120px; min-height: 100vh;">
+    
+    <div class="glass-card" style="width: 100%; max-width: 800px; padding: 40px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: var(--primary); filter: blur(100px); opacity: 0.1; pointer-events: none;"></div>
+
+        <div style="margin-bottom: 40px; border-left: 5px solid var(--primary); padding-left: 20px;">
+            <h1 style="text-transform: uppercase; letter-spacing: -2px; font-size: 2.5rem; margin: 0;">Account <span class="highlight">Settings</span></h1>
+            <p style="font-size: 0.7rem; color: #555; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;">Update your digital presence</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px;">
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <div class="avatar-preview-container" style="position: relative; width: 180px; height: 180px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
+                    {% if current_user.avatar %}
+                        <img id="output" src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.05);">?</div>
+                    {% endif %}
+                </div>
+                
+                <label class="liquid-btn" style="padding: 10px 20px; font-size: 0.7rem; cursor: pointer; text-align: center; width: 100%;">
+                    CHOOSE IMAGE
+                    <input type="file" name="avatar" accept="image/*" onchange="loadFile(event)" style="display: none;">
+                </label>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <div class="input-group">
+                    <label>PUBLIC NICKNAME</label>
+                    <input type="text" name="username" value="{{ current_user.username }}" class="glass-input" required>
+                </div>
+
+                <div class="input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" name="email" value="{{ current_user.email }}" class="glass-input" required>
+                </div>
+
+                <div style="margin-top: 20px; margin-bottom: 20px;">
+                    <button type="button" onclick="toggleSecurity()" id="secureBtn" class="liquid-btn" 
+                            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; font-size: 0.7rem;">
+                        <i class="fas fa-lock" style="margin-right: 10px;"></i> CHANGE PASSWORD
+                    </button>
+                    <div id="securityFields" style="display: none; margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--primary);">
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>CURRENT PASSWORD</label>
+                            <input type="password" name="old_password" class="glass-input" placeholder="Confirm old">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="input-group">
+                                <label>NEW PASSWORD</label>
+                                <input type="password" name="new_password" class="glass-input" placeholder="Min. 8 chars">
+                            </div>
+                            <div class="input-group">
+                                <label>CONFIRM NEW</label>
+                                <input type="password" name="confirm_password" class="glass-input" placeholder="Repeat">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                function toggleSecurity() {
+                    var fields = document.getElementById("securityFields");
+                    var btn = document.getElementById("secureBtn");
+                    if (fields.style.display === "none") {
+                        fields.style.display = "block";
+                        btn.innerHTML = "CANCEL PASSWORD CHANGE";
+                        btn.style.borderColor = "var(--primary)";
+                    } else {
+                        fields.style.display = "none";
+                        btn.innerHTML = '<i class="fas fa-lock" style="margin-right: 10px;"></i> CHANGE PASSWORD';
+                        btn.style.borderColor = "rgba(255,255,255,0.1)";
+                        // Очищаем поля, если юзер передумал
+                        document.getElementsByName("old_password")[0].value = "";
+                        document.getElementsByName("new_password")[0].value = "";
+                        document.getElementsByName("confirm_password")[0].value = "";
+                    }
+                }
+                </script> 
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Favorite Team</label>
+                        <input type="text" name="favorite_team" placeholder="Enter team name..." 
+                                value="{{ current_user.favorite_team if current_user else '' }}" 
+                                style="width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444;">
+                    </div>
+                    <div class="input-group">
+                        <label>STEAM URL</label>
+                        <input type="text" name="steam_url" value="{{ current_user.steam_url }}" class="glass-input" placeholder="https://steamcommunity.com/...">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>BIOGRAPHY</label>
+                    <textarea name="bio" class="glass-input" style="height: 100px; resize: none;">{{ current_user.bio }}</textarea>
+                </div>
+
+                <button type="submit" class="liquid-btn" style="margin-top: 10px; border: none; padding: 18px; font-weight: 900; background: var(--primary);">
+                    SAVE CONFIGURATION
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .input-group label {
+        display: block;
+        font-size: 0.6rem;
+        color: #555;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+    .glass-input {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        color: white;
+        padding: 12px 15px;
+        font-family: 'Rajdhani', sans-serif;
+        outline: none;
+        transition: 0.3s;
+    }
+    .glass-input:focus {
+        border-color: var(--primary);
+        background: rgba(227,6,19,0.05);
+    }
+    select.glass-input option {
+        background: #0f0f0f;
+        color: white;
+    }
+</style>
+
+<script>
+  var loadFile = function(event) {
+    var output = document.getElementById('output');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function() {
+      URL.revokeObjectURL(output.src) 
+    }
+  };
+</script>
+{% endblock %}

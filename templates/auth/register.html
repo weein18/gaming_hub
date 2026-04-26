@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="display: flex; justify-content: center; align-items: center; padding-top: 100px;">
+    <div class="match-card" style="width: 100%; max-width: 500px; padding: 40px; border: 1px solid rgba(255,255,255,0.1);">
+        <div style="margin-bottom: 30px; text-align: center;">
+            <h2 style="letter-spacing: -1px;">CREATE <span class="highlight">IDENTITY</span></h2>
+            <p style="font-size: 0.6rem; color: #555; letter-spacing: 2px; font-weight: 800;">JOIN THE ELITE HUB</p>
+        </div>
+
+        <form method="POST" style="display: grid; gap: 15px;">
+            <input type="email" name="email" placeholder="EMAIL ADDRESS" required class="glass-input">
+            <input type="text" name="username" placeholder="NICKNAME" required class="glass-input">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input type="password" name="password" placeholder="PASSWORD" required class="glass-input">
+                <input type="password" name="confirm_password" placeholder="REPEAT" required class="glass-input">
+            </div>
+
+            <select name="favorite_team" class="glass-input" style="appearance: none; cursor: pointer;">
+                <option value="" disabled selected>FAVORITE TEAM (OPTIONAL)</option>
+                <option value="NAVI">NAVI</option>
+                <option value="G2">G2 Esports</option>
+                <option value="Vitality">Team Vitality</option>
+                <option value="FaZe">FaZe Clan</option>
+                <option value="Cloud9">Cloud9</option>
+            </select>
+
+            <button type="submit" class="liquid-btn" style="margin-top: 20px; border: none; cursor: pointer;">INITIALIZE ACCOUNT</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .glass-input {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        color: white;
+        padding: 15px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.3s;
+    }
+    .glass-input:focus { border-color: var(--primary); background: rgba(227,6,19,0.02); }
+</style>
+{% endblock %}

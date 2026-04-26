@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>ZywOo CS2 Settings & Equipment - Updated April 2026</title>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon/apple-touch-icon.png?v=XByKjgX50z">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon/favicon-32x32.png?v=XByKjgX50z">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon/favicon-16x16.png?v=XByKjgX50z">
+    <link rel="manifest" href="/assets/img/favicon/site.webmanifest?v=XByKjgX50z">
+    <link rel="mask-icon" href="/assets/img/favicon/safari-pinned-tab.svg?v=XByKjgX50z" color="#121722">
+    <link rel="shortcut icon" href="/assets/img/favicon/favicon.ico?v=XByKjgX50z">
+    <meta name="msapplication-TileColor" content="#121722">
+    <meta name="msapplication-config" content="/assets/img/favicon/browserconfig.xml?v=XByKjgX50z">
+    <meta name="theme-color" content="#121722">
+
+    <!-- Primary SEO -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="ZywOo CS2 Settings and Equipment - Including Sensitivity, DPI, Resolution, FOV, Keybinds, Mouse, Keyboard, Headset & more">
+    <meta name="keywords" content="ZywOo, CS2, CS2 settings, pro config, gaming gear, sensitivity, dpi, crosshair">
+    <link rel="canonical" href="https://specs.gg/ZywOo" />
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://specs.gg/ZywOo" />
+    <meta property="og:title" content="ZywOo CS2 Settings & Equipment (April 2026)" />
+    <meta property="og:description" content="Full list of ZywOo CS2 settings and gaming gear – including mouse, keyboard, monitor, headset, DPI, sensitivity, resolution, FOV, crosshair & more." />
+    <meta property="og:image" content="https://specs.gg/assets/include/upload/image.php?name=ZywOo&t=2026-04-04 19:53:09" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://specs.gg/ZywOo" />
+    <meta name="twitter:title" content="ZywOo CS2 Settings & Equipment - Updated April 2026" />
+    <meta name="twitter:description" content="ZywOo CS2 settings, sensitivity, DPI, resolution, FOV, gear & equipment list (April 2026)" />
+    <meta name="twitter:image" content="https://specs.gg/assets/include/upload/image.php?name=ZywOo&t=2026-04-04 19:53:09" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "ZywOo CS2 Settings & Equipment",
+    "description": "Full list of ZywOo CS2 settings and gaming equipment including sensitivity, DPI, resolution, FOV, crosshair, keybinds, mouse, keyboard, headset and monitor.",
+    "url": "https://specs.gg/ZywOo",
+    "dateModified": "2026-04-04",
+    "inLanguage": "en",
+    "publisher": {
+        "@type": "Organization",
+        "name": "specs.gg",
+        "url": "https://specs.gg",
+        "logo": {
+        "@type": "ImageObject",
+        "url": "https://specs.gg/assets/img/logo.png"
+        }
+    }
+    }
+    </script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+
+    <!-- main css -->
+    <link rel="stylesheet" href="/assets/css/main.css?v=1772815191"></link>
+    <link rel="stylesheet" href="/assets/css/testing.css?v=1760968259"></link>
+
+    <!-- Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Staatliches&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+        .modal-title-team{
+            color: #fff;
+            font-family: 'Staatliches', "Roboto", cursive;
+            font-size: 32px;
+            display: block;
+            width: 100%;
+        }
+        select {
+            text-transform:capitalize
+        }
+    </style>
+
+    <!-- Google Analytics - commented out
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G60HXVSGWW"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-G60HXVSGWW');
+    </script>
+    -->
+
+<style>
+    .container_body > .row > div > .row{
+        height: 100%;
+    }
+
+    .container_body > .row > div > .row .col-12{
+        align-self: flex-end !important;
+    }
+
+    .container-2 .container_body .__main{
+        text-transform: none;
+    }
+
+    .container-2 .container_body{
+        padding: 1rem 30px;
+        text-align: left;
+    }
+
+    .container-2 .container_body .__sub1{
+        font-size: 18px;
+        font-weight: 500;
+        border-radius: 5px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .container-2 .container_body .lighterborder .__sub1{
+        border: 1px solid #3c475b !important;
+    }
+
+    </style></head>
+
+<body>
+    <nav class="navbar" style="width: 100%;z-index:1030;height: 92.5px;">
+    <div class="container row">
+        <div class="col-auto navbar-brand">
+            <a class="navbar-link" href="/">
+                <img src="/assets/logo/specs-gg.svg" alt="specsgg logo" class="navlogo" fetchpriority=high>
+            </a>
+        </div>
+        <div class="col mega-menu">
+            <ul class="navbar-nav d-none d-md-flex">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/players" id="navbardrop" data-toggle="dropdown">Games</a>
+                    <div class="dropdown-menu">
+                        <div class="row">
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=pubg">
+                                    <img src="/assets/icon/game/pubg.png" loading="lazy" alt="PlayerUnknown's Battlegrounds game logo">
+                                    <span>PUBG</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=valorant">
+                                    <img src="/assets/icon/game/valorant.png" loading="lazy" alt="Valorant game logo">
+                                    <span>Valorant</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=cs2">
+                                    <img src="/assets/icon/game/cs2.png" loading="lazy" alt="Counter Strike 2 game logo">
+                                    <span>CS2</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=fortnite">
+                                    <img src="/assets/icon/game/fortnite.png" loading="lazy" alt="Fortnite game logo">
+                                    <span>Fortnite</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=rainbow-six">
+                                    <img src="/assets/icon/game/rainbow-six.png" loading="lazy" alt="Rainbow Six game logo">
+                                    <span>Rainbow Six</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=apex-legends">
+                                    <img src="/assets/icon/game/apex-legends.png" loading="lazy" alt="Apex Legends game logo">
+                                    <span>Apex Legends</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=league-of-legends">
+                                    <img src="/assets/icon/game/league-of-legends.png" loading="lazy"
+                                        alt="League of Legends game logo">
+                                    <span>League of Legends</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/players?game=overwatch">
+                                    <img src="/assets/icon/game/overwatch.png" loading="lazy" alt="Overwatch game logo">
+                                    <span>Overwatch</span>
+                                </a>
+                            </div>
+                            <div class="col-12 mega-menu-all">
+                                <hr>
+                                <a class="dropdown-item" href="/players">
+                                    <i class="fas fa-list-ul"></i>
+                                    <span>All Games</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/teams" id="navbardrop" data-toggle="dropdown">Teams</a>
+                    <div class="dropdown-menu">
+                        <div class="row">
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/g2-esports">
+                                    <img src="/assets/img/teams/g2-esports_small.webp" loading="lazy" alt="">
+                                    <span>G2 Esports</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/100-thieves">
+                                    <img src="/assets/img/teams/100-thieves_small.webp" loading="lazy" alt="">
+                                    <span>100 Thieves</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/faze-clan">
+                                    <img src="/assets/img/teams/faze-clan_small.webp" loading="lazy" alt="">
+                                    <span>Faze</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/natus-vincere">
+                                    <img src="/assets/img/teams/natus-vincere_small.webp" loading="lazy" alt="">
+                                    <span>Natus Vincere</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/team-liquid">
+                                    <img src="/assets/img/teams/team-liquid_small.webp" loading="lazy" alt="">
+                                    <span>Team Liquid</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/vitality">
+                                    <img src="/assets/img/teams/vitality_small.webp" loading="lazy" alt="">
+                                    <span>Vitality</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/t1">
+                                    <img src="/assets/img/teams/t1_small.webp" loading="lazy" alt="">
+                                    <span>T1</span>
+                                </a>
+                            </div>
+                            <div class="col-6 mega-menu-item">
+                                <a class="dropdown-item" href="/team/sentinels">
+                                    <img src="/assets/img/teams/sentinels_small.webp" loading="lazy" alt="">
+                                    <span>Sentinels</span>
+                                </a>
+                            </div>
+                            <div class="col-12 mega-menu-all">
+                                <hr>
+                                <a class="dropdown-item" href="/teams">
+                                    <i class="fas fa-list-ul"></i>
+                                    <span>All Teams</span>
+                                </a>
+                            </div>
+                        </div>
+                </li>
+                                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/events" id="navbardrop" data-toggle="dropdown">Events</a>
+                    <div class="dropdown-menu">
+                        <div class="row">
+                            
+                                <div class="col-12 mega-menu-item">
+                                    <a class="dropdown-item" href="/event/intel-extreme-masters-rio-2026" style="height: auto;">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-clock text-warning" style="font-size: 8px; margin-right: 10px;"></i>
+                                            <div>
+                                                <span style="display: block;line-height: 1.2;">Intel Extreme Masters Rio 2026</span>
+                                                <small class="text-muted" style="display: block;font-size: 11px;">Apr 13 - Apr 19</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                                            <div class="col-12 mega-menu-all">
+                                <hr>
+                                <a class="dropdown-item" href="/events">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>All Events</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                            </ul>
+        </div>
+        <div class="col col-xl-4 nonnon-search d-none d-md-block" id="mymainDropdown2">
+            <div class="input-group" data-toggle="dropdown">
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><i class="fas fa-search" style="color:#101823;"></i></div>
+                </div>
+                <input oninput="toggle_search(this.value);" type="text" class="form-control px-0"
+                    placeholder="Search">
+            </div>
+
+            <div class="dropdown-menu search-results" id="myDropdown2">
+                                <a class="dropdown-item" href="/players/?game=cs2" style="background: var(--bg-light);">
+                    <div class="row navhover">
+                        <div class="col-auto p-0 result-img-wrapper">
+                                                            <img src="/assets/icon/game/cs2.png" loading="lazy" class="rounded-0"
+                                    alt="">
+                                                    </div>
+                        <div class="col result-name-wrapper">
+                            <span
+                                class="result-name">CS2 Players</span>
+                        </div>
+                    </div>
+                </a>
+                                
+<a class="dropdown-item" href="/donk">
+<div class="row navhover">
+    <div class="col-auto p-0 result-img-wrapper">
+        <img src="/assets/include/upload/image.php?name=donk&t=2026-04-04 19:55:44" loading="lazy" alt="">
+    </div>
+    <div class="col result-name-wrapper">
+        <span class="result-name">donk</span>
+    </div>
+</div>
+</a>
+
+<a class="dropdown-item" href="/ZywOo">
+<div class="row navhover">
+    <div class="col-auto p-0 result-img-wrapper">
+        <img src="/assets/include/upload/image.php?name=ZywOo&t=2026-04-04 19:55:52" loading="lazy" alt="">
+    </div>
+    <div class="col result-name-wrapper">
+        <span class="result-name">ZywOo</span>
+    </div>
+</div>
+</a>
+
+<a class="dropdown-item" href="/m0NESY">
+<div class="row navhover">
+    <div class="col-auto p-0 result-img-wrapper">
+        <img src="/assets/include/upload/image.php?name=m0NESY&t=2026-04-04 19:53:13" loading="lazy" alt="">
+    </div>
+    <div class="col result-name-wrapper">
+        <span class="result-name">m0NESY</span>
+    </div>
+</div>
+</a>
+
+<a class="dropdown-item" href="/ScreaM">
+<div class="row navhover">
+    <div class="col-auto p-0 result-img-wrapper">
+        <img src="/assets/include/upload/image.php?name=ScreaM&t=2026-04-04 19:48:52" loading="lazy" alt="">
+    </div>
+    <div class="col result-name-wrapper">
+        <span class="result-name">ScreaM</span>
+    </div>
+</div>
+</a>
+
+<a class="dropdown-item" href="/NiKo">
+<div class="row navhover">
+    <div class="col-auto p-0 result-img-wrapper">
+        <img src="/assets/include/upload/image.php?name=NiKo&t=2026-04-04 19:39:54" loading="lazy" alt="">
+    </div>
+    <div class="col result-name-wrapper">
+        <span class="result-name">NiKo</span>
+    </div>
+</div>
+</a>
+            </div>
+        </div>
+        <div class="col-auto d-block d-md-none pl-0">
+            <button onclick="activate_search()" class="btn btn-outline-secondary" type="button"
+                style="background:var(--bg-dark);">
+                <i class="fas fa-search search-button-icon" style="color:#fff;"></i>
+                <i class="fas fa-times search-button-icon d-none" style="color:#fff;"></i>
+            </button>
+        </div>
+        <div class="col-auto non-search pl-0">
+            <ul class="navbar-nav">
+                
+                    <li class="nav-item dropdown profile-dropdown px-0">
+                        <a href="/login" class="sign-in">
+                            <span> sign-in</span>
+                        </a>
+                    </li>
+                                </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+
+<!-- Position it -->
+<div style="position: fixed; top: 25px; right: 25px;z-index:2000;">
+
+    <!-- Then put toasts within -->
+    <div class="toast2 toast bg-success fade hide d-none" role="alert" aria-live="assertive" aria-atomic="true"
+        data-delay="3000">
+        <div class="toast-body text-white">
+            <i class="fas fa-check-circle" style="font-size:25px;vertical-align: bottom;"></i>
+            <span id="toast-title" style="font-size:16px;"> SETTINGS SAVED! </span>
+        </div>
+    </div>
+
+    <!-- Then put toasts within -->
+    <div class="toast3 toast bg-danger fade hide" role="alert" aria-live="assertive" aria-atomic="true"
+        data-delay="3000">
+        <div class="toast-body text-white">
+            <i class="fas fa-times-circle" style="font-size:25px;vertical-align: bottom;"></i>
+            <span id="toast-title2" style="font-size:16px;text-transform:uppercase;"> You require 500 profile views!
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- modal request gear -->
+    <main style="position:relative;">
+
+    
+        <div class="banner-side content container-2 container-fluid" style="position:fixed;top:92px;background: transparent;">
+            <div class="row justify-content-between">
+                <div class="col-2 left"><a href="https://hunt.gg/r/specs" target="_blank" rel="nofollow noopener" onclick="cookieclicker(&apos;profile.left&apos;);return true;"><img src="/assets/img/banner/325x645-1.png" loading="lazy" fetchpriority="low" alt=""></a>
+                </div>
+                <div class="col-2 right"><iframe src="https://case-ad.hunt.gg/?code=specs" style="width: 100%; height: 645px; border: 1px solid #272f40; background: var(--bg-light); border-radius: 0.75rem;" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+        
+<div class="content container-2 container-fluid profile-main-container">
+    <div class="row container profile-content-wrapper">
+        <div class="col-12 col-lg-3 py-2 pr-lg-0">
+            <div class="sticky-top sticky-offset">
+                <div class="profile-sidebar">
+                    <div class="profile-image-container">
+                        <div class="row justify-content-center">
+                            <div class="col-auto">
+                                <img class="profile-image"
+                                src="/assets/include/upload/image.php?name=ZywOo&t=2026-04-04 19:53:09" fetchpriority=high alt="Vitality ZywOo CS2 Profile Picture April 2026">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+
+                        <div class="profile-info-item gamertag">
+                            <span class="profile-username">ZywOo</span>
+                            <img class="profile-verified-icon d-none" src="" alt="Verified" title="Verified Profile">
+                        </div>
+    
+                        <div class="profile-info-item country">
+                            <div class="row m-0 w-100">
+        
+                                <div class="col-6 p-0">
+                                    <a href="/players/?country=france" class="profile-info-item-link">
+                                        <div class="profile-country-flag-container">
+                                            <img class="profile-country-flag" src="/assets/icon/flag/france.svg" alt="France Flag">
+                                        </div>
+                                        <span>France</span>
+                                    </a>
+                                </div>
+            
+                                <div class="col-6 p-0">
+                                    <a href="/team/vitality" class="profile-info-item-link">
+                                        <img class="profile-team-icon" src="/assets/img/teams/vitality_small.webp" alt="Vitality Team" title="Vitality Team">
+                                        <span>Vitality</span>
+                                    </a>
+                                </div>
+            
+                            </div>
+                        </div>
+        
+                        <div class="profile-info-item games">
+                            <div class="row m-0 w-100">
+    
+                                <div class="col-12 p-0" style="margin: 0.5rem 0;">
+                                    <a href="/ZywOo" class="profile-info-item-link profile-game-link active" style="flex-direction: columnn;margin: 0;">
+                                        <img class="profile-game-icon" src="/assets/icon/game/cs2.png" alt="CS2 Game" title="CS2 Game">
+                                        <span>CS2</span>
+                                    </a>
+                                </div>
+        
+                            </div>
+                        </div>
+    
+</div>
+
+                    <div class="profile-update-action">
+                        <button type="button" class="btn profile-update-btn" data-toggle="modal" data-target="#communityupdater">
+                            <span>Spotted an Update?</span>
+                            <small>Help keep this profile accurate</small>
+                        </button>
+                    </div>
+    
+                    <div class="profile-social-links">
+<div class="profile-social-item facebook">
+                <a href="https://www.facebook.com/ZywOo.cs" target="_blank" rel="noopener noreferrer" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+            </div><div class="profile-social-item instagram">
+                <a href="https://www.instagram.com/cs_zywoo" target="_blank" rel="noopener noreferrer" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div><div class="profile-social-item steam">
+                <a href="https://steamcommunity.com/profiles/76561198113666193" target="_blank" rel="noopener noreferrer" title="Steam">
+                    <i class="fab fa-steam"></i>
+                </a>
+            </div><div class="profile-social-item twitch">
+                <a href="https://www.twitch.tv/cs_zywoo" target="_blank" rel="noopener noreferrer" title="Twitch">
+                    <i class="fab fa-twitch"></i>
+                </a>
+            </div><div class="profile-social-item twitter">
+                <a href="https://twitter.com/zywoo" target="_blank" rel="noopener noreferrer" title="Twitter/X">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+            </div><div class="profile-social-item youtube">
+                <a href="https://www.youtube.com/c/ZywOo" target="_blank" rel="noopener noreferrer" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+                    </div>
+    
+                </div>
+
+        <div class="col-12 d-block d-lg-none py-2">
+            <div class="row justify-content-center">
+                <div class="col-12" style="padding: 0.5rem 0;"><a href="https://hunt.gg/r/specs" target="_blank" rel="nofollow noopener" onclick="cookieclicker(&apos;profile.sidebar.mobile&apos;);return true;" style="border: 1px solid #272f40; background: var(--bg-light); border-radius: 0.75rem; padding: 0; overflow: hidden; display: block;"><img src="/assets/img/banner/1080x250-1.png" loading="lazy" fetchpriority="low" alt="" style="width: 100%; display: block;"></a>
+                </div>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+        <div class="col">
+
+                    <div class="container" style="padding: 0;">
+                        <div class="row py-2">
+                            <div class="col-12 container_content">
+                                <div class="col-12 container_header" style="background: none;border: none;">
+                                    <img src="/assets/icon/game/cs2.png" alt="CS2 Game Icon" style="height: 32px; width: 32px; margin-right: 8px;">
+                                    <span>CS2 Settings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="row py-2">
+    <div class="col container_content">
+    <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+                <i class="fas fa-mouse"></i><span>Mouse Settings</span>
+            </div>
+
+                    </div>
+
+        
+                <div class="row container_cta cta_cs_money">
+                <div class="col-12 container_body">
+                    <div class="row justify-content-center justify-content-xl-start">
+                        <div class="col-12 col-xl text-xl-left text-center">
+                            <img src="/assets/img/gear/mouse/Pulsar ZywOo the Chosen.png" loading="lazy" class="icon" alt="Pulsar ZywOo the Chosen - mouse" height="40" width="40">
+                            <span><a target="_blank" rel="noopener noreferrer sponsored" href="https://www.amazon.com/s?k=Pulsar+ZywOo+the+Chosen&tag=ggspecs03-20">Pulsar ZywOo the Chosen</a></span>
+                        </div>
+                        <div class="col-auto pt-4 pt-md-3 pt-xl-0">
+                            <a class="btn btn-primary" target="_blank" rel="noopener noreferrer sponsored" href="https://www.amazon.com/s?k=Pulsar+ZywOo+the+Chosen&tag=ggspecs03-20"><i class="fab fa-amazon" style="margin-bottom: -2px;"></i> Check price</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        <div class="col-12 container_body">
+            <div class="row">
+            <div class="col-6 col-md-4 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">DPI</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">400</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Polling Rate</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">1000HZ</span></div>
+                                                </div>
+                </div>
+
+
+                <div class="col-6 col-md-4 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Sensitivity</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">2</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Zoom Sensitivity</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">1</span></div>
+                                                </div>
+                </div>
+
+                <div class="col-6 col-md-4 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Windows Sensitivity</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">6</span></div>
+                                                </div>
+                </div>
+
+                <div class="col-6 col-md-4 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">eDPI</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">800</span></div>
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+                <i class="fas fa-crosshairs"></i><span>Crosshair Settings</span>
+            </div>
+
+                    </div>
+
+                                <div class="row container_cta cta_crosshair">
+                <div class="col-12 container_body">
+                    <div class="row">
+                        <img src="/assets/img/crosshair-slides/dust2.webp" loading="lazy" class="crosshair-bg img-fluid" alt="" style="transform: scaleX(1.333);">
+                        <div class="crosshair"><svg viewBox='-4.4 -4.4 8.8 8.8' width='8.8' height='8.8' xmlns='http://www.w3.org/2000/svg' fill-opacity='1' style='transform: scale(2) scaleX(1.333);'>
+<rect x='-4.4' y='-0.5' width='3' height='1' fill='rgb(255, 255, 255)'/>
+<rect x='1.4' y='-0.5' width='3' height='1' fill='rgb(255, 255, 255)'/>
+<rect x='-0.5' y='-4.4' width='1' height='3' fill='rgb(255, 255, 255)'/>
+<rect x='-0.5' y='1.4' width='1' height='3' fill='rgb(255, 255, 255)'/></svg></div>
+                        <div class="crosshair-controls ratio">
+                            <button class="btn" onclick="crosshairRatio(this, 1)">16:9</button>
+                            <button class="btn active" onclick="crosshairRatio(this, (1+1/3))">4:3</button>
+                        </div>
+                        <div class="crosshair-controls">
+                            <button class="btn" onclick="crosshairMagnify(this, 1)">1x</button>
+                            <button class="btn active" onclick="crosshairMagnify(this, 2)">2x</button>
+                            <button class="btn" onclick="crosshairMagnify(this, 4)">4x</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        <div class="col-12 container_body">
+                        <div class="row">
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Length</span></div>
+                            <div class="col-12"><span class="__sub1">1.5</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Thickness</span></div>
+                            <div class="col-12"><span class="__sub1">0.1</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Gap</span></div>
+                            <div class="col-12"><span class="__sub1">-2.6</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Red</span></div>
+                            <div class="col-12"><span class="__sub1">255</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Green</span></div>
+                            <div class="col-12"><span class="__sub1">255</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Blue</span></div>
+                            <div class="col-12"><span class="__sub1">255</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Alpha</span></div>
+                            <div class="col-12"><span class="__sub1">255</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Outline</span></div>
+                            <div class="col-12"><span class="__sub1">1</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Center Dot</span></div>
+                        <div class="col-12"><span class="__sub1">No</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Follow Recoil</span></div>
+                        <div class="col-12"><span class="__sub1">No</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Weapon Gap</span></div>
+                        <div class="col-12"><span class="__sub1">No</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Has Outline</span></div>
+                        <div class="col-12"><span class="__sub1">No</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Crosshair Style</span></div>
+                        <div class="col-12"><span class="__sub1">Classic Static</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">T Style</span></div>
+                        <div class="col-12"><span class="__sub1">No</span></div>
+                    </div>
+                </div>
+
+                
+                
+                
+            </div>
+            
+            
+                <div class="row justify-content-center">
+                <div class="col-12 py-2">
+                    <div class="row justify-content-center px-3">
+                        <div class="col-12"><span class="__main">Crosshair Code</span></div>
+                        
+                            <div class="col-10 p-0" style="max-width: 500px;">
+                                <span id="crossharicode2" style="border: 1px solid #293242;border-top-right-radius: 0;border-bottom-right-radius: 0;overflow: hidden;margin-top: 8px;padding: 0.25rem 1rem;max-height: 64px;" class="__sub1">CSGO-33tjH-QWX3U-KcSnD-wu3wu-i2pxA</span>
+                            </div>
+                            <div class="col-2 p-0">
+                                <button id="crossharicode2copybutton" class="inline-copy-button" onclick="copyToClipboard('#crossharicode2', this.id)">COPY</button>
+                            </div>
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto" style="display: flex; align-items: center;">
+                <img src="/assets/logo/cs-money-icon.svg" loading="lazy" alt="" style="width: 36px;max-height: 1.5em;">
+                <span>Skins</span>
+            </div>
+                    </div>
+
+                    <div class="row container_cta cta_cs_money">
+                <div class="col-12 container_body">
+                    <div class="row justify-content-center justify-content-xl-start">
+                        <div class="col-12 col-xl"><span class="d-inline-flex d-xl-flex">Get your dream skins instantly on cs.money!</span></div>
+                        <div class="col-auto pt-3 pt-xl-0">
+                            <a class="btn btn-secondary" target="_blank" rel="noopener noreferrer sponsored" href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link"><img src="/assets/logo/cs-money.svg" loading="lazy" alt=""></a>
+                            <a class="btn btn-primary" target="_blank" rel="noopener noreferrer sponsored" href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link">Get skins</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        <div class="col-12 container_body" style="padding: 1rem 25px;">
+            <div class="row">
+                                        <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=Butterfly+Knife+%7C+Doppler+Ruby" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">★ Butterfly Knife | Doppler Ruby</h3>
+                                <img src="/assets/img/cs2_skins/Butterfly Knife/Doppler Ruby.png" loading="lazy" class="skin-image special" alt="Doppler Ruby Butterfly Knife">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=Sport+Gloves+%7C+Amphibious" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">★ Sport Gloves | Amphibious</h3>
+                                <img src="/assets/img/cs2_skins/Gloves/Sport Gloves  Amphibious.png" loading="lazy" class="skin-image special" alt="Sport Gloves  Amphibious Gloves">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=AK-47+%7C+Fire+Serpent" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">AK-47 | Fire Serpent</h3>
+                                <img src="/assets/img/cs2_skins/AK-47/Fire Serpent.png" loading="lazy" class="skin-image covert" alt="Fire Serpent AK-47">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=AWP+%7C+Gungnir" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">AWP | Gungnir</h3>
+                                <img src="/assets/img/cs2_skins/AWP/Gungnir.png" loading="lazy" class="skin-image covert" alt="Gungnir AWP">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=M4A1-S+%7C+Printstream" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">M4A1-S | Printstream</h3>
+                                <img src="/assets/img/cs2_skins/M4A1-S/Printstream.png" loading="lazy" class="skin-image covert" alt="Printstream M4A1-S">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=USP-S+%7C+Kill+Confirmed" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">USP-S | Kill Confirmed</h3>
+                                <img src="/assets/img/cs2_skins/USP-S/Kill Confirmed.png" loading="lazy" class="skin-image covert" alt="Kill Confirmed USP-S">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=Desert+Eagle+%7C+Code+Red" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">Desert Eagle | Code Red</h3>
+                                <img src="/assets/img/cs2_skins/Desert Eagle/Code Red.png" loading="lazy" class="skin-image covert" alt="Code Red Desert Eagle">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                                            <div class="col-6 col-md-4 col-xl-3 skin-item">
+                            <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=specsgg&utm_campaign=market&utm_content=link&sort=price&order=asc&search=Glock-18+%7C+Fade" target="_blank" rel="nofollow noopener">
+                                <h3 class="skin-name">Glock-18 | Fade</h3>
+                                <img src="/assets/img/cs2_skins/Glock-18/Fade.png" loading="lazy" class="skin-image restricted" alt="Fade Glock-18">
+                                <button class="skin-btn btn">Check price</button>
+                            </a>
+                        </div>
+                                    
+                            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <i class="fas fa-video"></i><span>Video Settings</span>
+            </div>
+
+                    </div>
+        <div class="col-12 container_body">
+            <div class="row justify-content-center">
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Resolution</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">1024 X 768</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Aspect Ratio</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">4:3</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Display Mode</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">FULLSCREEN</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Refresh Rate</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">360hz</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Boost Player Contrast</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">ENABLED</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">V-Sync</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">DISABLED</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">NVIDIA G-Sync</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">DISABLED</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">NVIDIA Reflex Low Latency</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">ENABLED</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Maximum FPS In Game</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">0</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Brightness</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">71%</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Multisampling Anti-Aliasing</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">4X MSAA</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Global Shadow Quality</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">HIGH</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Dynamic Shadows</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">ALL</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Model / Texture Detail</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">HIGH</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Texture Filtering Mode</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">ANISOTROPIC 4X</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Shader Detail</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">HIGH</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Particle Detail</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">HIGH</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Ambient Occlusion</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">MEDIUM</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">High Dynamic Range</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">QUALITY</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">FidelityFX Super Resolution</span></div>
+                        
+                            <div class="col-12" ><span class="__sub1">DISABLED (HQ)</span></div>
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <i class="fas fa-eye"></i><span>Viewmodel</span>
+            </div>
+                    </div>
+        <div class="col-12 container_body">
+            <div class="row justify-content-center">
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">FOV</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">68</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Offset X</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">2.5</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Offset Y</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">0</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Offset Z</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">-1.5</span></div>
+                                                </div>
+                </div>
+            </div>
+
+            
+                <div class="row justify-content-center">
+                <div class="col-12 py-2">
+                    <div class="row justify-content-center px-3">
+                        <div class="col-12"><span class="__main">Viewmodel Code</span></div>
+                        <div class="col-10 p-0" style="max-width: 500px;">
+                            <span id="viewmodelcode" style="border: 1px solid #293242;border-top-right-radius: 0;border-bottom-right-radius: 0;overflow: hidden;margin-top: 8px;padding: 0.25rem 1rem;max-height: 64px;" class="__sub1">viewmodel_fov 68;viewmodel_offset_x 2.5;viewmodel_offset_y 0;viewmodel_offset_z -1.5;</span>
+                        </div>
+                        <div class="col-2 p-0">
+                            <button id="viewmodelcodecopybutton" class="inline-copy-button" onclick="copyToClipboard('#viewmodelcode', this.id)">COPY</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <i class="fas fa-th-large"></i><span>HUD</span>
+            </div>
+
+                    </div>
+        <div class="col-12 container_body">
+            <div class="row justify-content-start">
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">HUD Scale</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">1</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">HUD Color</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">Team Color</span></div>
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <i class="fas fa-satellite-dish"></i></i><span>Radar</span>
+            </div>
+
+                    </div>
+        <div class="col-12 container_body">
+            <div class="row justify-content-start">
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Radar Centers The Player</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">Yes</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Radar Is Rotating</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">Yes</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Radar HUD Size</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">1</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Radar Map Zoom</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">0.7</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Toggle Shape With Scoreboard</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">Yes</span></div>
+                                                </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    
+    <div class="col-12 col-md container_content py-2">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <i class="fas fa-rocket"></i><span>launch options</span>
+            </div>
+    
+    </div>
+        <div class="col-12 container_body">
+    
+            <div class="row justify-content-center">
+                <div class="col-12 py-2">
+                    <div class="row justify-content-center px-3">
+                        
+                            <div class="col-10 p-0" style="max-width: 500px;">
+                                <span id="launchoptions" style="border: 1px solid #293242;border-top-right-radius: 0;border-bottom-right-radius: 0;overflow: hidden;margin-top: 8px;padding: 0.25rem 1rem;max-height: 64px;" class="__sub1">-novid -tickrate 128 -allow_third_party_software</span>
+                            </div>
+                            <div class="col-2 p-0">
+                                <button id="launchoptionscopybutton" class="inline-copy-button" onclick="copyToClipboard('#launchoptions', this.id)">COPY</button>
+                            </div>
+                            
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    </div>
+    </div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <i class="fas fa-desktop"></i><span>Monitor Settings</span>
+            </div>
+                    </div>
+
+
+                <div class="row container_cta cta_cs_money">
+                <div class="col-12 container_body">
+                    <div class="row justify-content-center justify-content-xl-start">
+                        <div class="col-12 col-xl text-xl-left text-center">
+                            <img src="/assets/img/gear/monitor/ZOWIE XL2586X+.png" loading="lazy" class="icon" alt="ZOWIE XL2586X+ - monitor" height="40" width="40">
+                            <span><a target="_blank" rel="noopener noreferrer sponsored" href="https://www.amazon.com/s?k=ZOWIE+XL2586X+&tag=ggspecs03-20">ZOWIE XL2586X+</a></span>
+                        </div>
+                        <div class="col-auto pt-4 pt-md-3 pt-xl-0">
+                            <a class="btn btn-primary" target="_blank" rel="noopener noreferrer sponsored" href="https://www.amazon.com/s?k=ZOWIE+XL2586X+&tag=ggspecs03-20"><i class="fab fa-amazon" style="margin-bottom: -2px;"></i> Check price</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        <div class="col-12 container_body">
+            <div class="row justify-content-center">
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Brightness</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">83</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Contrast</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">50</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Sharpness</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">10</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Gamma</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">Gamma 3</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Color Temperature</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">r100-g100-b100</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Color Vibrance</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">20</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Black eQualizer</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">12</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Picture Mode</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">FPS 1</span></div>
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+            <img src="/assets/icon/gpu.png" loading="lazy" alt="Graphics Card GPU Icon" style="width: 42px;max-height: 1.5em;"><span>Graphics card Settings</span>
+            </div>
+                    </div>
+
+
+                <div class="row container_cta cta_cs_money">
+                <div class="col-12 container_body">
+                    <div class="row justify-content-center justify-content-xl-start">
+                        <div class="col-12 col-xl text-xl-left text-center">
+                            <img src="/assets/img/gear/gpu/Nvidia GeForce RTX 3080.png" loading="lazy" class="icon" alt="Nvidia GeForce RTX 3080 - gpu" height="40" width="40">
+                            <span><a target="_blank" rel="noopener noreferrer sponsored" href="https://www.amazon.com/s?k=Nvidia+GeForce+RTX+3080&tag=ggspecs03-20">NVIDIA GeForce RTX 3080</a></span>
+                        </div>
+                        <div class="col-auto pt-4 pt-md-3 pt-xl-0">
+                            <a class="btn btn-primary" target="_blank" rel="noopener noreferrer sponsored" href="https://www.amazon.com/s?k=Nvidia+GeForce+RTX+3080&tag=ggspecs03-20"><i class="fab fa-amazon" style="margin-bottom: -2px;"></i> Check price</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        <div class="col-12 container_body">
+            <div class="row justify-content-start">
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Brightness</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">50%</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Contrast</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">50%</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Gamma</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">1</span></div>
+                                                </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 py-2">
+                    <div class="row">
+                        <div class="col-12"><span class="__main">Digital Vibrance</span></div>
+                        
+                            <div class="col-12"><span class="__sub1">50%</span></div>
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row py-2 team-box">
+    <div class="col container_content">
+        <div class="row container_header justify-content-between" style="margin-right: 0px;margin-left: 0px;padding-left: 15px;">
+            <div class="col-auto">
+                <img src="/assets/img/teams/vitality_small.webp" loading="lazy" alt="Vitality - Professional CS2 Esports Team Logo" class="team-logo">
+                <span class="team-name">Vitality - CS2</span>
+            </div>
+            <div class="col-auto align-content-center">
+                <a class="team-all-btn d-flex px-2" href="/team/vitality">view all</a>
+            </div>
+        </div>
+        <div class="col-12 container_body">
+            <div class="row">
+                <div class="col-6 col-md-4 col-lg-3 player-box"><a class="player-link" href="/apEX"><img src="/assets/include/upload/image.php?name=apEX" loading="lazy" alt="apEX - Vitality CS2 Player Profile Picture" onerror="this.onerror=null; this.src='/assets/img/default-player.png';" class="player-img"><span class="player-name">apEX</span><div class="player-country"><img src="/assets/icon/flag/france.svg" loading="lazy" alt="France Flag" class="flag-icon"> France</div></a></div><div class="col-6 col-md-4 col-lg-3 player-box"><a class="player-link" href="/ropz"><img src="/assets/include/upload/image.php?name=ropz" loading="lazy" alt="ropz - Vitality CS2 Player Profile Picture" onerror="this.onerror=null; this.src='/assets/img/default-player.png';" class="player-img"><span class="player-name">ropz</span><div class="player-country"><img src="/assets/icon/flag/estonia.svg" loading="lazy" alt="Estonia Flag" class="flag-icon"> Estonia</div></a></div><div class="col-6 col-md-4 col-lg-3 player-box"><a class="player-link" href="/mezii"><img src="/assets/include/upload/image.php?name=mezii" loading="lazy" alt="mezii - Vitality CS2 Player Profile Picture" onerror="this.onerror=null; this.src='/assets/img/default-player.png';" class="player-img"><span class="player-name">mezii</span><div class="player-country"><img src="/assets/icon/flag/united-kingdom.svg" loading="lazy" alt="United Kingdom Flag" class="flag-icon"> United Kingdom</div></a></div><div class="col-6 col-md-4 col-lg-3 player-box"><a class="player-link" href="/flameZ"><img src="/assets/include/upload/image.php?name=flamez" loading="lazy" alt="flameZ - Vitality CS2 Player Profile Picture" onerror="this.onerror=null; this.src='/assets/img/default-player.png';" class="player-img"><span class="player-name">flameZ</span><div class="player-country"><img src="/assets/icon/flag/israel.svg" loading="lazy" alt="Israel Flag" class="flag-icon"> Israel</div></a></div>            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+    </div>
+</div>
+
+    <div class="content container-2 container-3 container-fluid gear-container">
+        <div class="container">
+            <div class="row py-2">
+                <div class="col-12 container_content">
+                    <div class="col-12 container_header gear-header">
+                        <i class="fas fa-cogs"></i>
+                        <span>Equipment</span>
+                    </div>
+                    <div class="col-12 container_body" style="padding: 1rem 25px;">
+                        <div class="row justify-content-start">
+    
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=ZOWIE+XL2586X+&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">ZOWIE XL2586X+</h3>
+                <img src="/assets/img/gear/monitor/ZOWIE XL2586X+.png" loading="lazy" class="gear-img" alt="ZOWIE XL2586X+ - Monitor">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=Pulsar+ZywOo+the+Chosen&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">Pulsar ZywOo the Chosen</h3>
+                <img src="/assets/img/gear/mouse/Pulsar ZywOo the Chosen.png" loading="lazy" class="gear-img" alt="Pulsar ZywOo the Chosen - Mouse">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=ASUS+ROG+Flachion+ACE+HFX+ZywOo+Edition&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">ASUS ROG Falchion Ace HFX ZywOo Edition</h3>
+                <img src="/assets/img/gear/keyboard/ASUS ROG Flachion ACE HFX ZywOo Edition.png" loading="lazy" class="gear-img" alt="ASUS ROG Flachion ACE HFX ZywOo Edition - Keyboard">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=ZywOo+The+Chosen&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">Pulsar ZywOo The Chosen</h3>
+                <img src="/assets/img/gear/mousepad/ZywOo The Chosen.png" loading="lazy" class="gear-img" alt="ZywOo The Chosen - Mousepad">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=ASUS+ROG+Pelta&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">ASUS ROG Pelta</h3>
+                <img src="/assets/img/gear/headset/ASUS ROG Pelta.png" loading="lazy" class="gear-img" alt="ASUS ROG Pelta - Headset">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=AceZone+Earphones+(Unreleased)&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">AceZone Earphones (Unreleased)</h3>
+                <img src="/assets/img/gear/In-Ears/AceZone Earphones (Unreleased).png" loading="lazy" class="gear-img" alt="AceZone Earphones (Unreleased) - In Ears">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=Logitech+Brio+Ultra+HD+Pro&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">Logitech Brio Ultra HD PRO</h3>
+                <img src="/assets/img/gear/webcam/Logitech Brio Ultra HD Pro.png" loading="lazy" class="gear-img" alt="Logitech Brio Ultra HD Pro - Camera">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=Intel+Core+i9-11900K&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">Intel Core i9-11900K</h3>
+                <img src="/assets/img/gear/cpu/Intel Core i9-11900K.png" loading="lazy" class="gear-img" alt="Intel Core i9-11900K - CPU">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=Nvidia+GeForce+RTX+3080&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">NVIDIA GeForce RTX 3080</h3>
+                <img src="/assets/img/gear/gpu/Nvidia GeForce RTX 3080.png" loading="lazy" class="gear-img" alt="Nvidia GeForce RTX 3080 - GPU">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-4 col-lg-3 col-xl-20pc gear-item" >
+            <a class="gear-link" href="https://www.amazon.com/s?k=Secretlab+Titan+Evo+Vitality&tag=ggspecs03-20" target="_blank" rel="nofollow noopener">
+                <h3 class="gear-name">Secretlab TITAN Evo Vitality</h3>
+                <img src="/assets/img/gear/chair/Secretlab Titan Evo Vitality.png" loading="lazy" class="gear-img" alt="Secretlab Titan Evo Vitality - Chair">
+                <button class="btn d-block"><i class="fab fa-amazon"></i> Check price</button>
+            </a>
+        </div>
+        
+                        </div>
+                        <p class="amazon-notice">As an Amazon Associate specs.gg earn from qualifying purchases.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+
+<div class="modal fade" id="communityupdater" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content community-modal">
+      <div class="modal-header community-modal-header">
+        <div class="community-modal-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="community-modal-title-wrapper">
+          <h5 class="modal-title community-modal-title"
+              data-mobile-text="Help Update Profile"
+              data-mobile-small-text="Update Profile">Help Keep This Profile Accurate</h5>
+          <p class="community-modal-subtitle">Spotted outdated info? Help the community by submitting an update!</p>
+        </div>
+        <button type="button" class="close community-modal-close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body community-modal-body">
+        <form action="/assets/include/send-update.php" method="POST" id="sendProfileUpdate">
+            <input type="hidden" name="q[profile]" value="ZywOo">
+
+            <div class="form-group community-form-group">
+                <label for="textInput" class="community-label">
+                  <i class="fas fa-edit"></i>
+                  What has changed?
+                </label>
+                <textarea class="form-control community-input community-textarea" id="textInput" name="q[textInput]" rows="5" required
+                       placeholder="Examples:
+• Mouse sensitivity changed from 1.5 to 2.0
+• Switched from Logitech G Pro X to SteelSeries Arctis 7
+• Updated resolution from 1920x1080 to 2560x1440
+• New crosshair settings or keybind changes"
+                       data-mobile-placeholder="What changed?
+• Mouse sens: 1.5 → 2.0
+• New headset or mouse
+• Resolution update"></textarea>
+                <small class="form-text community-text-muted">Be specific about what needs updating</small>
+            </div>
+
+            <div class="form-group community-form-group">
+                <label for="textSrc" class="community-label">
+                  <i class="fas fa-link"></i>
+                  Source (optional)
+                </label>
+                <input type="text" class="form-control community-input" id="textSrc" name="q[textSrc]"
+                       placeholder="Stream link, social media post, official announcement..."
+                       data-mobile-placeholder="Source link (optional)">
+                <small class="form-text community-text-muted">Help us verify the information with a reliable source</small>
+            </div>
+
+            <div class="community-info-box">
+              <i class="fas fa-info-circle"></i>
+              <div>
+                <strong>Community Powered</strong>
+                <p>Your submissions help keep our database accurate and up-to-date for everyone. Thank you for contributing!</p>
+              </div>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer community-modal-footer">
+        <button type="button" class="btn btn-secondary community-btn-secondary" data-dismiss="modal">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary community-btn-primary" form="sendProfileUpdate">
+          <i class="fas fa-paper-plane"></i>
+          Submit Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="communitySuccessModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content community-modal">
+      <div class="modal-header community-modal-header community-success-header">
+        <div class="community-modal-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        <div class="community-modal-title-wrapper">
+          <h5 class="modal-title community-modal-title">Update Submitted Successfully!</h5>
+          <p class="community-modal-subtitle">Thank you for helping keep our database accurate!</p>
+        </div>
+        <button type="button" class="close community-modal-close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body community-modal-body">
+        <div class="community-success-content">
+          <div class="community-success-icon">
+            <i class="fas fa-thumbs-up"></i>
+          </div>
+          <h4>Your contribution matters!</h4>
+          <p>We have received your update request and our team will review it shortly. Your help keeps our community database accurate and up-to-date for everyone.</p>
+
+          <div class="community-success-info">
+            <div class="success-info-item">
+              <i class="fas fa-clock"></i>
+              <span>Updates are typically reviewed within 24-48 hours</span>
+            </div>
+            <div class="success-info-item">
+              <i class="fab fa-discord"></i>
+              <span>
+                <a href="https://discord.gg/P96xHw6mxU" target="_blank" class="discord-link">
+                  🎉 Join our Discord for exclusive updates & rewards!
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer community-modal-footer">
+        <button type="button" class="btn btn-primary community-btn-primary community-btn-success" data-dismiss="modal" style="width: 100%; justify-content: center;">
+          <i class="fas fa-check"></i>
+          Awesome, got it!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <div class="content container-2 container-fluid banner-center py-2">
+        <div class="row container">
+            <div class="col-auto"><a href="https://hunt.gg/r/specs" target="_blank" rel="nofollow noopener" onclick="cookieclicker(&apos;profile.bottom&apos;);return true;" style="margin: 0;"><img src="/assets/img/banner/1300x400-1.png" loading="lazy" fetchpriority="low" alt="" style="width: 100%;"></a>
+            </div>
+        </div>
+    </div>
+    
+
+        <div class="overlay"></div>
+    <!-- modal languages -->
+<div class="modal fade" id="language" style="background: var(--bg-dark);" tabindex="-1" role="dialog" aria-labelledby="languageTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="background-color: var(--bg);color: #fff;">
+      <div class="modal-header" style="border-bottom: none">
+        <h5 class="modal-title" id="exampleModalLongTitle" style="font-family: 'Staatliches', cursive;font-size: 32px;">Language</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color: #fff;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="row justify-content-center">
+                <div class="col-2 pt-2"></div>
+            
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = 'português brasileiro';" type="radio" name="lang" value="BR" >
+                        <img src="/assets/img/languages/BR.png" loading="lazy">
+                    </label>
+                </div>
+                    
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = '漢語';" type="radio" name="lang" value="CN" >
+                        <img src="/assets/img/languages/CN.png" loading="lazy">
+                    </label>
+                </div>
+                    
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = '日本語';" type="radio" name="lang" value="JP" >
+                        <img src="/assets/img/languages/JP.png" loading="lazy">
+                    </label>
+                </div>
+                    
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = '한국어';" type="radio" name="lang" value="KR" >
+                        <img src="/assets/img/languages/KR.png" loading="lazy">
+                    </label>
+                </div>
+                    <div class="col-2 pt-2"></div><div class="col-2 pt-2"></div>
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = 'русский';" type="radio" name="lang" value="RU" >
+                        <img src="/assets/img/languages/RU.png" loading="lazy">
+                    </label>
+                </div>
+                    
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = 'ไทย';" type="radio" name="lang" value="TH" >
+                        <img src="/assets/img/languages/TH.png" loading="lazy">
+                    </label>
+                </div>
+                    
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = 'Türkçe';" type="radio" name="lang" value="TR" >
+                        <img src="/assets/img/languages/TR.png" loading="lazy">
+                    </label>
+                </div>
+                    
+                <div class="col-2 pt-2">
+                    <label>
+                        <input onclick="document.getElementById('feedback_text').innerText = 'English';" type="radio" name="lang" value="US" checked>
+                        <img src="/assets/img/languages/US.png" loading="lazy">
+                    </label>
+                </div>
+                    <div class="col-2 pt-2"></div><div class="col-2 pt-2"></div>                <div class="col-2 pt-2"></div>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <span id="feedback_text">English</span>
+            </div>
+      </div>
+      <div class="modal-footer pt-0" style="border: unset;">
+        <button onclick="change_language();" type="button" class="btn btn-primary" style="color: #fff !important;" >Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="content container-2 container-fluid">
+    <br><br><br>
+        <div class="row justify-content-center" style="text-align:center;">
+            <div class="col-auto p-0">
+                <a href="/privacy-policy-and-affiliate-disclosure"> Privacy Policy & Affiliate Disclosure </a>
+            </div>
+            <div class="col-auto p-0">
+                <span class="">&nbsp;-&nbsp;</span>
+            </div>
+            <div class="col-auto p-0 d-flex d-md-none"><br></div>
+            <div class="col-auto p-0">
+                <a href="/terms-and-conditions"> Terms & Conditions </a>-
+                <a href="/copyright-takedown"> Copyright Takedown </a>-
+                <a href="/legal-notice"> Legal Notice </a>-
+                <a style="cursor:pointer!important;" data-toggle="modal" data-target="#language"> Language </a>
+            </div>
+        </div>
+        <div class="row" style="text-align:center;">
+            <div class="col-12">
+                <span>
+                    Copyright ©
+                    2026  SPECS.GG
+                </span>
+            </div>
+        </div>
+        <div class="row" style="text-align:center; padding-top:5px;">
+            <div class="col-12">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js" integrity="sha512-b+nQTCdtTBIRIbraqNEwsjB6UvL3UEMkXnhzd8awtCYh0Kcsjl9uEgwVFVbhoj3uu1DO1ZMacNvLoyJJiNfcvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/js/main.js?v=1760722441"></script>
+</body>
+
+</html>
