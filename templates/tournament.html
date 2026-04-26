@@ -18,7 +18,7 @@
                 
                 <div style="text-align: right; display: flex; flex-direction: row-reverse; align-items: center; gap: 30px;">
                     <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.02); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <img src="{{ url_for('static', filename='img/team_logos/' + match.home_team.lower() + '.png') }}" alt="{{ match.home_team }}">
+                        <img src="{{ url_for('static', filename='img/team_logos/' + (match.team1|lower if match.team1 else 'default') + '.png') }}" alt="{{ match.team1 }}">
                              style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));"
                              onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
                     </div>
@@ -32,7 +32,7 @@
 
                 <div style="text-align: left; display: flex; align-items: center; gap: 30px;">
                     <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.02); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <img src="{{ url_for('static', filename='img/team_logos/' + match.away_team.lower() + '.png') }}" alt="{{ match.away_team }}">
+                        <img src="{{ url_for('static', filename='img/team_logos/' + (match.team2|lower if match.team2 else 'default') + '.png') }}" alt="{{ match.team2 }}">
                              style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));"
                              onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
                     </div>
