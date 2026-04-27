@@ -253,18 +253,21 @@ def all_tournaments():
 @app.route('/admin/add_match', methods=['GET', 'POST'])
 @login_required
 def admin_add_match():
-    if request.method == 'POST':
-        new_match = Match(
-            tournament_name=request.form.get('tournament').strip(),
-            team1=request.form.get('team1').strip(),
-            team2=request.form.get('team2').strip(),
-            date=request.form.get('date'),
-            time=request.form.get('time')
-        )
-        db.session.add(new_match)
-        db.session.commit()
-        return redirect(url_for('admin_add_match'))
-    return render_template('/admin/add_match.html')
+        key = request.args.get('key')
+        if key != ADMIN_ACCESS_KEY:
+            return "Access Denied: Wrong or missing key.", 403
+        if request.method == 'POST':
+            new_match = Match(
+                tournament_name=request.form.get('tournament').strip(),
+                team1=request.form.get('team1').strip(),
+                team2=request.form.get('team2').strip(),
+                date=request.form.get('date'),
+                time=request.form.get('time')
+            )
+            db.session.add(new_match)
+            db.session.commit()
+            return redirect(url_for('admin_add_match'))
+        return render_template('/admin/add_match.html')
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
