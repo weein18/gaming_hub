@@ -12,6 +12,8 @@ from itsdangerous import URLSafeTimedSerializer
 if not os.path.exists('instance'):
     os.makedirs('instance')
 
+ADMIN_ACCESS_KEY = "weein_mouz_208004"
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gaming_hub_secret_key_99'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -286,21 +288,21 @@ def predict(match_id):
 #         match.status = "Finished"
 #         db.session.commit()
 #     return redirect(request.referrer or url_for('matches'))
-
+    
 @app.route('/admin/manage-matches')
-# @login_required
 def manage_matches(): 
-    # if current_user.username != 'weein18':
-    #     flash("Access Denied!")
-        # return redirect(url_for('index'))  
-        # active_matches = Match.query.filter_by(status='Upcoming').all()
-        return render_template('admin/manage_matches.html',)
+    key = request.args.get('key')
+    if key != ADMIN_ACCESS_KEY:
+        return "Access Denied: Wrong or missing key.", 403
+    active_matches = Match.query.filter_by(status='Upcoming').all()
+    return render_template('admin/manage_matches.html', active_matches=active_matches)
 
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required
 def close_match(match_id):
-    # if current_user.username != 'weein18':
-    #     return "Unauthorized", 403
+    key = request.args.get('key')
+    if key != ADMIN_ACCESS_KEY:
+        return "Unauthorized", 403
     final_score = request.form.get('final_score')
     match = db.session.get(Match, match_id)   
     if match and final_score:
@@ -314,7 +316,7 @@ def close_match(match_id):
                 user.xp += 100
         db.session.commit()
         flash(f"Match {match.team1} vs {match.team2} closed with score {final_score}!") 
-    return redirect(url_for('manage_matches'))
+    return redirect(url_for('manage_matches', key=ADMIN_ACCESS_KEY))
 
 @app.route('/how-it-works')
 def how_it_works():
