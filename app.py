@@ -44,13 +44,13 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(500), nullable=False)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(1000), nullable=False)
     xp = db.Column(db.Integer, default=0)
     rank = db.Column(db.String(20), default='Silver')
     bio = db.Column(db.String(200), default='No bio yet...')
     steam_url = db.Column(db.String(200), default='')
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(200), unique=True, nullable=False)
     favorite_team = db.Column(db.String(50), default=' ')
     avatar = db.Column(db.String(200), default='default.png')
 class Match(db.Model):
