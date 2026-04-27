@@ -47,7 +47,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(1000), nullable=False)
     xp = db.Column(db.Integer, default=0)
-    rank = db.Column(db.String(20), default='Silver')
+    rank = db.Column(db.String(100), default='Silver')
     bio = db.Column(db.String(200), default='No bio yet...')
     steam_url = db.Column(db.String(200), default='')
     email = db.Column(db.String(200), unique=True, nullable=False)
@@ -163,14 +163,25 @@ def profile(username):
     total_preds = Prediction.query.filter_by(user_id=user.id).count()
     correct_preds = Prediction.query.filter_by(user_id=user.id, is_correct=True).count()
     accuracy = 0
-    if total_preds > 0:
-        accuracy = round((correct_preds / total_preds) * 100)
-    if user.xp > 1000:
-        user.rank = 'Global Elite'
-    elif user.xp > 500:
-        user.rank = 'Gold Nova'
-    else:
-        user.rank = 'Silver'
+    xp = user.xp
+    if xp >= 9500:   user.rank = 'The Global Elite'
+    elif xp >= 8900: user.rank = 'Supreme Master First Class'
+    elif xp >= 8300: user.rank = 'Legendary Eagle Master'
+    elif xp >= 7700: user.rank = 'Legendary Eagle'
+    elif xp >= 7100: user.rank = 'Distinguished Master Guardian'
+    elif xp >= 6500: user.rank = 'Master Guardian Elite'
+    elif xp >= 5900: user.rank = 'Master Guardian II'
+    elif xp >= 5300: user.rank = 'Master Guardian I'
+    elif xp >= 4700: user.rank = 'Gold Nova Master'
+    elif xp >= 4100: user.rank = 'Gold Nova III'
+    elif xp >= 3500: user.rank = 'Gold Nova II'
+    elif xp >= 2900: user.rank = 'Gold Nova I'
+    elif xp >= 2300: user.rank = 'Silver Elite Master'
+    elif xp >= 1700: user.rank = 'Silver Elite'
+    elif xp >= 1100: user.rank = 'Silver IV'
+    elif xp >= 600:  user.rank = 'Silver III'
+    elif xp >= 300:  user.rank = 'Silver II'
+    else:            user.rank = 'Silver I'
     db.session.commit()
     return render_template('user/profile.html', 
                            user=user, 
@@ -278,7 +289,7 @@ def predict(match_id):
     else:
         new_pred = Prediction(user_id=current_user.id, match_id=match_id, prediction_score=score)
         db.session.add(new_pred)
-    current_user.xp += 10 
+    # current_user.xp += 10 
     db.session.commit()
     return redirect(request.referrer)
 

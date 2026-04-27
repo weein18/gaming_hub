@@ -71,11 +71,12 @@
     <div class="match-card" style="margin-top: 20px; padding: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <span style="font-size: 0.7rem; font-weight: 800; color: #444;">RANK PROGRESS</span>
-            <span style="font-size: 0.7rem; font-weight: 800; color: var(--primary);">{{ user.xp }} / 1000 XP</span>
+            <span style="font-size: 0.7rem; font-weight: 800; color: var(--primary);">{{ user.xp }} / 10000 XP</span>
         </div>
         <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;">
-            <div style="width: {{ (user.xp / 1000 * 100) }}%; height: 100%; background: var(--primary); box-shadow: 0 0 20px var(--primary);"></div>
+            <div style="width: {{ (user.xp / 10000 * 100) if user.xp <= 10000 else 100 }}%; height: 100%; background: var(--primary); box-shadow: 0 0 20px var(--primary);"></div>
         </div>
-    </div>
+    </div>    
+
 </div>
 {% endblock %}
