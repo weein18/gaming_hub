@@ -19,7 +19,9 @@ app.config['SECRET_KEY'] = 'gaming_hub_secret_key_99'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'database.db')
+db_path = os.path.join(basedir, 'instance', 'database.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -261,8 +263,7 @@ def admin_add_match():
                 team1=request.form.get('team1').strip(),
                 team2=request.form.get('team2').strip(),
                 date=request.form.get('date'),
-                time=request.form.get('time'),
-                status='Upcoming'
+                time=request.form.get('time')
             )
             db.session.add(new_match)
             db.session.commit()
