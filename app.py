@@ -17,7 +17,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gaming_hub_secret_key_99'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db')
+ADMIN_ACCESS_KEY = os.getenv('ADMIN_ACCESS_KEY')
+uri = os.getenv('DATABASE_URL', 'sqlite:///database.db')
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SECRET_KEY'] = os.getenv('SECRET_ACCESS_KEY', 'default_local_secret')
 
 db = SQLAlchemy(app)
