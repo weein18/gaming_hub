@@ -359,5 +359,13 @@ def how_it_works():
 #             return redirect(url_for('login'))
 #     return render_template('auth/reset_password_form.html')
 
+@app.route('/secret-user-list')
+def secret_users():
+    users = User.query.all()
+    output = "<h1>Users in Database:</h1>"
+    for u in users:
+        output += f"<p>ID: {u.id} | Name: {u.username} | Email: {u.email} | Team: {u.favorite_team}</p>"
+    return output
+
 if __name__ == '__main__':
     app.run(debug=True)
