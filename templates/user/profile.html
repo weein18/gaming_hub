@@ -41,7 +41,7 @@
         <div style="display: flex; flex-direction: column; gap: 20px;">
             <div class="match-card" style="padding: 30px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
                 <div style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                    <img src="{{ url_for('static', filename='img/team_logos/' + (user.favorite_team.strip().lower() if user.favorite_team and user.favorite_team.strip() else 'default') + '.png') }}" 
+                    <img src="{{ url_for('static', filename='img/team_logos/' + (user.favorite_team.strip().lower().replace(' ', '_') if user.favorite_team and user.favorite_team.strip() else 'default') + '.png') }}" 
                         alt="logo"
                         style="width: 100%; height: 100%; object-fit: contain;"
                         onerror="this.src='https://via.placeholder.com/60?text=?'">
