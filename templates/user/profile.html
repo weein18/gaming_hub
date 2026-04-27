@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; opacity: 0.15; pointer-events: none;">
-    <img src="/static/img/team_logos/{{ user.favorite_team.lower().replace(' ', '_') }}.png" 
+    <img src="{{ url_for('static', filename='img/team_logos/' + (user.favorite_team.strip().lower() if user.favorite_team and user.favorite_team.strip() else 'default') + '.png') }}" 
          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; filter: blur(100px);">
 </div>
 

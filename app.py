@@ -267,7 +267,7 @@ def admin_add_match():
             db.session.add(new_match)
             db.session.commit()
             return redirect(url_for('admin_add_match'))
-        return render_template('/admin/add_match.html')
+        return render_template('/admin/add_match.html', key=ADMIN_ACCESS_KEY)
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
