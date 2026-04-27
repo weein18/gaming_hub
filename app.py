@@ -12,16 +12,14 @@ from itsdangerous import URLSafeTimedSerializer
 if not os.path.exists('instance'):
     os.makedirs('instance')
 
-ADMIN_ACCESS_KEY = "weein_mouz_208004"
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gaming_hub_secret_key_99'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'database.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gaming_hub_db_user:bJtGSquh9ESmRbh2ORzl6HxcbF1dqmJA@dpg-d7njl5gk1i2s739n49mg-a.frankfurt-postgres.render.com/gaming_hub_db'
+ADMIN_ACCESS_KEY = os.getenv('ADMIN_KEY', 'default_key_for_local_test')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db')
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -267,8 +265,8 @@ def admin_add_match():
             )
             db.session.add(new_match)
             db.session.commit()
-            return redirect(url_for('admin_add_match', key=ADMIN_ACCESS_KEY))
-        return render_template('/admin/add_match.html', key=ADMIN_ACCESS_KEY)
+            return redirect(url_for('admin_add_match', access_key=ADMIN_ACCESS_KEY))
+        return render_template('/admin/add_match.html', access_key=ADMIN_ACCESS_KEY)
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
@@ -299,7 +297,7 @@ def manage_matches():
     if key != ADMIN_ACCESS_KEY:
         return "Access Denied: Wrong or missing key.", 403
     active_matches = Match.query.filter_by(status='Upcoming').all()
-    return render_template('admin/manage_matches.html', active_matches=active_matches)
+    return render_template('admin/manage_matches.html', active_matches=active_matches, access_key=ADMIN_ACCESS_KEY)
 
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required

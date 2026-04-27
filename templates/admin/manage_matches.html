@@ -9,7 +9,7 @@
             <span style="font-size: 1.2rem;">{{ match.team1 }} vs {{ match.team2 }}</span>
         </div>
 
-        <form action="{{ url_for('close_match', match_id=match.id, key='weein_mouz_208004') }}" method="POST" style="display: flex; gap: 10px;">
+        <form action="{{ url_for('close_match', match_id=match.id, key=access_key) }}" method="POST" style="display: flex; gap: 10px;">
             <input type="text" name="final_score" placeholder="Score (e.g. 2-1)" 
                    style="background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; width: 120px;" required>
             
