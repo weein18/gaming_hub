@@ -262,6 +262,7 @@ def admin_add_match():
                 team2=request.form.get('team2').strip(),
                 date=request.form.get('date'),
                 time=request.form.get('time')
+                status='Upcoming'
             )
             db.session.add(new_match)
             db.session.commit()
