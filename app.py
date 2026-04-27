@@ -17,9 +17,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gaming_hub_secret_key_99'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gaming_hub_db_user:bJtGSquh9ESmRbh2ORzl6HxcbF1dqmJA@dpg-d7njl5gk1i2s739n49mg-a.frankfurt-postgres.render.com/gaming_hub_db'
-ADMIN_ACCESS_KEY = os.getenv('ADMIN_KEY', 'default_key_for_local_test')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db')
+app.config['SECRET_KEY'] = os.getenv('SECRET_ACCESS_KEY', 'default_local_secret')
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
