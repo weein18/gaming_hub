@@ -6,6 +6,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+import base64
 
 
 
@@ -52,7 +53,7 @@ class User(UserMixin, db.Model):
     steam_url = db.Column(db.String(200), default='')
     email = db.Column(db.String(200), unique=True, nullable=False)
     favorite_team = db.Column(db.String(50), default=' ')
-    avatar = db.Column(db.String(200), default='default.png')
+    avatar = db.Column(db.Text, default='default.png')
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tournament_name = db.Column(db.String(100), nullable=False, default='BLAST Rivals 2026 Season 1')
@@ -221,10 +222,9 @@ def settings():
         if 'avatar' in request.files:
             file = request.files['avatar']
             if file and file.filename != '':
-                ext = file.filename.rsplit('.', 1)[1].lower()
-                filename = secure_filename(f"user_{current_user.id}.{ext}")
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                current_user.avatar = filename
+                img_data = file.read()
+                base64_encoded = base64.b64encode(img_data).decode('utf-8')
+                current_user.avatar = f"data:{file.content_type};base64,{base64_encoded}"
 
         db.session.commit()
         flash('Profile settings saved!')
