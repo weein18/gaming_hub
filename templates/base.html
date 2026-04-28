@@ -33,8 +33,8 @@
                     <button class="dropbtn">
                         <div class="user-avatar-circle" style="padding: 0; overflow: hidden; border: 1px solid var(--primary);">
                             {% if current_user.avatar %}
-                                <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" 
-                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ current_user.avatar if 'base64' in current_user.avatar else url_for('static', filename='img/default_avatar.png') }}" 
+                                    style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
                             {% else %}
                                 {{ current_user.username[0].upper() }}
                             {% endif %}
