@@ -157,13 +157,16 @@ def matches():
         })   
     return render_template('games/matches.html', tournaments=tournaments)
 
-@app.route('/profile/<username>') # Добавили <username> в путь
+@app.route('/profile/<username>')
 @login_required
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     total_preds = Prediction.query.filter_by(user_id=user.id).count()
     correct_preds = Prediction.query.filter_by(user_id=user.id, is_correct=True).count()
-    accuracy = 0
+    if total_preds > 0:
+        accuracy = int((correct_preds / total_preds) * 100)
+    else:
+        accuracy = 0
     xp = user.xp
     if xp >= 9500:   user.rank = 'The Global Elite'
     elif xp >= 8900: user.rank = 'Supreme Master First Class'
