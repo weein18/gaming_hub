@@ -238,15 +238,57 @@ def settings():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-        total_preds = Prediction.query.filter_by(user_id=current_user.id).count()
-        correct_preds = Prediction.query.filter_by(user_id=current_user.id, is_correct=True).count()
-        if total_preds > 0:
-            accuracy = int((correct_preds / total_preds) * 100)
-        else:
-            accuracy = 0
-        recent_predictions = Prediction.query.filter_by(user_id=current_user.id).limit(10).all()
-        weekly_xp = current_user.xp
-        return render_template('admin/dashboard.html', weekly_xp=weekly_xp, predictions_count=len(recent_predictions), accuracy=accuracy)
+    user = current_user
+    total_preds = Prediction.query.filter_by(user_id=user.id).count()
+    correct_preds = Prediction.query.filter_by(user_id=user.id, is_correct=True).count()
+    accuracy = int((correct_preds / total_preds) * 100) if total_preds > 0 else 0
+    xp = user.xp
+    if xp >= 9500:   
+        user.rank, next_rank, next_threshold = 'The Global Elite', 'MAX', 10000
+    elif xp >= 8900: 
+        user.rank, next_rank, next_threshold = 'Supreme Master First Class', 'The Global Elite', 9500
+    elif xp >= 8300: 
+        user.rank, next_rank, next_threshold = 'Legendary Eagle Master', 'Supreme Master First Class', 8900
+    elif xp >= 7700: 
+        user.rank, next_rank, next_threshold = 'Legendary Eagle', 'Legendary Eagle Master', 8300
+    elif xp >= 7100: 
+        user.rank, next_rank, next_threshold = 'Distinguished Master Guardian', 'Legendary Eagle', 7700
+    elif xp >= 6500: 
+        user.rank, next_rank, next_threshold = 'Master Guardian Elite', 'Distinguished Master Guardian', 7100
+    elif xp >= 5900: 
+        user.rank, next_rank, next_threshold = 'Master Guardian II', 'Master Guardian Elite', 6500
+    elif xp >= 5300: 
+        user.rank, next_rank, next_threshold = 'Master Guardian I', 'Master Guardian II', 5900
+    elif xp >= 4700: 
+        user.rank, next_rank, next_threshold = 'Gold Nova Master', 'Master Guardian I', 5300
+    elif xp >= 4100: 
+        user.rank, next_rank, next_threshold = 'Gold Nova III', 'Gold Nova Master', 4700
+    elif xp >= 3500: 
+        user.rank, next_rank, next_threshold = 'Gold Nova II', 'Gold Nova III', 4100
+    elif xp >= 2900: 
+        user.rank, next_rank, next_threshold = 'Gold Nova I', 'Gold Nova II', 3500
+    elif xp >= 2300: 
+        user.rank, next_rank, next_threshold = 'Silver Elite Master', 'Gold Nova I', 2900
+    elif xp >= 1700: 
+        user.rank, next_rank, next_threshold = 'Silver Elite', 'Silver Elite Master', 2300
+    elif xp >= 1100: 
+        user.rank, next_rank, next_threshold = 'Silver IV', 'Silver Elite', 1700
+    elif xp >= 600:  
+        user.rank, next_rank, next_threshold = 'Silver III', 'Silver IV', 1100
+    elif xp >= 300:  
+        user.rank, next_rank, next_threshold = 'Silver II', 'Silver III', 600
+    else:            
+        user.rank, next_rank, next_threshold = 'Silver I', 'Silver II', 300
+    db.session.commit()
+    recent_predictions = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).limit(10).all()
+    return render_template('admin/dashboard.html', 
+                           user=user, 
+                           accuracy=accuracy, 
+                           total_wins=correct_preds,
+                           next_rank=next_rank,
+                           next_threshold=next_threshold,
+                           predictions_count=len(recent_predictions),
+                           recent_predictions=recent_predictions)
 
 @app.route('/tournament/<name>')
 @login_required
