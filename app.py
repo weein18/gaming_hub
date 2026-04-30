@@ -238,9 +238,15 @@ def settings():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    recent_predictions = Prediction.query.filter_by(user_id=current_user.id).limit(10).all()
-    weekly_xp = current_user.xp
-    return render_template('admin/dashboard.html', weekly_xp=weekly_xp, predictions_count=len(recent_predictions))
+        total_preds = Prediction.query.filter_by(user_id=user.id).count()
+        correct_preds = Prediction.query.filter_by(user_id=user.id, is_correct=True).count()
+        if total_preds > 0:
+            accuracy = int((correct_preds / total_preds) * 100)
+        else:
+            accuracy = 0
+        recent_predictions = Prediction.query.filter_by(user_id=current_user.id).limit(10).all()
+        weekly_xp = current_user.xp
+        return render_template('admin/dashboard.html', weekly_xp=weekly_xp, predictions_count=len(recent_predictions), accuracy=accuracy)
 
 @app.route('/tournament/<name>')
 @login_required
