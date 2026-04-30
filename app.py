@@ -232,8 +232,7 @@ def settings():
         db.session.commit()
         flash('Profile settings saved!')
         return redirect(url_for('profile', username=current_user.username))
-
-    return render_template('user/settings.html')
+    return render_template('user/settings.html', user=current_user)
 
 @app.route('/dashboard')
 @login_required
@@ -343,15 +342,6 @@ def predict(match_id):
     # current_user.xp += 10 
     db.session.commit()
     return redirect(request.referrer)
-
-# @app.route('/admin/finish_match/<int:match_id>')
-# @login_required
-# def finish_match(match_id):
-#     match = db.session.get(Match, match_id)
-#     if match:
-#         match.status = "Finished"
-#         db.session.commit()
-#     return redirect(request.referrer or url_for('matches'))
     
 @app.route('/admin/manage-matches')
 def manage_matches(): 

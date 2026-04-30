@@ -15,7 +15,8 @@
             <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                 <div class="avatar-preview-container" style="position: relative; width: 180px; height: 180px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
                     {% if current_user.avatar %}
-                        <img id="output" src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ user.avatar if 'data:' in user.avatar else url_for('static', filename='uploads/' + user.avatar) }}" 
+                                style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;">
                     {% else %}
                         <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.05);">?</div>
                     {% endif %}
