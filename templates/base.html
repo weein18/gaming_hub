@@ -25,9 +25,7 @@
             {% else %}
                 <a href="{{ url_for('index') }}">Homepage</a>
             {% endif %}
-            
-            <a href="{{ url_for('matches') }}">Matches</a>
-
+                <a href="{{ url_for('matches') }}">Tournaments</a>
             {% if current_user.is_authenticated %}
                 <div class="dropdown">
                     <button class="dropbtn">

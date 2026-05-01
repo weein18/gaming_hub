@@ -59,11 +59,42 @@
         <h3 style="margin-bottom: 15px;">FAST ENTRY</h3>
         <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Predict results in two clicks and track your accuracy in real-time.</p>
     </div>
-    <div class="f-card" style="border-top: 2px solid var(--primary);">
-        <i class="fas fa-trophy" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
-        <h3 style="margin-bottom: 15px;">GLOBAL RANKING</h3>
-        <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Earn XP for every correct score and reach the Global Elite rank.</p>
-    </div>
+    <a href="{{ url_for('leaderboard') }}" class="feature-card-link" style="text-decoration: none; color: inherit;">
+        <div class="feature-card" style="
+            border: 1px solid var(--primary); 
+            padding: 40px; 
+            border-radius: 20px; 
+            text-align: center; 
+            transition: all 0.3s ease;
+            background: rgba(227, 6, 19, 0.05);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        ">
+            <div class="glow-effect"></div>
+            <i class="fas fa-trophy" style="font-size: 2rem; color: var(--primary); margin-bottom: 20px; display: block;"></i>       
+            <h3 style="font-size: 1.5rem; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">
+                GLOBAL RANKING
+            </h3>
+            <p style="color: #666; font-size: 0.9rem; line-height: 1.4;">
+                Earn XP for every correct score and reach the Global Elite rank. <br>
+                <span style="color: var(--primary); font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; margin-top: 15px; display: block;">
+                    VIEW LEADERBOARD →
+                </span>
+            </p>
+        </div>
+    </a>
+    <style>
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(227, 6, 19, 0.2);
+            background: rgba(227, 6, 19, 0.1) !important;
+            border-color: #fff !important;
+        }
+        .feature-card:hover h3 {
+            text-shadow: 0 0 15px var(--primary);
+        }
+    </style>
     <div class="f-card">
         <i class="fas fa-shield-alt" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
         <h3 style="margin-bottom: 15px;">SECURE DATA</h3>

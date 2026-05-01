@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-container" style="padding-top: 130px;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 4rem; text-transform: uppercase; letter-spacing: -2px;">Global <span class="highlight">Elite</span> Rankings</h1>
+        <p style="color: #555;">Top predictors competing for the ultimate glory.</p>
+    </div>
+
+    <div class="glass-box" style="padding: 0; overflow: hidden; border-radius: 20px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(255,255,255,0.02); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; color: #444;">
+                <tr>
+                    <th style="padding: 20px;">Rank</th>
+                    <th style="padding: 20px;">User</th>
+                    <th style="padding: 20px;">Current Tier</th>
+                    <th style="padding: 20px; text-align: right;">Total XP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in users %}
+                <tr onclick="window.location='{{ url_for('profile', username=player.username) }}';" 
+                    style="border-bottom: 1px solid rgba(255,255,255,0.02); transition: 0.3s; cursor: pointer;" 
+                    class="leaderboard-row">
+                    <td style="padding: 20px; font-weight: 900;">
+                        {% if loop.index == 1 %} <span style="color: #ffd700;">👑 1</span>
+                        {% elif loop.index == 2 %} <span style="color: #c0c0c0;">🥈 2</span>
+                        {% elif loop.index == 3 %} <span style="color: #cd7f32;">🥉 3</span>
+                        {% else %} <span style="color: #444;">#{{ loop.index }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 20px; display: flex; align-items: center; gap: 15px;">
+                        <img src="{{ player.avatar if 'data:' in player.avatar else url_for('static', filename='uploads/' + (player.avatar or 'default.png')) }}" 
+                            style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);"
+                            class="row-avatar">
+                        <span class="player-name" style="font-weight: 700;">{{ player.username }}</span>
+                    </td>
+                    <td style="padding: 20px;">
+                        <span class="tier-badge" style="font-size: 0.65rem; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 4px; color: #aaa;">
+                            {{ player.rank }}
+                        </span>
+                    </td>
+                    <td style="padding: 20px; text-align: right; font-family: monospace; color: var(--accent); font-weight: 900;">
+                        {{ player.xp }} XP
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<style>
+    .leaderboard-row:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+        box-shadow: inset 4px 0 0 var(--primary);
+    }
+
+    .leaderboard-row:hover .player-name {
+        color: var(--primary) !important;
+        transform: translateX(5px);
+        transition: all 0.3s ease;
+    }
+
+    .leaderboard-row:hover .row-avatar {
+        border-color: var(--primary) !important;
+        transform: scale(1.1);
+        transition: all 0.3s ease;
+    }
+
+    .leaderboard-row:hover td:last-child {
+        color: #fff !important;
+        text-shadow: 0 0 10px var(--accent);
+    }
+</style>
+</style>
+{% endblock %}

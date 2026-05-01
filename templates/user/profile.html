@@ -10,13 +10,10 @@
     <div style="text-align: center; margin-bottom: 60px;">
         <div style="position: relative; display: inline-block; margin-bottom: 20px;">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; background: var(--primary); filter: blur(60px); opacity: 0.2; border-radius: 50%;"></div>
-
             <img src="{{ user.avatar if 'base64' in user.avatar else url_for('static', filename='img/default_avatar.png') }}" 
                 style="width: 180px; height: 180px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); position: relative; z-index: 2; object-fit: cover;">
-            
             <div style="position: absolute; bottom: 15px; right: 15px; width: 30px; height: 30px; background: #28a745; border-radius: 50%; border: 5px solid #0a0a0a; z-index: 3; box-shadow: 0 0 20px #28a745;"></div>
         </div>
-
         <h1 style="font-size: 5rem; text-transform: uppercase; letter-spacing: -3px; line-height: 1; margin: 0;">{{ user.username }}</h1>
         <div style="display: flex; justify-content: center; gap: 30px; margin-top: 10px;">
             <span style="color: var(--primary); font-weight: 900; letter-spacing: 4px; font-size: 0.8rem;">{{ user.rank.upper() }}</span>
@@ -25,9 +22,10 @@
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; align-items: start;">
-
-        <div class="match-card" style="padding: 25px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; align-items: stretch;">
+        
+        <!-- Accuracy & Wins -->
+        <div class="match-card" style="padding: 25px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center;">
             <div style="margin-bottom: 20px;">
                 <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 5px;">PREDICTION ACCURACY</div>
                 <div style="font-size: 1.8rem; font-weight: 900;">{{ accuracy }}%</div>
@@ -39,35 +37,46 @@
         </div>
         
         <div style="display: flex; flex-direction: column; gap: 20px;">
-            <div class="match-card" style="padding: 30px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                <div style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                    <img src="{{ url_for('static', filename='img/team_logos/' + (user.favorite_team.strip().lower().replace(' ', '_') if user.favorite_team and user.favorite_team.strip() else 'default') + '.png') }}" 
-                        alt="logo"
-                        style="width: 100%; height: 100%; object-fit: contain;"
-                        onerror="this.src='https://via.placeholder.com/60?text=?'">
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <span style="font-size: 0.6rem; color: #444; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Representing</span>
-                    <span style="font-size: 1.5rem; font-weight: 800;">{{ user.favorite_team }}</span>
+            <!-- Team -->
+            <div class="match-card" style="padding: 20px; display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); min-height: 90px;">
+                <img src="{{ url_for('static', filename='img/team_logos/' + (user.favorite_team.strip().lower().replace(' ', '_') if user.favorite_team and user.favorite_team.strip() else 'default') + '.png') }}" 
+                     style="width: 50px; height: 50px; object-fit: contain;"
+                     onerror="this.src='https://via.placeholder.com/50?text=?'">
+                <div>
+                    <span style="font-size: 0.6rem; color: #444; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block;">Representing</span>
+                    <span style="font-size: 1.2rem; font-weight: 800;">{{ user.favorite_team }}</span>
                 </div>
             </div>
-        </div>
             
-            <div class="match-card" style="padding: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px;">OPERATIVE BIO</div>
-                <p style="color: #888; line-height: 1.6; font-style: italic; margin: 0;">"{{ user.bio }}"</p>
+            <!-- Rank -->
+            <div class="match-card" style="padding: 20px; display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); min-height: 90px;">
+                <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    <img src="{{ url_for('static', filename='img/ranks/' + (user.rank | lower | replace(' ', '_')) + '.png') }}" 
+                         style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(227, 6, 19, 0.2));">
+                </div>
+                <div>
+                    <span style="font-size: 0.6rem; color: var(--primary); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; display: block;">Current Tier</span>
+                    <span style="font-size: 1.2rem; font-weight: 800;">{{ user.rank.upper() }}</span>
+                </div>
             </div>
         </div>
-
-        <div class="match-card" style="padding: 25px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); text-align: center;">
-            <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 20px;">EXTERNAL LINKS</div>
-            <a href="{{ user.steam_url }}" style="display: block; padding: 15px; background: #1b2838; border-radius: 8px; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700;">
-                <i class="fab fa-steam" style="margin-right: 10px;"></i> STEAM PROFILE
-            </a>
+        
+        <!-- Bio -->
+        <div class="match-card" style="padding: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center;">
+            <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px;">OPERATIVE BIO</div>
+            <p style="color: #888; line-height: 1.6; font-style: italic; margin: 0; font-size: 0.9rem;">"{{ user.bio }}"</p>
         </div>
-
     </div>
 
+    <!-- Steam -->
+    <div class="match-card" style="padding: 25px; margin-top: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); text-align: center;">
+        <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 20px;">EXTERNAL LINKS</div>
+        <a href="{{ user.steam_url }}" style="display: inline-block; min-width: 300px; padding: 15px; background: #1b2838; border-radius: 8px; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; transition: 0.3s;">
+            <i class="fab fa-steam" style="margin-right: 10px;"></i> STEAM PROFILE
+        </a>
+    </div>
+
+    <!-- Rank Progress -->
     <div class="match-card" style="margin-top: 20px; padding: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <span style="font-size: 0.7rem; font-weight: 800; color: #444;">RANK PROGRESS</span>
