@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 import base64
+from sqlalchemy import or_
 
 
 
@@ -420,6 +421,34 @@ def how_it_works():
 def leaderboard():
     top_users = User.query.order_by(User.xp.desc()).limit(50).all()
     return render_template('user/leaderboard.html', users=top_users)
+
+@app.route('/match/<int:match_id>')
+@login_required
+def match_analytics(match_id):
+    match = Match.query.get_or_404(match_id)
+    t1_past = Match.query.filter(
+        or_(Match.team1 == match.team1, Match.team2 == match.team1),
+        Match.status == "Finished",
+        Match.id != match_id
+    ).order_by(Match.id.desc()).all()
+    t2_past = Match.query.filter(
+        or_(Match.team1 == match.team2, Match.team2 == match.team2),
+        Match.status == "Finished",
+        Match.id != match_id
+    ).order_by(Match.id.desc()).all()
+    h2h = Match.query.filter(
+        or_(
+            (Match.team1 == match.team1) & (Match.team2 == match.team2),
+            (Match.team1 == match.team2) & (Match.team2 == match.team1)
+        ),
+        Match.status == "Finished",
+        Match.id != match_id
+    ).order_by(Match.id.desc()).limit(3).all()
+    return render_template ("match_analytics.html",
+                            match=match,
+                            t1_past=t1_past,
+                            t2_past=t2_past,
+                            h2h=h2h)
 
 if __name__ == '__main__':
     app.run(debug=True)
