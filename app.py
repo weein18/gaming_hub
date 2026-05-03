@@ -64,6 +64,7 @@ class Match(db.Model):
     time = db.Column(db.String(10), nullable=False)
     status = db.Column(db.String(20), default='Upcoming')
     final_score = db.Column(db.String(10), default='')
+    match_type = db.Column(db.String(10), default="BO3")
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -318,12 +319,14 @@ def admin_add_match():
         if key != ADMIN_ACCESS_KEY:
             return "Access Denied: Wrong or missing key.", 403
         if request.method == 'POST':
+            m_type = request.form.get("match_type", "BO3")
             new_match = Match(
                 tournament_name=request.form.get('tournament').strip(),
                 team1=request.form.get('team1').strip(),
                 team2=request.form.get('team2').strip(),
                 date=request.form.get('date'),
-                time=request.form.get('time')
+                time=request.form.get('time'),
+                match_type = m_type
             )
             db.session.add(new_match)
             db.session.commit()
@@ -430,12 +433,12 @@ def match_analytics(match_id):
         or_(Match.team1 == match.team1, Match.team2 == match.team1),
         Match.status == "Finished",
         Match.id != match_id
-    ).order_by(Match.id.desc()).all()
+    ).order_by(Match.id.desc()).limit(3).all()
     t2_past = Match.query.filter(
         or_(Match.team1 == match.team2, Match.team2 == match.team2),
         Match.status == "Finished",
         Match.id != match_id
-    ).order_by(Match.id.desc()).all()
+    ).order_by(Match.id.desc()).limit(3).all()
     h2h = Match.query.filter(
         or_(
             (Match.team1 == match.team1) & (Match.team2 == match.team2),
