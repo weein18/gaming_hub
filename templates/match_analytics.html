@@ -28,10 +28,10 @@
             <h3 style="color: #444; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 20px;">{{ match.team1.upper() }} RECENT FORM</h3>
             {% for m in t1_past %}
                 {% set score_parts = m.final_score.split('-') %}
-                {% set is_t1_in_past = m.team1.lower() == match.team1.lower() %}
+                {% set is_current_t1 = m.team1.lower() == match.team1.lower() %}
                 {% set val1 = score_parts[0]|int %}
                 {% set val2 = score_parts[1]|int %}
-                {% set win = (is_t1_in_past and val1 > val2) or (not is_t1_in_past and val2 > val1) %}
+                {% set win = (is_current_t1 and v1 > v2) or (not is_current_t1 and v2 > v1) %}
                 <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <span style="color: {% if win %}#28a745{% else %}#dc3545{% endif %}; font-weight: 900; width: 30px;">
                         {{ 'W' if win else 'L' }}
@@ -49,10 +49,10 @@
             <h3 style="color: #444; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 20px;">{{ match.team2.upper() }} RECENT FORM</h3>
             {% for m in t2_past %}
                 {% set score_parts = m.final_score.split('-') %}
-                {% set is_t1_in_past = m.team1.lower() == match.team2.lower() %}
+                {% set is_current_t2 = m.team1.lower() == match.team2.lower() %}
                 {% set val1 = score_parts[0]|int %}
                 {% set val2 = score_parts[1]|int %}
-                {% set win = (is_t2_in_past and val1 > val2) or (not is_t2_in_past and val2 > val1) %}
+                {% set win = (is_current_t2 and v1 > v2) or (not is_current_t2 and v2 > v1) %}
 
                 <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <span style="color: {% if win %}#28a745{% else %}#dc3545{% endif %}; font-weight: 900; width: 30px;">
