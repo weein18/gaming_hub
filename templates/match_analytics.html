@@ -31,7 +31,7 @@
                 {% set is_current_t1 = m.team1.lower() == match.team1.lower() %}
                 {% set val1 = score_parts[0]|int %}
                 {% set val2 = score_parts[1]|int %}
-                {% set win = (is_current_t1 and v1 > v2) or (not is_current_t1 and v2 > v1) %}
+                {% set win = (is_current_t1 and val1 > val2) or (not is_current_t1 and val2 > val1) %}
                 <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <span style="color: {% if win %}#28a745{% else %}#dc3545{% endif %}; font-weight: 900; width: 30px;">
                         {{ 'W' if win else 'L' }}
@@ -52,7 +52,7 @@
                 {% set is_current_t2 = m.team1.lower() == match.team2.lower() %}
                 {% set val1 = score_parts[0]|int %}
                 {% set val2 = score_parts[1]|int %}
-                {% set win = (is_current_t2 and v1 > v2) or (not is_current_t2 and v2 > v1) %}
+                {% set win = (is_current_t2 and val1 > val2) or (not is_current_t2 and val2 > val1) %}
 
                 <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <span style="color: {% if win %}#28a745{% else %}#dc3545{% endif %}; font-weight: 900; width: 30px;">
