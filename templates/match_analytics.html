@@ -36,7 +36,7 @@
                     <span style="color: {% if win %}#28a745{% else %}#dc3545{% endif %}; font-weight: 900; width: 30px;">
                         {{ 'W' if win else 'L' }}
                     </span>
-                    <span style="flex-grow: 1; color: #888;">vs {{ m.team2 if is_t1_in_past else m.team1 }}</span>
+                    <span style="flex-grow: 1; color: #888;">vs {{ m.team2 if is_current_t1 else m.team1 }}</span>
                     <span style="font-weight: 700; color: #fff;">{{ m.final_score }}</span>
                 </div>
             {% else %}
@@ -58,7 +58,7 @@
                     <span style="color: {% if win %}#28a745{% else %}#dc3545{% endif %}; font-weight: 900; width: 30px;">
                         {{ 'W' if win else 'L' }}
                     </span>
-                    <span style="flex-grow: 1; color: #888;">vs {{ m.team2 if is_t1_in_past else m.team1 }}</span>
+                    <span style="flex-grow: 1; color: #888;">vs {{ m.team2 if is_current_t2 else m.team1 }}</span>
                     <span style="font-weight: 700; color: #fff;">{{ m.final_score }}</span>
                 </div>
             {% else %}
