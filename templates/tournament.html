@@ -58,20 +58,42 @@
 
                 <form action="{{ url_for('predict', match_id=match.id) }}" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 10px;">
                     {% set current_pred = user_preds.get(match.id) %}
+                    
                     {% if match.match_type == 'BO5' %}
                         {% set scores = ['3-0', '3-1', '3-2', '2-3', '1-3', '0-3'] %}
                     {% else %}
                         {% set scores = ['2-0', '2-1', '1-2', '0-2'] %}
                     {% endif %}
+
                     {% for score in scores %}
-                    <button name="predicted_score" value="{{ score }}" 
-                            onclick="event.stopPropagation();"
-                            class="bet-btn {% if current_pred == score %}active-pred{% endif %}"
-                            style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {% if current_pred == score %} background: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(227,6,19,0.4); {% endif %}">
-                        {{ score }}
-                    </button>
+                        {% set btn_style = "" %}
+                        
+                        {% if match.status == 'Finished' %}
+                            {% if score == match.final_score %}
+                                {% set btn_style = "background: #28a745; border-color: #28a745; box-shadow: 0 0 15px rgba(40,167,69,0.4);" %}
+                            {% elif current_pred == score and current_pred != match.final_score %}
+                                {% set btn_style = "background: #dc3545; border-color: #dc3545; opacity: 0.8;" %}
+                            {% elif current_pred == score and current_pred == match.final_score %}
+                                {% set btn_style = "background: #28a745; border-color: #28a745;" %}
+                            {% else %}
+                                {% set btn_style = "opacity: 0.3; pointer-events: none;" %}
+                            {% endif %}
+                        {% else %}
+                            {% if current_pred == score %}
+                                {% set btn_style = "background: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(227,6,19,0.4);" %}
+                            {% endif %}
+                        {% endif %}
+
+                        <button name="predicted_score" value="{{ score }}" 
+                                onclick="event.stopPropagation();"
+                                class="bet-btn {% if current_pred == score %}active-pred{% endif %}"
+                                {% if match.status == 'Finished' %}disabled{% endif %}
+                                style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {{ btn_style }}">
+                            {{ score }}
+                        </button>
                     {% endfor %}
-                </form>    
+                </form>
+
             </div>
         </div>
         {% endfor %}
