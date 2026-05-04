@@ -296,11 +296,10 @@ def dashboard():
 def tournament(name):
     clean_name = name.replace('-', ' ')
     tournament_matches = Match.query.filter(
-        Match.tournament_name.ilike(f"%{clean_name}%"),
-        Match.status == 'Upcoming'
-    ).all()     
-    user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()    
-    preds_dict = {p.match_id: p.prediction_score for p in user_predictions}    
+        Match.tournament_name.ilike(f"%{clean_name}%")
+    ).order_by(Match.date.asc(), Match.time.asc()).all() 
+    user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
+    preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
     return render_template('tournament.html', 
                            tournament_name=name, 
                            matches=tournament_matches, 

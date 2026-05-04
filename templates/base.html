@@ -13,6 +13,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- <div id="loader" style="position:fixed; width:100%; height:100%; background:#0a0a0a; z-index:9999; display:flex; justify-content:center; align-items:center;">
+        <div style="text-align:center;">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" style="width:100px; animation: pulse 1.5s infinite;">
+            <p style="color:var(--primary); font-weight:900; letter-spacing:3px; margin-top:20px;">LOADING ELITEHUB...</p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            document.getElementById('loader').style.display = 'none';
+        };
+    </script>
+
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+    </style> -->
     <nav class="navbar">
         <div class="logo">
             <a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">
