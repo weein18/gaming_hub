@@ -326,23 +326,37 @@ def all_tournaments():
 
 @app.route('/admin/add_match', methods=['GET', 'POST'])
 def admin_add_match():
-        key = request.args.get('key')
-        if key != ADMIN_ACCESS_KEY:
-            return "Access Denied: Wrong or missing key.", 403
-        if request.method == 'POST':
-            m_type = request.form.get("match_type", "BO3")
-            new_match = Match(
-                tournament_name=request.form.get('tournament').strip(),
-                team1=request.form.get('team1').strip(),
-                team2=request.form.get('team2').strip(),
-                date=request.form.get('date'),
-                time=request.form.get('time'),
-                match_type = m_type
+    key = request.args.get('key')
+    if key != ADMIN_ACCESS_KEY:
+        return "Access Denied: Wrong or missing key.", 403
+    if request.method == 'POST':
+        t_name = request.form.get('tournament').strip()
+        m_type = request.form.get("match_type", "BO3")
+        f_prize = request.form.get('prize_pool', '$1,000,000').strip()
+        f_xp = request.form.get('xp_reward', '1000 XP').strip()
+        tournament = Tournament.query.filter_by(display_name=t_name).first()
+        if not tournament:
+            tournament = Tournament(
+                display_name=t_name,
+                url_name=t_name.lower().replace(' ', '-'),
+                prize_pool=f_prize,
+                xp_reward=f_xp,
+                tier="S-TIER"
             )
-            db.session.add(new_match)
-            db.session.commit()
-            return redirect(url_for('admin_add_match', key=ADMIN_ACCESS_KEY))
-        return render_template('/admin/add_match.html', access_key=ADMIN_ACCESS_KEY)
+            db.session.add(tournament)
+            db.session.flush()
+        new_match = Match(
+            tournament_name=t_name,
+            team1=request.form.get('team1').strip(),
+            team2=request.form.get('team2').strip(),
+            date=request.form.get('date'),
+            time=request.form.get('time'),
+            match_type=m_type
+        )
+        db.session.add(new_match)
+        db.session.commit()
+        return redirect(url_for('admin_add_match', key=ADMIN_ACCESS_KEY))
+    return render_template('/admin/add_match.html', access_key=ADMIN_ACCESS_KEY)
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
