@@ -9,6 +9,15 @@
         <h1 style="font-size: 3.5rem; margin: 0; text-transform: uppercase; letter-spacing: -2px;">{{ tournament_name.replace('-', ' ') }}</h1>
         <h2 style="font-size: 1.5rem; margin: 0; text-transform: uppercase; letter-spacing: -1px;">GRAND FINAL</h2>
     </div>
+    <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 40px;">
+        {% for date in all_dates %}
+            <a href="{{ url_for('tournament', name=tournament_name, date=date) }}" 
+            style="padding: 10px 20px; background: {% if date == current_date %}var(--primary){% else %}#222{% endif %}; 
+                    color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                DAY {{ loop.index }} ({{ date }})
+            </a>
+        {% endfor %}
+    </div>
 
     <div style="display: flex; flex-direction: column; gap: 30px;">
         {% for match in matches %}

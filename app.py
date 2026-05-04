@@ -149,13 +149,15 @@ def login():
 
 @app.route('/matches')
 def matches():
-    unique_tournaments = db.session.query(Match.tournament_name).distinct().all()    
+    active_tournaments = db.session.query(Match.tournament_name).filter(
+        Match.status == 'Upcoming'
+    ).distinct().all()
     tournaments = []
-    for t in unique_tournaments:
+    for t in active_tournaments:
         name = t[0]
         tournaments.append({
             'display_name': name,
-            'url_name': name.lower().replace(' ', '-') # "IEM Rio" -> "iem-rio"
+            'url_name': name.lower().replace(' ', '-')
         })   
     return render_template('games/matches.html', tournaments=tournaments)
 
@@ -295,15 +297,22 @@ def dashboard():
 @login_required
 def tournament(name):
     clean_name = name.replace('-', ' ')
-    tournament_matches = Match.query.filter(
+    selected_date = request.args.get('date')
+    all_dates = db.session.query(Match.date).filter(
         Match.tournament_name.ilike(f"%{clean_name}%")
-    ).order_by(Match.date.asc(), Match.time.asc()).all() 
-    user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
-    preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
+    ).distinct().order_by(Match.date.asc()).all()
+    all_dates = [d[0] for d in all_dates]
+    if not selected_date and all_dates:
+        selected_date = all_dates[0]
+    matches = Match.query.filter(
+        Match.tournament_name.ilike(f"%{clean_name}%"),
+        Match.date == selected_date
+    ).all()
     return render_template('tournament.html', 
                            tournament_name=name, 
-                           matches=tournament_matches, 
-                           user_preds=preds_dict)
+                           matches=matches, 
+                           all_dates=all_dates, 
+                           current_date=selected_date)
 
 @app.route('/all-tournament')
 @login_required
