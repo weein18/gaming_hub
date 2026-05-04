@@ -304,15 +304,18 @@ def tournament(name):
     all_dates = [d[0] for d in all_dates]
     if not selected_date and all_dates:
         selected_date = all_dates[0]
-    matches = Match.query.filter(
+    tournament_matches = Match.query.filter(
         Match.tournament_name.ilike(f"%{clean_name}%"),
         Match.date == selected_date
     ).all()
+    user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
+    preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
     return render_template('tournament.html', 
                            tournament_name=name, 
-                           matches=matches, 
+                           matches=tournament_matches, 
                            all_dates=all_dates, 
-                           current_date=selected_date)
+                           current_date=selected_date,
+                           user_preds=preds_dict)
 
 @app.route('/all-tournament')
 @login_required
