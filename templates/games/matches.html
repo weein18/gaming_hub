@@ -40,43 +40,54 @@
             Select an active event to start predicting. The more accurate your predictions, the faster you climb to Global Elite.
         </p>
     </div>
+    {% for tour in tournaments %}
+    <div class="match-card tournament-card" style="padding: 0; border-radius: 24px; position: relative; overflow: hidden;">
+        <!-- СЕКЦИЯ С ЛОГОТИПОМ -->
+        <div style="height: 200px; background: linear-gradient(45deg, #121212, #000); position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.03);">
+            <div style="position: absolute; top: 20px; left: 20px; z-index: 2;">
+                <span style="background: #28a745; color: white; padding: 5px 12px; border-radius: 6px; font-size: 0.6rem; font-weight: 900; box-shadow: 0 0 15px rgba(40,167,69,0.4);">● ACTIVE NOW</span>
+            </div>
+            
+            <!-- Автоматический поиск логотипа по названию турнира -->
+            <img src="{{ url_for('static', filename='img/tournaments/' + (tour.display_name|lower|replace(' ', '_')) + '.png') }}" 
+                alt="{{ tour.display_name }}"
+                style="height: 100px; width: auto; object-fit: contain; filter: drop-shadow(0 0 25px rgba(227,6,19,0.2)); position: relative; z-index: 1;"
+                onerror="this.src='https://via.placeholder.com/200x100?text=EVENT+LOGO'">
+            
+            <!-- Фоновая иконка для объема -->
+            <i class="fas fa-trophy" style="position: absolute; font-size: 8rem; color: rgba(255,255,255,0.02); z-index: 0;"></i>
+        </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 40px;">
-        {% for tour in tournaments %}
-        <div class="match-card tournament-card" style="padding: 0; border-radius: 24px; position: relative; overflow: hidden;">
-            <div style="height: 200px; background: linear-gradient(45deg, #1a1a1a, #000); position: relative; display: flex; align-items: center; justify-content: center;">
-                <div style="position: absolute; top: 20px; left: 20px; display: flex; gap: 10px;">
-                    <span style="background: #28a745; color: white; padding: 5px 12px; border-radius: 6px; font-size: 0.6rem; font-weight: 900; box-shadow: 0 0 15px rgba(40,167,69,0.4);">● ACTIVE NOW</span>
-                </div>
-                <i class="fas fa-trophy" style="font-size: 4rem; color: rgba(255,255,255,0.05);"></i>
+        <div style="padding: 40px;">
+            <div style="margin-bottom: 10px;">
+                <h2 style="font-size: 2.2rem; margin: 0; letter-spacing: -1px; text-transform: uppercase;">{{ tour.display_name }}</h2>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                {# ЛОГИКА ДЛЯ РАЗНЫХ ТИРОВ И НАГРАД #}
+                {% if "Major" in tour.display_name or "PGL" in tour.display_name %}
+                    <span style="font-size: 0.65rem; color: #ffd700; border: 1px solid rgba(255,215,0,0.3); background: rgba(255,215,0,0.05); padding: 5px 12px; border-radius: 6px; font-weight: 800;">S-TIER</span>
+                    <span style="font-size: 0.65rem; color: var(--primary); border: 1px solid rgba(227,6,19,0.3); padding: 5px 12px; border-radius: 6px; font-weight: 800;">5000 XP REWARD</span>
+                {% elif "Challenger" in tour.display_name %}
+                    <span style="font-size: 0.65rem; color: #c0c0c0; border: 1px solid rgba(192,192,192,0.3); padding: 5px 12px; border-radius: 6px; font-weight: 800;">A-TIER</span>
+                    <span style="font-size: 0.65rem; color: #888; border: 1px solid #222; padding: 5px 12px; border-radius: 6px; font-weight: 800;">2500 XP REWARD</span>
+                {% else %}
+                    <span style="font-size: 0.65rem; color: #888; border: 1px solid #222; padding: 5px 12px; border-radius: 6px; font-weight: 800;">B-TIER</span>
+                    <span style="font-size: 0.65rem; color: #444; border: 1px solid #111; padding: 5px 12px; border-radius: 6px; font-weight: 800;">1000 XP REWARD</span>
+                {% endif %}
             </div>
 
-            <div style="padding: 40px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h2 style="font-size: 2.2rem; margin: 0; letter-spacing: -1px;">{{ tour.display_name }}</h2>
-                </div>
-                
-                <div style="display: flex; gap: 15px; margin-bottom: 30px;">
-                    <span style="font-size: 0.7rem; color: #444; border: 1px solid #222; padding: 4px 10px; border-radius: 4px;">S-TIER</span>
-                    <span style="font-size: 0.7rem; color: #444; border: 1px solid #222; padding: 4px 10px; border-radius: 4px;">XP REWARDS</span>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <div>
-                        <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 1px;">PRIZE POOL</div>
-                        <div style="font-size: 1.2rem; font-weight: 900; color: #fff;">$1,000,000</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div>
+                    <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 1px;">PRIZE POOL</div>
+                    <div style="font-size: 1.2rem; font-weight: 900; color: #fff;">
+                        {% if "Major" in tour.display_name %} $1,250,000 {% else %} $1,000,000 {% endif %}
                     </div>
-                    <a href="{{ url_for('tournament', name=tour.url_name) }}" class="liquid-btn" style="padding: 15px 35px; border-radius: 12px;">ENTER HUB</a>
                 </div>
+                <a href="{{ url_for('tournament', name=tour.url_name) }}" class="liquid-btn" style="padding: 15px 35px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">ENTER HUB</a>
             </div>
         </div>
-        {% else %}
-        <div style="grid-column: 1/-1; text-align: center; padding: 100px; background: rgba(255,255,255,0.02); border-radius: 30px; border: 2px dashed #111;">
-            <i class="fas fa-ghost" style="font-size: 3rem; color: #222; margin-bottom: 20px;"></i>
-            <h2 style="color: #444; letter-spacing: 2px;">RADAR IS EMPTY</h2>
-            <p style="color: #222;">Check back later for upcoming Major events.</p>
-        </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 {% endblock %}
