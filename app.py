@@ -400,8 +400,8 @@ def admin_add_match():
         )
         db.session.add(new_match)
         db.session.commit()
-        return redirect(url_for('admin_add_match', key=ADMIN_ACCESS_KEY))
-    return render_template('/admin/add_match.html', access_key=ADMIN_ACCESS_KEY)
+        return redirect(url_for('admin_add_match'))
+    return render_template('/admin/add_match.html')
 
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
@@ -428,14 +428,14 @@ def manage_matches():
         flash("Only admins can access this page!")
         return redirect(url_for("index"))
     active_matches = Match.query.filter_by(status='Upcoming').all()
-    return render_template('admin/manage_matches.html', active_matches=active_matches, access_key=ADMIN_ACCESS_KEY)
+    return render_template('admin/manage_matches.html', active_matches=active_matches)
 
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required
 def close_match(match_id):
-    key = request.args.get('key')
-    if key != ADMIN_ACCESS_KEY:
-        return "Unauthorized", 403
+    if not current_user.is_admin:
+        flash("Only admin access!!!")
+        return redirect(url_for("index"))
     final_score = request.form.get('final_score')
     match = db.session.get(Match, match_id)   
     if match and final_score:
@@ -449,7 +449,7 @@ def close_match(match_id):
                 user.xp += 100
         db.session.commit()
         flash(f"Match {match.team1} vs {match.team2} closed with score {final_score}!") 
-    return redirect(url_for('manage_matches', key=ADMIN_ACCESS_KEY))
+    return redirect(url_for('manage_matches'))
 
 @app.route('/how-it-works')
 def how_it_works():
@@ -527,6 +527,16 @@ def match_analytics(match_id):
                             t1_past=t1_past,
                             t2_past=t2_past,
                             h2h=h2h)
+
+@app.after_request
+def add_security_headers(response):
+    # only my scripts
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    # clickjacking defens
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # (nosniff)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 if __name__ == '__main__':
     app.run(debug=False)
