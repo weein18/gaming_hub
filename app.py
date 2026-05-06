@@ -62,6 +62,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(200), unique=True, nullable=False)
     favorite_team = db.Column(db.String(50), default=' ')
     avatar = db.Column(db.Text, default='default.png')
+    is_admin = db.Column(db.Boolean, default=False)
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tournament_name = db.Column(db.String(100), nullable=False, default='BLAST Rivals 2026 Season 1')
@@ -370,9 +371,9 @@ def all_tournaments():
 
 @app.route('/admin/add_match', methods=['GET', 'POST'])
 def admin_add_match():
-    key = request.args.get('key')
-    if key != ADMIN_ACCESS_KEY:
-        return "Access Denied: Wrong or missing key.", 403
+    if not current_user.is_admin:
+        flash("Only admin page!!!")
+        return redirect(url_for("index"))
     if request.method == 'POST':
         t_name = request.form.get('tournament').strip()
         m_type = request.form.get("match_type", "BO3")
@@ -422,10 +423,10 @@ def predict(match_id):
     return redirect(request.referrer)
 
 @app.route('/admin/manage-matches')
-def manage_matches(): 
-    key = request.args.get('key')
-    if key != ADMIN_ACCESS_KEY:
-        return "Access Denied: Wrong or missing key.", 403
+def manage_matches():
+    if not current_user.is_admin:
+        flash("Only admins can access this page!")
+        return redirect(url_for("index"))
     active_matches = Match.query.filter_by(status='Upcoming').all()
     return render_template('admin/manage_matches.html', active_matches=active_matches, access_key=ADMIN_ACCESS_KEY)
 
