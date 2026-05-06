@@ -9,7 +9,7 @@ from itsdangerous import URLSafeTimedSerializer
 import base64
 from sqlalchemy import or_
 import re
-
+import dns.resolver
 
 
 if not os.path.exists('instance'):
@@ -27,6 +27,12 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_ACCESS_KEY', 'default_local_secret'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+)
 
 # app.config.update(
 #     MAIL_SERVER='smtp.gmail.com',
@@ -85,12 +91,35 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
+@app.after_request
+def add_security_headers(response):
+    # defens (Clickjacking)
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # defens( MIME-sniffing)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # filter XSS on old
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Content Security Policy (CSP)
+    # defens against XSS
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    return response
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         username = re.sub('<[^<]+?>', '', username)
-        email = request.form.get('email', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            flash("Please enter a valid email address (e.g. name@gmail.com)!")
+            return redirect(url_for('register'))
+        domain = email.split('@')[-1]
+        try:
+            dns.resolver.resolve(domain, 'MX')
+        except Exception:
+            flash("This email domain does not exist! Use a real provider like Gmail.")
+            return redirect(url_for('register'))
         fav_team = request.form.get('favorite_team', '').strip()
         fav_team = re.sub('<[^<]+?>', '', fav_team)
         password = request.form.get('password')
@@ -376,6 +405,10 @@ def admin_add_match():
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
 def predict(match_id):
+    match = Match.query.get_or_404(match_id)
+    if match.status != 'Upcoming':
+        flash("You can only predict on upcoming matches! Too late.")
+        return redirect(request.referrer)
     score = request.form.get('predicted_score') 
     existing = Prediction.query.filter_by(user_id=current_user.id, match_id=match_id).first()
     if existing:
@@ -383,17 +416,9 @@ def predict(match_id):
     else:
         new_pred = Prediction(user_id=current_user.id, match_id=match_id, prediction_score=score)
         db.session.add(new_pred)
-    # current_user.xp += 10 
     db.session.commit()
+    flash("Prediction saved!")
     return redirect(request.referrer)
-    
-@app.route('/admin/manage-matches')
-def manage_matches(): 
-    key = request.args.get('key')
-    if key != ADMIN_ACCESS_KEY:
-        return "Access Denied: Wrong or missing key.", 403
-    active_matches = Match.query.filter_by(status='Upcoming').all()
-    return render_template('admin/manage_matches.html', active_matches=active_matches, access_key=ADMIN_ACCESS_KEY)
 
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required
@@ -494,4 +519,4 @@ def match_analytics(match_id):
                             h2h=h2h)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
