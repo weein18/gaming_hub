@@ -57,7 +57,7 @@
                                 {{ current_user.username[0].upper() }}
                             {% endif %}
                         </div>
-                        {{ current_user.username }}
+                        {{ current_user.username | e}}
                     </button>
                     <div class="dropdown-content">
                         <a href="{{ url_for('profile', username=current_user.username) }}">My Profile</a>
