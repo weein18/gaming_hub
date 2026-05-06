@@ -2,7 +2,6 @@
 {% block content %}
 <div class="main-container" style="padding-top: 100px;">
     
-    <!-- ВЕРХНИЙ БЛОК: СХВАТКА -->
     <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 50px; margin-bottom: 80px;">
         <div style="text-align: right;">
             <img src="{{ url_for('static', filename='img/team_logos/' + (match.team1|lower|replace(' ', '_')) + '.png') }}" style="width: 150px; filter: drop-shadow(0 0 30px rgba(255,255,255,0.1));" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
@@ -20,10 +19,8 @@
         </div>
     </div>
 
-    <!-- СЕТКА АНАЛИТИКИ -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
         
-        <!-- ПОСЛЕДНИЕ МАТЧИ TEAM 1 -->
         <div class="match-card" style="padding: 30px; background: rgba(255,255,255,0.02);">
             <h3 style="color: #444; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 20px;">{{ match.team1.upper() }} RECENT FORM</h3>
             {% for m in t1_past %}
@@ -44,7 +41,6 @@
             {% endfor %}
         </div>
 
-        <!-- ПОСЛЕДНИЕ МАТЧИ TEAM 2 -->
         <div class="match-card" style="padding: 30px; background: rgba(255,255,255,0.02);">
             <h3 style="color: #444; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 20px;">{{ match.team2.upper() }} RECENT FORM</h3>
             {% for m in t2_past %}
@@ -83,7 +79,6 @@
 
     </div>
 
-    <!-- КНОПКА ВОЗВРАТА -->
     <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
         <a href="javascript:history.back()" style="color: #444; text-decoration: none; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='#444'">
             ← BACK TO TOURNAMENT
