@@ -8,6 +8,7 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 import base64
 from sqlalchemy import or_
+import re
 
 
 
@@ -216,23 +217,33 @@ def settings():
             current_user.password = generate_password_hash(new_pass)
             flash("Password security updated!")
         new_username = request.form.get('username')
+        new_username = re.sub('<[^<]+?>', '', new_username).strip()
         if new_username != current_user.username:
             user_exists = User.query.filter_by(username=new_username).first()
             if user_exists:
                 flash("This username is already taken!")
                 return redirect(url_for('settings'))
             current_user.username = new_username
+        raw_steam_url = request.form.get('steam_url', '').strip()
+        if raw_steam_url:
+            if raw_steam_url.startswith('https://steamcommunity.com/'):
+                current_user.steam_url = raw_steam_url
+            else:
+                current_user.steam_url = ""
+                flash("Invalid Steam URL! Only official Steam links allowed.")
+        else:
+            current_user.steam_url = ""
+        raw_bio = request.form.get('bio', '')
+        current_user.bio = re.sub('<[^<]+?>', '', raw_bio).strip()
+        raw_team = request.form.get('favorite_team', '')
+        current_user.favorite_team = re.sub('<[^<]+?>', '', raw_team).strip()
         current_user.email = request.form.get('email')
-        current_user.bio = request.form.get('bio')
-        current_user.steam_url = request.form.get('steam_url')
-        current_user.favorite_team = request.form.get('favorite_team')
         if 'avatar' in request.files:
             file = request.files['avatar']
             if file and file.filename != '':
                 img_data = file.read()
                 base64_encoded = base64.b64encode(img_data).decode('utf-8')
                 current_user.avatar = f"data:{file.content_type};base64,{base64_encoded}"
-
         db.session.commit()
         flash('Profile settings saved!')
         return redirect(url_for('profile', username=current_user.username))
