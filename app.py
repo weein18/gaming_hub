@@ -88,11 +88,16 @@ with app.app_context():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
+        username = request.form.get('username', '').strip()
+        username = re.sub('<[^<]+?>', '', username)
+        email = request.form.get('email', '').strip()
+        fav_team = request.form.get('favorite_team', '').strip()
+        fav_team = re.sub('<[^<]+?>', '', fav_team)
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password') 
-        fav_team = request.form.get('favorite_team')
+        if not username:
+            flash("Username is required!")
+            return redirect(url_for('register'))
         if password != confirm_password:
             flash("Passwords do not match!")
             return redirect(url_for('register'))
@@ -111,7 +116,6 @@ def register():
         db.session.commit()       
         flash('Registration successful! Please login.')
         return redirect(url_for('login'))
-        
     return render_template('auth/register.html')
 
 @app.route('/logout')
