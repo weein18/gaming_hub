@@ -29,7 +29,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 app.config.update(
-    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='Lax',
 )
