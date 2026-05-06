@@ -402,6 +402,7 @@ def admin_add_match():
         return redirect(url_for('admin_add_match', key=ADMIN_ACCESS_KEY))
     return render_template('/admin/add_match.html', access_key=ADMIN_ACCESS_KEY)
 
+
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
 def predict(match_id):
@@ -419,6 +420,14 @@ def predict(match_id):
     db.session.commit()
     flash("Prediction saved!")
     return redirect(request.referrer)
+
+@app.route('/admin/manage-matches')
+def manage_matches(): 
+    key = request.args.get('key')
+    if key != ADMIN_ACCESS_KEY:
+        return "Access Denied: Wrong or missing key.", 403
+    active_matches = Match.query.filter_by(status='Upcoming').all()
+    return render_template('admin/manage_matches.html', active_matches=active_matches, access_key=ADMIN_ACCESS_KEY)
 
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required
