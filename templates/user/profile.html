@@ -44,7 +44,7 @@
                      onerror="this.src='https://via.placeholder.com/50?text=?'">
                 <div>
                     <span style="font-size: 0.6rem; color: #444; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block;">Representing</span>
-                    <span style="font-size: 1.2rem; font-weight: 800;">{{ user.favorite_team }}</span>
+                    <span style="font-size: 1.2rem; font-weight: 800;">{{ user.favorite_team | e}}</span>
                 </div>
             </div>
             
@@ -64,7 +64,7 @@
         <!-- Bio -->
         <div class="match-card" style="padding: 30px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center;">
             <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px;">OPERATIVE BIO</div>
-            <p style="color: #888; line-height: 1.6; font-style: italic; margin: 0; font-size: 0.9rem;">"{{ user.bio }}"</p>
+            <p style="color: #888; line-height: 1.6; font-style: italic; margin: 0; font-size: 0.9rem;">"{{ user.bio | e}}"</p>
         </div>
     </div>
 
