@@ -18,3 +18,4 @@ Werkzeug==3.1.8
 wheel==0.46.3
 gunicorn
 psycopg2-binary
+dnspython==2.7.0
