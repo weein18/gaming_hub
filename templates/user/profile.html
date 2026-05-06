@@ -71,7 +71,7 @@
     <!-- Steam -->
     <div class="match-card" style="padding: 25px; margin-top: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); text-align: center;">
         <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 20px;">EXTERNAL LINKS</div>
-        <a href="{{ user.steam_url }}" style="display: inline-block; min-width: 300px; padding: 15px; background: #1b2838; border-radius: 8px; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; transition: 0.3s;">
+        <a href="{{ user.steam_url | e}}" style="display: inline-block; min-width: 300px; padding: 15px; background: #1b2838; border-radius: 8px; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; transition: 0.3s;">
             <i class="fab fa-steam" style="margin-right: 10px;"></i> STEAM PROFILE
         </a>
     </div>
