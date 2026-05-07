@@ -377,7 +377,6 @@ def all_tournaments():
 @app.route('/admin/add_match', methods=['GET', 'POST'])
 @login_required
 def admin_add_match():
-    
     if request.method == 'POST':
         new_match = Match(
             tournament_name=request.form.get('tournament_name'),
