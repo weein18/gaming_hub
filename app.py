@@ -360,6 +360,13 @@ def tournament(name):
     ).all()
     user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
     preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
+    def parse_date(date_str):
+        try:
+            clean_date = "".join(c for i, c in enumerate(date_str) if not (c.isalpha() and i > 2))
+            return datetime.datetime.strptime(f"{clean_date} 2026", "%B %d %Y")
+        except:
+            return datetime.datetime.max
+    all_dates.sort(key=parse_date)
     return render_template('tournament.html', 
                            tournament_name=name, 
                            matches=tournament_matches, 
