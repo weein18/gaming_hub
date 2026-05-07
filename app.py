@@ -540,15 +540,15 @@ def user_history(username):
     query = Prediction.query.filter_by(user_id=user.id)
     if t_filter:
         query = query.join(Match).filter(Match.tournamnet == t_filter)
-        if time_range == "week":
-            query = query.filter(Prediction.id > 0)
-        predictions = query.order_by(Prediction.id.desc()).all()
-        all_tournaments = db.session.query(Match.tournament).distinct().all()
-        tournaments = [t[0] for t in all_tournaments if t[0]]
-        return render_template ("user/user_history.html",
-                                user=user,
-                                predictions=predictions,
-                                tournaments=tournaments)
+    if time_range == "week":
+        query = query.filter(Prediction.id > 0)
+    predictions = query.order_by(Prediction.id.desc()).all()
+    all_tournaments = db.session.query(Match.tournament).distinct().all()
+    tournaments = [t[0] for t in all_tournaments if t[0]]
+    return render_template ("user/user_history.html",
+                            user=user,
+                            predictions=predictions,
+                            tournaments=tournaments)
 
 
 
