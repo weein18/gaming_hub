@@ -375,40 +375,42 @@ def all_tournaments():
     return render_template('all_tournaments.html', tournaments=tour_list)
 
 @app.route('/admin/add_match', methods=['GET', 'POST'])
+@login_required
 def admin_add_match():
-    if not current_user.is_admin:
-        flash("Only admin page!!!")
-        return redirect(url_for("index"))
+    
     if request.method == 'POST':
-        t_name = request.form.get('tournament').strip()
-        m_type = request.form.get("match_type", "BO3")
-        f_prize = request.form.get('prize_pool', '$1,000,000').strip()
-        f_xp = request.form.get('xp_reward', '1000').replace(' XP', '').strip()
-        tournament = Tournament.query.filter_by(name=t_name).first()
-        if not tournament:
-            tournament = Tournament(
-                name=t_name,
-                prize_pool=f_prize,
-                xp_reward=int(f_xp) if f_xp.isdigit() else 1000
-            )
-            db.session.add(tournament)
-            db.session.flush()
         new_match = Match(
-            tournament_name=t_name,
-            team1=request.form.get('team1').strip(),
-            team2=request.form.get('team2').strip(),
+            tournament_name=request.form.get('tournament_name'),
+            team1=request.form.get('team1'),
+            team2=request.form.get('team2'),
             date=request.form.get('date'),
             time=request.form.get('time'),
-            match_type=m_type
+            match_type=request.form.get('match_type'),
+            status='Upcoming'
         )
-        try:
-            db.session.add(new_match)
+        db.session.add(new_match)
+        db.session.commit()
+        return redirect(url_for('admin_add_match'))
+    all_tournaments = Tournament.query.all()
+    return render_template('admin/add_match.html', tournaments=all_tournaments)
+
+@app.route("/admin/add_tournament", method=["GET", "POST"])
+@login_required
+def admin_add_tournament():
+        if not current_user.is_admin:
+            flash("Only admin page!!!")
+            return redirect(url_for("index"))
+        if request.method == 'POST':
+            new_t = Tournament(
+                name=request.form.get('name'),
+                prize_pool=request.form.get('prize_pool'),
+                date=request.form.get('dates'),
+                xp_reward=request.form.get('xp_reward') 
+            )
+            db.session.add(new_t)
             db.session.commit()
             return redirect(url_for('admin_add_match'))
-        except Exception as e:
-            db.session.rollback()
-            return f"Database Error: {e}", 500
-    return render_template('admin/add_match.html')
+        return render_template('admin/add_tournament.html')
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required

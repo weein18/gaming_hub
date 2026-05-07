@@ -9,10 +9,15 @@
         </div>
 
         <form action="{{ url_for('admin_add_match') }}" method="POST">
-            <div>
-                <label style="display: block; font-size: 0.6rem; color: var(--primary); font-weight: 900; margin-bottom: 8px;">TOURNAMENT NAME</label>
-                <input type="text" name="tournament" placeholder="e.g. IEM RIO 2026" required
-                    style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit;">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.6rem; color: var(--primary); font-weight: 900; margin-bottom: 8px;">SELECT TOURNAMENT</label>
+                <select name="tournament" required 
+                    style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit; outline: none;">
+                    <option value="" disabled selected>Choose a tournament...</option>
+                    {% for t in tournaments %}
+                        <option value="{{ t.name }}">{{ t.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div style="margin-top: 15px;">
                 <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 8px;">PRIZE POOL & XP (Only for new tournaments)</label>
