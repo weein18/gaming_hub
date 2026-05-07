@@ -533,24 +533,21 @@ def match_analytics(match_id):
                             h2h=h2h)
 
 @app.route('/user/<username>/history')
+@login_required
 def user_history(username):
     user = User.query.filter_by(username=username).first_or_404()
-    t_filter = request.args.get("tournament")
-    time_range = request.args.get("range")
+    selected_t = request.args.get('tournament')
     query = Prediction.query.filter_by(user_id=user.id)
-    if t_filter:
-        query = query.join(Match).filter(Match.tournamnet == t_filter)
-    if time_range == "week":
-        query = query.filter(Prediction.id > 0)
+    if selected_t:
+        query = query.join(Match).filter(Match.tournament_name == selected_t)
     predictions = query.order_by(Prediction.id.desc()).all()
-    all_tournaments = db.session.query(Match.tournament).distinct().all()
-    tournaments = [t[0] for t in all_tournaments if t[0]]
-    return render_template ("user/user_history.html",
-                            user=user,
-                            predictions=predictions,
-                            tournaments=tournaments)
-
-
+    all_t = db.session.query(Match.tournament_name).distinct().all()
+    tournaments = [t[0] for t in all_t if t[0]]
+    return render_template('user/user_history.html', 
+                           user=user, 
+                           predictions=predictions, 
+                           tournaments=tournaments,
+                           selected_tournament=selected_t)
 
 @app.after_request
 def add_security_headers(response):
