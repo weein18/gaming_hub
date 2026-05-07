@@ -382,15 +382,13 @@ def admin_add_match():
         t_name = request.form.get('tournament').strip()
         m_type = request.form.get("match_type", "BO3")
         f_prize = request.form.get('prize_pool', '$1,000,000').strip()
-        f_xp = request.form.get('xp_reward', '1000 XP').strip()
+        f_xp = request.form.get('xp_reward', '1000').replace(' XP', '').strip()
         tournament = Tournament.query.filter_by(name=t_name).first()
         if not tournament:
             tournament = Tournament(
                 name=t_name,
-                url_name=t_name.lower().replace(' ', '-'),
                 prize_pool=f_prize,
-                xp_reward=f_xp,
-                tier="S-TIER"
+                xp_amount=int(f_xp) if f_xp.isdigit() else 1000
             )
             db.session.add(tournament)
             db.session.flush()
@@ -402,11 +400,14 @@ def admin_add_match():
             time=request.form.get('time'),
             match_type=m_type
         )
-        db.session.add(new_match)
-        db.session.commit()
-        return redirect(url_for('admin_add_match'))
-    return render_template('/admin/add_match.html')
-
+        try:
+            db.session.add(new_match)
+            db.session.commit()
+            return redirect(url_for('admin_add_match'))
+        except Exception as e:
+            db.session.rollback()
+            return f"Database Error: {e}", 500
+    return render_template('admin/add_match.html')
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
 @login_required
