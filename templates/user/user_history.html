@@ -1,78 +1,101 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container" style="padding-top: 140px; max-width: 1000px; margin: 0 auto; font-family: 'Rajdhani', sans-serif;">
+<div class="main-container" style="padding-top: 140px; max-width: 1100px; margin: 0 auto; font-family: 'Rajdhani', sans-serif;">
     
-    <div style="margin-bottom: 40px; border-left: 4px solid var(--primary); padding-left: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; border-left: 5px solid var(--primary); padding-left: 25px;">
         <div>
-            <h2 style="text-transform: uppercase; letter-spacing: -1px; color: white; margin: 0;">Prediction <span class="highlight">History</span></h2>
-            <p style="font-size: 0.7rem; color: #555; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">ARCHIVE FOR {{ user.username.upper() }}</p>
+            <h1 style="text-transform: uppercase; letter-spacing: -2px; color: white; margin: 0; font-size: 2.5rem;">Analytical <span class="highlight">Archive</span></h1>
+            <p style="font-size: 0.8rem; color: #666; font-weight: 800; letter-spacing: 3px; margin-top: 5px;">DOSSIER: {{ user.username.upper() }}</p>
         </div>
-
-        <div style="display: flex; gap: 10px;">
-            <a href="{{ url_for('user_history', username=user.username, range='week') }}" class="filter-btn">WEEK</a>
-            <a href="{{ url_for('user_history', username=user.username, range='month') }}" class="filter-btn">MONTH</a>
-            <a href="{{ url_for('user_history', username=user.username) }}" class="filter-btn">ALL</a>
+        <div style="display: flex; gap: 15px;">
+            <a href="?range=week" class="time-filter">WEEK</a>
+            <a href="?range=month" class="time-filter">MONTH</a>
+            <a href="{{ url_for('user_history', username=user.username) }}" class="time-filter active">ALL TIME</a>
         </div>
     </div>
 
-    <div style="margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap;">
-        <span style="color: #444; font-size: 0.7rem; font-weight: 800; align-self: center; margin-right: 10px;">TOURNAMENTS:</span>
-        {% for t_name in tournaments %}
-            <a href="{{ url_for('user_history', username=user.username, tournament=t_name) }}" 
-               style="padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); color: #888; transition: 0.3s;">
-                {{ t_name.upper() }}
-            </a>
+    <div style="margin-bottom: 40px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+        <div style="display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px;" class="tournament-scroll">
+            <a href="{{ url_for('user_history', username=user.username) }}" class="t-badge {% if not selected_tournament %}active{% endif %}">ALL EVENTS</a>
+            {% for t_name in tournaments %}
+                <a href="{{ url_for('user_history', username=user.username, tournament=t_name) }}" 
+                   class="t-badge {% if selected_tournament == t_name %}active{% endif %}">
+                    {{ t_name.upper() }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        {% for pred in predictions %}
+        {% set match = pred.match %}
+        {% set is_done = match.status|lower in ['finished', 'closed'] or match.final_score %}
+        
+        <div class="match-row" style="background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); transition: 0.4s; overflow: hidden; display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center; padding: 20px;">
+            
+            <div style="padding-left: 10px;">
+                <div style="color: var(--primary); font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;">{{ match.tournament_name.upper() }}</div>
+                <div style="color: #444; font-size: 0.6rem; font-weight: 700; margin-top: 4px;">MATCH ID: #{{ match.id }}</div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: center; gap: 30px;">
+                <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-end;">
+                    <span style="font-weight: 700; color: white; font-size: 1.1rem;">{{ match.team1 }}</span>
+                    <img src="{{ url_for('static', filename='img/team_logos/' + match.team1|lower + '.png') }}" 
+                         onerror="this.src='/static/img/team_logos/default.png'" style="width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));">
+                </div>
+
+                <div style="text-align: center; min-width: 80px;">
+                    <div style="font-size: 1.8rem; font-weight: 900; color: white; letter-spacing: 4px; font-family: 'Rajdhani';">
+                        {{ match.final_score if is_done else 'VS' }}
+                    </div>
+                    <div style="font-size: 0.55rem; color: #555; font-weight: 800; letter-spacing: 2px;">{{ 'FINAL RESULT' if is_done else 'IN PROGRESS' }}</div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-start;">
+                    <img src="{{ url_for('static', filename='img/team_logos/' + match.team2|lower + '.png') }}" 
+                         onerror="this.src='/static/img/team_logos/default.png'" style="width: 45px; height: 45px; object-fit: contain;">
+                    <span style="font-weight: 700; color: white; font-size: 1.1rem;">{{ match.team2 }}</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: flex-end; padding-right: 15px;">
+                <span style="font-size: 0.55rem; color: #555; font-weight: 800; margin-bottom: 5px;">YOUR PICK</span>
+                <div style="
+                    padding: 8px 18px; border-radius: 6px; font-weight: 900; font-size: 1rem;
+                    {% if is_done %}
+                        {% if pred.is_correct %}
+                            background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.1);
+                        {% else %}
+                            background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444;
+                        {% endif %}
+                    {% else %}
+                        background: rgba(255,255,255,0.05); color: #888; border: 1px solid rgba(255,255,255,0.1);
+                    {% endif %}
+                ">
+                    {{ pred.prediction_score }}
+                </div>
+            </div>
+        </div>
         {% endfor %}
     </div>
-
-    {% for pred in predictions %}
-    {% set match = pred.match %}
-    {% set is_done = match.status|lower == 'finished' or match.final_score %}
-    
-    <div class="match-card" style="margin-bottom: 15px; padding: 20px 30px; background: rgba(255,255,255,0.02); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.03);">
-        
-        <div style="flex: 2; display: flex; align-items: center; gap: 25px;">
-            <div style="text-align: right; width: 120px; font-weight: 700; color: white;">{{ match.team1 }}</div>
-            <div style="padding: 8px 15px; background: rgba(0,0,0,0.4); border-radius: 6px; font-weight: 900; color: var(--primary); min-width: 60px; text-align: center;">
-                {{ match.final_score if match.final_score else 'VS' }}
-            </div>
-            <div style="text-align: left; width: 120px; font-weight: 700; color: white;">{{ match.team2 }}</div>
-        </div>
-
-        <div style="flex: 1; text-align: center;">
-            <span style="font-size: 0.55rem; color: #444; display: block; margin-bottom: 4px; font-weight: 800;">PREDICTION</span>
-            <span style="
-                padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 900;
-                {% if is_done %}
-                    {% if pred.is_correct %}
-                        background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid #00ff88;
-                    {% else %}
-                        background: rgba(255, 68, 68, 0.15); color: #ff4444; border: 1px solid #ff4444;
-                    {% endif %}
-                {% else %}
-                    background: rgba(255,255,255,0.05); color: #666;
-                {% endif %}
-            ">
-                {{ pred.prediction_score }}
-            </span>
-        </div>
-
-        <div style="flex: 1; text-align: right;">
-            {% if is_done %}
-                <span style="color: #444; font-size: 0.7rem; font-weight: 800;">FINISHED</span>
-            {% else %}
-                <span style="color: var(--primary); font-size: 0.7rem; font-weight: 800;">PENDING</span>
-            {% endif %}
-        </div>
-    </div>
-    {% else %}
-        <p style="text-align: center; color: #444; margin-top: 50px; font-weight: 800;">NO MATCHES FOUND</p>
-    {% endfor %}
-
 </div>
 
 <style>
-    .filter-btn { color: #555; text-decoration: none; font-size: 0.7rem; font-weight: 800; padding: 5px 10px; border-bottom: 2px solid transparent; transition: 0.3s; }
-    .filter-btn:hover { color: white; border-color: var(--primary); }
+    .tournament-scroll::-webkit-scrollbar { height: 4px; }
+    .tournament-scroll::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+    
+    .t-badge {
+        padding: 8px 18px; background: rgba(255,255,255,0.03); color: #666;
+        text-decoration: none; border-radius: 8px; font-size: 0.75rem; font-weight: 800;
+        transition: 0.3s; border: 1px solid transparent;
+    }
+    .t-badge:hover { background: rgba(255,255,255,0.08); color: white; }
+    .t-badge.active { background: rgba(255, 111, 0, 0.15); color: var(--primary); border-color: var(--primary); }
+
+    .time-filter { text-decoration: none; color: #444; font-size: 0.75rem; font-weight: 800; border-bottom: 2px solid transparent; padding-bottom: 5px; transition: 0.3s; }
+    .time-filter:hover, .time-filter.active { color: white; border-color: var(--primary); }
+
+    .match-row:hover { transform: scale(1.01); background: rgba(255,255,255,0.05); border-color: rgba(255, 111, 0, 0.3); }
 </style>
 {% endblock %}
