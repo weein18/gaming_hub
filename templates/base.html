@@ -76,5 +76,9 @@
     <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <footer style="margin-top: 50px; padding: 30px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+        <p style="color: #444; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px;">&copy; 2026 ELITEHUB TERMINAL</p>
+        <a href="{{ url_for('privacy') }}" style="color: var(--primary); text-decoration: none; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">Privacy Policy</a>
+    </footer>
 </body>
 </html>

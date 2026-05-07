@@ -548,5 +548,9 @@ def add_security_headers(response):
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     return response
 
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
 if __name__ == '__main__':
     app.run(debug=False)
