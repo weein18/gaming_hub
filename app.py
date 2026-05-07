@@ -394,7 +394,7 @@ def admin_add_match():
     all_tournaments = Tournament.query.all()
     return render_template('admin/add_match.html', tournaments=all_tournaments)
 
-@app.route("/admin/add_tournament", method=["GET", "POST"])
+@app.route("/admin/add_tournament", methods=["GET", "POST"])
 @login_required
 def admin_add_tournament():
         if not current_user.is_admin:
