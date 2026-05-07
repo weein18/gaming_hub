@@ -532,22 +532,32 @@ def match_analytics(match_id):
                             t2_past=t2_past,
                             h2h=h2h)
 
+from datetime import datetime, timedelta
+
 @app.route('/user/<username>/history')
 @login_required
 def user_history(username):
     user = User.query.filter_by(username=username).first_or_404()
-    selected_t = request.args.get('tournament')
-    query = Prediction.query.filter_by(user_id=user.id)
-    if selected_t:
-        query = query.join(Match).filter(Match.tournament_name == selected_t)
-    predictions = query.order_by(Prediction.id.desc()).all()
+    t_filter = request.args.get('tournament')
+    time_range = request.args.get('range')
+    query = Prediction.query.filter_by(user_id=user.id).join(Match)
+    if time_range == 'week':
+        one_week_ago = datetime.now() - timedelta(days=7)
+        query = query.filter(Match.date >= one_week_ago) 
+    elif time_range == 'month':
+        one_month_ago = datetime.now() - timedelta(days=30)
+        query = query.filter(Match.date >= one_month_ago)
+    if t_filter:
+        query = query.filter(Match.tournament_name == t_filter)
+    predictions = query.order_by(Match.id.desc()).all()
     all_t = db.session.query(Match.tournament_name).distinct().all()
     tournaments = [t[0] for t in all_t if t[0]]
     return render_template('user/user_history.html', 
                            user=user, 
                            predictions=predictions, 
                            tournaments=tournaments,
-                           selected_tournament=selected_t)
+                           selected_tournament=t_filter,
+                           selected_range=time_range)
 
 @app.after_request
 def add_security_headers(response):
