@@ -532,7 +532,7 @@ def match_analytics(match_id):
 @app.route('/user/<username>/history')
 def user_history(username):
     user = User.query.filter_by(username=username).first_or_404()
-    predictions = db.session.query(Prediction).filter(Prediction.user_id == user.id).all()
+    predictions = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).all()
     
     return render_template('user/user_history.html', user=user, predictions=predictions)
 

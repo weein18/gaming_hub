@@ -1,77 +1,73 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container" style="padding-top: 140px; max-width: 900px; margin: 0 auto;">
+<div class="main-container" style="padding-top: 140px; max-width: 900px; margin: 0 auto; font-family: 'Rajdhani', sans-serif;">
     
     <div style="margin-bottom: 40px; border-left: 4px solid var(--primary); padding-left: 20px;">
-        <h2 style="text-transform: uppercase; letter-spacing: -1px;">Prediction <span class="highlight">History</span></h2>
+        <h2 style="text-transform: uppercase; letter-spacing: -1px; color: white;">Prediction <span class="highlight">History</span></h2>
         <p style="font-size: 0.7rem; color: #555; font-weight: 800; letter-spacing: 2px;">ARCHIVE FOR {{ user.username.upper() }}</p>
     </div>
 
     {% for pred in predictions %}
     {% set match = pred.match %}
-    <div class="match-card" style="margin-bottom: 20px; padding: 30px; position: relative; overflow: hidden;">
+    <div class="match-card" style="margin-bottom: 25px; padding: 30px; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); position: relative;">
         
         <div style="position: absolute; top: 20px; right: 30px; font-weight: 900; font-size: 0.7rem; letter-spacing: 2px;">
             {% if match.status == 'closed' %}
-                {% if pred.predicted_score == match.final_score %}
-                    <span style="color: #00ff88;">● WON</span>
+                {% if pred.is_correct %}
+                    <span style="color: #00ff88;">● SUCCESS</span>
                 {% else %}
-                    <span style="color: #ff4444;">● LOST</span>
+                    <span style="color: #ff4444;">● INCORRECT</span>
                 {% endif %}
             {% else %}
                 <span style="color: #888;">● PENDING</span>
             {% endif %}
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="text-align: center; flex: 1;">
-                <div style="font-size: 1.2rem; font-weight: 700;">{{ match.team1 }}</div>
-            </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div style="text-align: center; flex: 1; font-size: 1.3rem; font-weight: 700; color: white;">{{ match.team1 }}</div>
             
-            <div style="text-align: center; padding: 0 40px;">
-                <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px;">FINAL SCORE</div>
-                <div style="font-size: 1.5rem; font-weight: 900; letter-spacing: 5px;">
-                    {% if match.status == 'closed' %}
-                        {{ match.final_score }}
-                    {% else %}
-                        VS
-                    {% endif %}
+            <div style="text-align: center; padding: 0 30px;">
+                <div style="font-size: 0.5rem; color: #666; font-weight: 800; margin-bottom: 5px;">FINAL SCORE</div>
+                <div style="font-size: 1.6rem; font-weight: 900; color: white; letter-spacing: 3px;">
+                    {{ match.final_score if match.final_score else 'VS' }}
                 </div>
             </div>
 
-            <div style="text-align: center; flex: 1;">
-                <div style="font-size: 1.2rem; font-weight: 700;">{{ match.team2 }}</div>
-            </div>
+            <div style="text-align: center; flex: 1; font-size: 1.3rem; font-weight: 700; color: white;">{{ match.team2 }}</div>
         </div>
 
         <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 20px;">
-            <span style="font-size: 0.6rem; color: #888; font-weight: 800; letter-spacing: 1px;">YOUR PREDICTION:</span>
+            <span style="font-size: 0.6rem; color: #888; font-weight: 800; letter-spacing: 1px;">YOUR CHOICE:</span>
             
-            {% for score in ['2-0', '2-1', '1-2', '0-2'] %}
-                <div style="
-                    padding: 8px 20px; 
-                    border-radius: 6px; 
-                    font-size: 0.8rem; 
-                    font-weight: 800;
-                    {% if pred.predicted_score == score %}
-                        {% if match.status == 'closed' and pred.predicted_score == match.final_score %}
-                            background: #00ff88; color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.3);
-                        {% elif match.status == 'closed' %}
-                            background: #ff4444; color: #fff;
+            <div style="display: flex; gap: 10px;">
+                {% for score_option in ['2-0', '2-1', '1-2', '0-2'] %}
+                    <div style="
+                        padding: 8px 20px; 
+                        border-radius: 6px; 
+                        font-size: 0.8rem; 
+                        font-weight: 800;
+                        {% if pred.prediction_score == score_option %}
+                            {% if pred.is_correct %}
+                                background: #00ff88; color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.4);
+                            {% elif match.status == 'closed' %}
+                                background: #ff4444; color: #fff;
+                            {% else %}
+                                background: var(--primary); color: #fff;
+                            {% endif %}
                         {% else %}
-                            background: var(--primary); color: #fff;
+                            background: rgba(255,255,255,0.05); color: #444;
                         {% endif %}
-                    {% else %}
-                        background: rgba(255,255,255,0.05); color: #444;
-                    {% endif %}
-                ">
-                    {{ score }}
-                </div>
-            {% endfor %}
+                    ">
+                        {{ score_option }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% else %}
-    <p style="color: #444; text-align: center; font-weight: 800; letter-spacing: 2px; margin-top: 50px;">NO PREDICTIONS MADE YET</p>
+    <div style="text-align: center; margin-top: 100px;">
+        <p style="color: #444; font-weight: 800; letter-spacing: 2px;">NO PREDICTIONS FOUND IN DATABASE</p>
+    </div>
     {% endfor %}
 
 </div>
