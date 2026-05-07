@@ -25,16 +25,26 @@
     <div style="display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; align-items: stretch;">
         
         <!-- Accuracy & Wins -->
-        <div class="match-card" style="padding: 25px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center;">
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 5px;">PREDICTION ACCURACY</div>
-                <div style="font-size: 1.8rem; font-weight: 900;">{{ accuracy }}%</div>
+         <a href="{{ url_for('user_history', username=user.username) }}" style="text-decoration: none; color: inherit; display: block;">
+            <div class="match-card" style="padding: 25px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center; transition: all 0.3s ease; cursor: pointer; border: 1px solid transparent;" 
+                onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='var(--primary)';" 
+                onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='transparent';">
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 5px;">PREDICTION ACCURACY</div>
+                    <div style="font-size: 1.8rem; font-weight: 900;">{{ accuracy }}%</div>
+                </div>
+                
+                <div>
+                    <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 5px;">TOTAL WINS</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: var(--primary);">{{ total_wins }}</div>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 0.5rem; color: var(--primary); letter-spacing: 1px; font-weight: 800;">
+                    VIEW PREDICTION HISTORY >
+                </div>
             </div>
-            <div>
-                <div style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 5px;">TOTAL WINS</div>
-                <div style="font-size: 1.8rem; font-weight: 900; color: var(--primary);">{{ total_wins }}</div>
-            </div>
-        </div>
+        </a>
         
         <div style="display: flex; flex-direction: column; gap: 20px;">
             <!-- Team -->

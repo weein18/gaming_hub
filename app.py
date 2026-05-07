@@ -528,6 +528,12 @@ def match_analytics(match_id):
                             t2_past=t2_past,
                             h2h=h2h)
 
+@app.route('/user/<username>/history')
+def user_history(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    predictions = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).all()
+    return render_template('user_history.html', user=user, predictions=predictions)
+
 @app.after_request
 def add_security_headers(response):
     # clickjcking
