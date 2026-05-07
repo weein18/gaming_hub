@@ -82,6 +82,7 @@ class Tournament(db.Model):
     name = db.Column(db.String(100), nullable=False)
     prize_pool = db.Column(db.String(50))
     date = db.Column(db.String(50))
+    xp_reward = db.Column(db.String(50))
 class Prediction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -388,7 +389,7 @@ def admin_add_match():
             tournament = Tournament(
                 name=t_name,
                 prize_pool=f_prize,
-                xp_amount=int(f_xp) if f_xp.isdigit() else 1000
+                xp_reward=int(f_xp) if f_xp.isdigit() else 1000
             )
             db.session.add(tournament)
             db.session.flush()
