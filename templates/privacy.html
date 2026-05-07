@@ -1,25 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container" style="max-width: 800px; margin: 0 auto; padding: 140px 20px 50px 20px; color: white; font-family: 'Inter', sans-serif; line-height: 1.6;">
-    <h1 style="border-left: 4px solid var(--primary); padding-left: 15px; text-transform: uppercase; letter-spacing: -1px;">Privacy <span class="highlight">Policy</span></h1>
+<div class="main-container" style="max-width: 800px; margin: 0 auto; padding: 140px 20px 50px 20px; color: white; font-family: 'Rajdhani', sans-serif; line-height: 1.6;">
+    <h1 style="border-left: 4px solid var(--primary); padding-left: 15px; text-transform: uppercase;">Privacy <span class="highlight">Policy</span></h1>
     
-    <p style="color: #888; font-size: 0.9rem;">Last updated: May 2026</p>
+    <p style="color: #666; font-size: 0.8rem; margin-bottom: 30px;">Last updated: May 2026</p>
 
-    <h3 style="color: var(--primary); margin-top: 30px;">1. Data Collection</h3>
-    <p>At EliteHub, we collect only the necessary information to provide you with our services: 
-       your <strong>Nickname</strong>, <strong>E-mail</strong>, and <strong>Encrypted Password</strong>. 
-       Your IP address may be processed by our hosting provider (Render.com) for security purposes.</p>
+    <section style="margin-bottom: 25px;">
+        <h3 style="color: var(--primary);">1. DATA COLLECTION & REGISTRATION</h3>
+        <p>EliteHub collects minimal data necessary for user accounts: your <strong>username</strong>, <strong>email address</strong>, and <strong>encrypted password</strong>. This data is used solely for authentication.</p>
+    </section>
 
-    <h3 style="color: var(--primary); margin-top: 30px;">2. Use of Data</h3>
-    <p>Your data is used strictly for authentication and to personalize your profile (e.g., your favorite team and avatar). We do not sell or share your data with third parties.</p>
+    <section style="margin-bottom: 25px;">
+        <h3 style="color: var(--primary);">2. EXTERNAL SERVICES (IMPORTANT)</h3>
+        <p>To provide a high-quality experience, our website uses the following external services:</p>
+        <ul>
+            <li><strong>Google Web Fonts:</strong> We load fonts directly from Google servers to ensure consistent typography. During this process, your IP address may be transmitted to Google.</li>
+            <li><strong>Cloudflare:</strong> We use Cloudflare for website security and performance. Cloudflare may process device information and IP addresses to prevent cyber attacks.</li>
+        </ul>
+    </section>
 
-    <h3 style="color: var(--primary); margin-top: 30px;">3. Cookies</h3>
-    <p>We use essential session cookies only. These cookies allow you to stay logged in while browsing the site. No tracking or marketing cookies are used.</p>
+    <section style="margin-bottom: 25px;">
+        <h3 style="color: var(--primary);">3. COOKIES</h3>
+        <p>We use essential session cookies only. These cookies allow you to stay logged in while browsing. No tracking or marketing cookies are used.</p>
+    </section>
 
-    <h3 style="color: var(--primary); margin-top: 30px;">4. Contact & Imprint</h3>
-    <p>If you have any questions, you can reach the administrator at:<br>
-    <strong>Admin:</strong> [Andrey Antonov]<br>
-    <strong>Location:</strong> [Hamburg, Germany]<br>
-    <strong>Email:</strong> [yaantonya1998@gmail.com]</p>
+    <section style="margin-bottom: 25px;">
+        <h3 style="color: var(--primary);">4. CONTACT & IMPRINT</h3>
+        <p>For any data-related inquiries, contact the administrator:</p>
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 2px solid var(--primary);">
+            <strong>Admin:</strong> Andreus Vatrukilus<br>
+            <strong>Contact:</strong> andreusvatru1999@gmail.com<br>
+            <strong>Location:</strong> Seattle, USA
+        </div>
+    </section>
 </div>
 {% endblock %}
