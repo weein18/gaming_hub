@@ -346,31 +346,34 @@ def dashboard():
 @app.route('/tournament/<name>')
 @login_required
 def tournament(name):
-    clean_name = name.replace('-', ' ')
+    clean_name = name.replace('-', ' ') 
     selected_date = request.args.get('date')
-    all_dates = db.session.query(Match.date).filter(
-        Match.tournament_name.ilike(f"%{clean_name}%")
-    ).distinct().order_by(Match.date.asc()).all()
-    all_dates = [d[0] for d in all_dates]
+    all_dates_query = db.session.query(Match.date).filter(
+        Match.tournament_name == clean_name
+    ).distinct().all()
+    all_dates = [d[0] for d in all_dates_query if d[0]]
+    def parse_date_string(date_str):
+        try:
+            # Убираем окончания (st, nd, rd, th), если они есть, для корректного парсинга
+            clean_date = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_str)
+            return datetime.strptime(f"{clean_date} 2026", "%B %d %Y")
+        except:
+            return datetime.min
+    all_dates.sort(key=parse_date_string)
     if not selected_date and all_dates:
         selected_date = all_dates[0]
     tournament_matches = Match.query.filter(
-        Match.tournament_name.ilike(f"%{clean_name}%"),
+        Match.tournament_name == clean_name,
         Match.date == selected_date
-    ).all()
+    ).order_by(Match.time.asc()).all()
+    tournament_info = Tournament.query.filter_by(name=clean_name).first()
     user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
     preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
-    def parse_date(date_str):
-        try:
-            clean_date = "".join(c for i, c in enumerate(date_str) if not (c.isalpha() and i > 2))
-            return datetime.datetime.strptime(f"{clean_date} 2026", "%B %d %Y")
-        except:
-            return datetime.datetime.max
-    all_dates.sort(key=parse_date)
-    return render_template('tournament.html', 
-                           tournament_name=name, 
-                           matches=tournament_matches, 
-                           all_dates=all_dates, 
+    return render_template('tournament.html',
+                           tournament_name=clean_name,
+                           tournament=tournament_info,
+                           matches=tournament_matches,
+                           all_dates=all_dates,
                            current_date=selected_date,
                            user_preds=preds_dict)
 
@@ -384,21 +387,33 @@ def all_tournaments():
 @app.route('/admin/add_match', methods=['GET', 'POST'])
 @login_required
 def admin_add_match():
+    if not current_user.is_admin:
+        return redirect(url_for('index'))
     if request.method == 'POST':
+        t_name = request.form.get('tournament')
+        t1 = request.form.get('team1')
+        t2 = request.form.get('team2')
+        m_date = request.form.get('date')
+        m_time = request.form.get('time')
+        m_type = request.form.get('match_type')
+        tournament_exists = Tournament.query.filter_by(name=t_name).first()
+        if not tournament_exists:
+            flash(f"Error: Tournament '{t_name}' not found in database!", "danger")
+            return redirect(url_for('admin_add_match'))
         new_match = Match(
-            tournament_name=request.form.get('tournament_name'),
-            team1=request.form.get('team1'),
-            team2=request.form.get('team2'),
-            date=request.form.get('date'),
-            time=request.form.get('time'),
-            match_type=request.form.get('match_type'),
-            status='Upcoming'
+            tournament_name=t_name,
+            team1=t1,
+            team2=t2,
+            date=m_date,
+            time=m_time,
+            match_type=m_type
         )
         db.session.add(new_match)
         db.session.commit()
+        flash("Match added successfully!", "success")
         return redirect(url_for('admin_add_match'))
     all_tournaments = Tournament.query.all()
-    return render_template('admin/add_match.html', tournaments=all_tournaments)
+    return render_template('add_match.html', tournaments=all_tournaments)
 
 @app.route("/admin/add_tournament", methods=["GET", "POST"])
 @login_required
