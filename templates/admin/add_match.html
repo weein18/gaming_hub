@@ -1,59 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container" style="display: flex; flex-direction: column; align-items: center; padding-top: 140px;">
-    <div class="match-card" style="width: 100%; max-width: 600px; padding: 50px;">
+<div class="main-container" style="display: flex; flex-direction: column; align-items: center; padding-top: 140px; min-height: 100vh; background: #050505;">
+    
+    <div class="match-card" style="width: 100%; max-width: 600px; padding: 50px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; box-shadow: 0 10px 30px rgba(255, 68, 68, 0.05); position: relative;">
         
-        <div style="margin-bottom: 30px; border-left: 4px solid var(--primary); padding-left: 20px;">
-            <h2 style="text-transform: uppercase; letter-spacing: -1px;">Add New <span class="highlight">Match</span></h2>
-            <p style="font-size: 0.7rem; color: #555; font-weight: 800; letter-spacing: 2px;">DATABASE INPUT TERMINAL</p>
+        <div style="position: absolute; left: 30px; top: 55px; width: 3px; height: 40px; background: #ff4444; border-radius: 2px; box-shadow: 0 0 10px #ff4444;"></div>
+
+        <div style="margin-bottom: 35px; padding-left: 20px;">
+            <h2 style="text-transform: uppercase; letter-spacing: -1px; color: #fff; font-size: 1.8rem; font-weight: 800;">Add New <span class="highlight" style="color: #ff4444; text-shadow: 0 0 10px rgba(255,68,68,0.5);">Match</span></h2>
+            <p style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">DATABASE INPUT TERMINAL</p>
         </div>
 
         <form action="{{ url_for('admin_add_match') }}" method="POST">
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 0.6rem; color: var(--primary); font-weight: 900; margin-bottom: 8px;">SELECT TOURNAMENT</label>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-size: 0.6rem; color: #ff4444; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Select Tournament</label>
                 <select name="tournament" required 
-                    style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit; outline: none;">
-                    <option value="" disabled selected>Choose a tournament...</option>
+                    style="width: 100%; background: #111; border: 1px solid #222; border-radius: 8px; color: white; padding: 15px; font-family: inherit; font-size: 0.9rem; font-weight: 600; outline: none; appearance: none; cursor: pointer; transition: 0.3s;">
+                    <option value="" disabled selected style="color: #555;">Choose a tournament...</option>
                     {% for t in tournaments %}
-                        <option value="{{ t.name }}">{{ t.name }}</option>
+                        <option value="{{ t.name }}" style="color: white; background: #111;">{{ t.name }}</option>
                     {% endfor %}
                 </select>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
                 <div>
-                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 8px;">TEAM 1</label>
-                    <input type="text" name="team1" placeholder="NAVI" required
-                        style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit;">
+                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Team 1</label>
+                    <input type="text" name="team1" placeholder="e.g. NAVI" required
+                        style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; padding: 15px; font-size: 1rem; font-weight: 600; outline: none;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 8px;">TEAM 2</label>
-                    <input type="text" name="team2" placeholder="G2" required
-                        style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit;">
+                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Team 2</label>
+                    <input type="text" name="team2" placeholder="e.g. G2" required
+                        style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; padding: 15px; font-size: 1rem; font-weight: 600; outline: none;">
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
                 <div>
-                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 8px;">DATE</label>
-                    <input type="text" name="date" placeholder="April 25" required
-                        style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit;">
+                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Date</label>
+                    <input type="text" name="date" placeholder="May 15" required
+                        style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; padding: 15px; font-size: 1rem; font-weight: 600; outline: none;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 8px;">TIME (UTC)</label>
-                    <input type="text" name="time" placeholder="18:00" required
-                        style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; padding: 12px; font-family: inherit;">
+                    <label style="display: block; font-size: 0.6rem; color: #888; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Time (UTC)</label>
+                    <input type="text" name="time" placeholder="17:00" required
+                        style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; padding: 15px; font-size: 1rem; font-weight: 600; outline: none;">
                 </div>
             </div>
-            <div style="margin-bottom: 20px;">
-                <label style="color: #444; font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 10px;">MATCH FORMAT</label>
-                <select name="match_type" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.02); border: 1px solid #222; color: #fff; border-radius: 12px;">
+
+            <div style="margin-bottom: 35px;">
+                <label style="display: block; font-size: 0.6rem; color: #444; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Match Format</label>
+                <select name="match_type" 
+                    style="width: 100%; background: #111; border: 1px solid #222; border-radius: 8px; color: #fff; padding: 15px; font-size: 0.9rem; font-weight: 600; outline: none; appearance: none; cursor: pointer;">
                     <option value="BO3">Best of 3 (Regular)</option>
                     <option value="BO5">Best of 5 (Grand Final)</option>
                 </select>
             </div>
 
-            <button type="submit" class="liquid-btn" style="margin-top: 20px; cursor: pointer; border: none;">UPLOAD TO DATABASE</button>
+            <button type="submit" class="liquid-btn" 
+                style="width: 100%; padding: 18px; background: #ff4444; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);">
+                Upload to Database
+            </button>
         </form>
     </div>
 </div>
