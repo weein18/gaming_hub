@@ -396,10 +396,6 @@ def admin_add_match():
         m_date = request.form.get('date')
         m_time = request.form.get('time')
         m_type = request.form.get('match_type')
-        tournament_exists = Tournament.query.filter_by(name=t_name).first()
-        if not tournament_exists:
-            flash(f"Error: Tournament '{t_name}' not found in database!", "danger")
-            return redirect(url_for('admin_add_match'))
         new_match = Match(
             tournament_name=t_name,
             team1=t1,
@@ -410,7 +406,7 @@ def admin_add_match():
         )
         db.session.add(new_match)
         db.session.commit()
-        flash("Match added successfully!", "success")
+        flash('Match added successfully!', 'success')
         return redirect(url_for('admin_add_match'))
     all_tournaments = Tournament.query.all()
     return render_template('add_match.html', tournaments=all_tournaments)
