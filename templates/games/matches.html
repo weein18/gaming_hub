@@ -1,89 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
-<style>
-    .bg-grid {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: 
-            linear-gradient(rgba(227,6,19,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(227,6,19,0.02) 1px, transparent 1px);
-        background-size: 50px 50px;
-        z-index: -1;
-    }
-    .tournament-card {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        border: 1px solid rgba(255,255,255,0.05);
-        background: rgba(10,10,10,0.6) !important;
-        backdrop-filter: blur(20px);
-    }
-    .tournament-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        border-color: var(--primary);
-        box-shadow: 0 20px 40px rgba(227,6,19,0.15);
-    }
-</style>
-
-<div class="bg-grid"></div>
-
-<div class="main-container" style="padding-top: 130px;">
-    <div style="text-align: center; margin-bottom: 80px; position: relative;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: var(--primary); filter: blur(150px); opacity: 0.1; z-index: -1;"></div>
-        
-        <div style="display: inline-block; padding: 8px 20px; background: rgba(227,6,19,0.1); border: 1px solid var(--primary); border-radius: 50px; color: var(--primary); font-size: 0.7rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 20px;">
-            LIVE TOURNAMENTS
+<div class="main-container" style="padding-top: 130px; max-width: 900px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 60px;">
+        <div style="display: inline-block; padding: 6px 15px; background: rgba(227,6,19,0.1); border: 1px solid var(--primary); border-radius: 50px; color: var(--primary); font-size: 0.6rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px;">
+            ACTIVE EVENTS
         </div>
-        <h1 style="font-size: 5rem; line-height: 0.8; margin: 0; text-transform: uppercase; letter-spacing: -3px;">
-            CHOOSE YOUR <span class="highlight" style="text-shadow: 0 0 30px var(--primary);">BATTLE</span>
+        <h1 style="font-size: 3.5rem; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -2px;">
+            CHOOSE <span class="highlight">BATTLE</span>
         </h1>
-        <p style="color: #555; max-width: 600px; margin: 25px auto 0; font-size: 1.1rem; line-height: 1.6;">
-            Select an active event to start predicting. The more accurate your predictions, the faster you climb to Global Elite.
-        </p>
     </div>
+
     {% for tour in tournaments %}
-    <a href="{{ url_for('tournament', name=tour.url_name) }}" style="text-decoration: none; color: inherit;">
-        <div class="match-card tournament-card" style="padding: 0; border-radius: 20px; position: relative; overflow: hidden; height: 450px; display: flex; flex-direction: column; cursor: pointer;">
-            
-            <!-- BANER -->
-            <div style="height: 220px; position: relative; overflow: hidden;">
-                <img src="{{ url_for('static', filename='img/tournaments/' + (tour.display_name|lower|replace(' ', '_')) + '.png') }}" 
-                    style="width: 100%; height: 100%; object-fit: cover;"
-                    onerror="this.src='https://via.placeholder.com/800x400?text=TOURNAMENT+BANNER'">
+    <div style="margin-bottom: 30px;"> <a href="{{ url_for('tournament', name=tour.url_name) }}" style="text-decoration: none; color: inherit;">
+            <div class="match-card tournament-card" style="padding: 0; border-radius: 16px; overflow: hidden; height: 320px; display: flex; flex-direction: column; background: #0c0c0c; border: 1px solid #1a1a1a;">
                 
-                <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, rgba(10,10,10,1), transparent);"></div>
-                
-                <div style="position: absolute; top: 15px; left: 15px;">
-                    <span style="background: #28a745; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.6rem; font-weight: 900; text-transform: uppercase;">● Active</span>
-                </div>
-            </div>
-
-            <!-- INFO -->
-            <div style="padding: 0 30px 30px; margin-top: -15px; position: relative; z-index: 2; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <h2 style="font-size: 2.2rem; margin: 0 0 10px; letter-spacing: -1.5px; text-transform: uppercase;">{{ tour.display_name }}</h2>
+                <div style="height: 140px; position: relative;">
+                    <img src="{{ url_for('static', filename='img/tournaments/' + (tour.name|lower|replace(' ', '_')) + '.png') }}" 
+                         style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;"
+                         onerror="this.src='{{ url_for('static', filename='img/tournaments/default.png') }}';">
                     
-                    <div style="display: flex; gap: 10px;">
-                        <span style="font-size: 0.6rem; color: #ffd700; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 4px; font-weight: 800;">
-                            {{ tour.tier if tour.tier else "S-TIER" }}
-                        </span>
-                        <span style="font-size: 0.6rem; color: var(--primary); border: 1px solid rgba(227,6,19,0.3); padding: 4px 10px; border-radius: 4px; font-weight: 800;">
-                            {{ tour.xp_reward if tour.xp_reward else "1,600 XP REWARD" }}
-                        </span>
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, #0c0c0c, transparent);"></div>
+                    
+                    <div style="position: absolute; top: 20px; left: 20px;">
+                        <span style="background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; padding: 4px 8px; border-radius: 4px; font-size: 0.5rem; font-weight: 900; text-transform: uppercase;">● Active</span>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div style="padding: 0 30px 25px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; margin-top: -20px; z-index: 2;">
                     <div>
-                        <div style="font-size: 0.55rem; color: #555; font-weight: 800; letter-spacing: 1px;">PRIZE POOL</div>
-                        <div style="font-size: 1.4rem; font-weight: 900; color: #fff;">{{ tour.prize_pool if tour.prize_pool else "$1,600,000" }}</div>
+                        <h2 style="font-size: 1.6rem; margin: 0 0 8px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px;">{{ tour.name }}</h2>
+                        
+                        <div style="display: flex; gap: 8px;">
+                            <span style="font-size: 0.5rem; color: #ffd700; border: 1px solid rgba(255,215,0,0.2); padding: 3px 8px; border-radius: 4px; font-weight: 800;">S-TIER</span>
+                            <span style="font-size: 0.5rem; color: var(--primary); border: 1px solid rgba(227,6,19,0.2); padding: 3px 8px; border-radius: 4px; font-weight: 800;">{{ tour.xp_reward }} XP</span>
+                        </div>
                     </div>
-                    
-                    <div class="enter-btn-fake" style="padding: 12px 30px; border-radius: 10px; background: var(--primary); color: white; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; box-shadow: 0 5px 15px rgba(227,6,19,0.2);">
-                        Enter Hub
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.03);">
+                        <div>
+                            <div style="font-size: 0.5rem; color: #444; font-weight: 900; text-transform: uppercase; margin-bottom: 2px;">Prize Pool</div>
+                            <div style="font-size: 1.1rem; font-weight: 900; color: #fff;">{{ tour.prize_pool }}</div>
+                        </div>
+                        
+                        <div class="enter-btn-fake" style="padding: 8px 20px; border-radius: 6px; background: var(--primary); color: white; font-weight: 900; font-size: 0.65rem; text-transform: uppercase;">
+                            Enter Hub
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </a>
+        </a>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}
