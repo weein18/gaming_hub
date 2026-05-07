@@ -73,6 +73,7 @@ class Match(db.Model):
     status = db.Column(db.String(20), default='Upcoming')
     final_score = db.Column(db.String(10), default='')
     match_type = db.Column(db.String(10), default="BO3")
+    predictions = db.relationship('Prediction', backref='match', lazy=True)
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -531,7 +532,8 @@ def match_analytics(match_id):
 @app.route('/user/<username>/history')
 def user_history(username):
     user = User.query.filter_by(username=username).first_or_404()
-    predictions = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).all()
+    predictions = db.session.query(Prediction).filter(Prediction.user_id == user.id).all()
+    
     return render_template('user/user_history.html', user=user, predictions=predictions)
 
 @app.after_request
