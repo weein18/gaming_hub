@@ -530,12 +530,22 @@ def match_analytics(match_id):
 
 @app.after_request
 def add_security_headers(response):
-    # only my scripts
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
-    # clickjacking defens
+    # clickjcking
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    # (nosniff)
+    # content guess
     response.headers['X-Content-Type-Options'] = 'nosniff'
+    # CSP
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; "
+        "frame-ancestors 'none'; "
+        "object-src 'none'; "
+        "base-uri 'self';"
+    )
+    # (Strict-Transport-Security)
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     return response
 
 if __name__ == '__main__':
