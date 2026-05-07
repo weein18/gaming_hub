@@ -10,6 +10,9 @@ import base64
 from sqlalchemy import or_
 import re
 import dns.resolver
+from datetime import datetime, timedelta
+
+
 
 
 if not os.path.exists('instance'):
@@ -532,9 +535,22 @@ def match_analytics(match_id):
 @app.route('/user/<username>/history')
 def user_history(username):
     user = User.query.filter_by(username=username).first_or_404()
-    predictions = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).all()
-    
-    return render_template('user/user_history.html', user=user, predictions=predictions)
+    t_filter = request.args.get("tournament")
+    time_range = request.args.get("range")
+    query = Prediction.query.filter_by(user_id=user.id)
+    if t_filter:
+        query = query.join(Match).filter(Match.tournamnet == t_filter)
+        if time_range == "week":
+            query = query.filter(Prediction.id > 0)
+        predictions = query.order_by(Prediction.id.desc()).all()
+        all_tournaments = db.session.query(Match.tournament).distinct().all()
+        tournaments = [t[0] for t in all_tournaments if t[0]]
+        return render_template ("user/user_history.html",
+                                user=user,
+                                predictions=predictions,
+                                tournaments=tournaments)
+
+
 
 @app.after_request
 def add_security_headers(response):
