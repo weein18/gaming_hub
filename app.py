@@ -383,10 +383,10 @@ def admin_add_match():
         m_type = request.form.get("match_type", "BO3")
         f_prize = request.form.get('prize_pool', '$1,000,000').strip()
         f_xp = request.form.get('xp_reward', '1000 XP').strip()
-        tournament = Tournament.query.filter_by(display_name=t_name).first()
+        tournament = Tournament.query.filter_by(name=t_name).first()
         if not tournament:
             tournament = Tournament(
-                display_name=t_name,
+                name=t_name,
                 url_name=t_name.lower().replace(' ', '-'),
                 prize_pool=f_prize,
                 xp_reward=f_xp,
