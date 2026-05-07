@@ -1,132 +1,119 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    .bg-grid {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: 
-            linear-gradient(rgba(227,6,19,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(227,6,19,0.03) 1px, transparent 1px);
-        background-size: 60px 60px;
-        z-index: -1;
+    .elite-grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 40px;
+        padding: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    .elite-card {
-        background: linear-gradient(145deg, #0f0f0f, #050505);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        border-radius: 24px;
+    .tournament-card-elite {
         position: relative;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 500px;
+        border-radius: 30px;
+        background: #080808;
+        border: 1px solid rgba(255, 255, 255, 0.05);
         overflow: hidden;
-        height: 400px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
     }
 
-    .elite-card::before {
-        content: '';
+    /* Фоновое изображение турнира */
+    .card-banner {
         position: absolute;
-        top: 0; left: 0; right: 0; height: 2px;
-        background: linear-gradient(90deg, transparent, var(--primary), transparent);
-        opacity: 0;
-        transition: 0.5s;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: 0.8s;
+        z-index: 1;
     }
 
-    .elite-card:hover {
-        transform: translateY(-10px) scale(1.01);
-        border-color: rgba(227,6,19,0.4);
-        box-shadow: 0 20px 50px rgba(227,6,19,0.15);
+    .tournament-card-elite:hover .card-banner {
+        transform: scale(1.1);
     }
 
-    .elite-card:hover::before {
-        opacity: 1;
+    /* Мощный градиент для читаемости текста */
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, #000 10%, rgba(0,0,0,0.2) 50%, transparent 100%);
+        z-index: 2;
     }
 
-    .glow-text {
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-    }
-
-    .elite-btn {
-        background: var(--primary);
-        color: white;
-        padding: 12px 35px;
-        border-radius: 12px;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 0.75rem;
-        border: none;
+    .card-content {
         position: relative;
-        overflow: hidden;
-        transition: 0.3s;
-        box-shadow: 0 5px 15px rgba(227,6,19,0.4);
+        z-index: 3;
+        padding: 40px;
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 
-    .elite-btn:hover {
-        letter-spacing: 4px;
-        box-shadow: 0 0 30px var(--primary);
+    .tournament-date-badge {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 8px 15px;
+        border-radius: 12px;
+        z-index: 3;
     }
+
+    .highlight-red { color: var(--primary); text-shadow: 0 0 20px rgba(227,6,19,0.5); }
 </style>
 
-<div class="bg-grid"></div>
-
-<div class="main-container" style="padding-top: 150px; max-width: 1000px; margin: 0 auto; padding-bottom: 100px;">
-    
-    <div style="margin-bottom: 80px; text-align: left; border-left: 5px solid var(--primary); padding-left: 30px;">
-        <h1 style="font-size: 4rem; line-height: 0.9; margin: 0; text-transform: uppercase; font-weight: 900; letter-spacing: -3px;">
-            ELITE<br><span style="color: var(--primary); filter: drop-shadow(0 0 10px rgba(227,6,19,0.5));">TOURNAMENTS</span>
+<div class="main-container" style="padding-top: 140px;">
+    <div style="text-align: center; margin-bottom: 80px;">
+        <h1 style="font-size: 5rem; font-weight: 900; letter-spacing: -4px; text-transform: uppercase; line-height: 0.8;">
+            CHOOSE YOUR <br> <span class="highlight-red">BATTLEGROUND</span>
         </h1>
-        <p style="color: #444; font-weight: 800; letter-spacing: 5px; margin-top: 15px; font-size: 0.7rem;">SELECT YOUR DESTINY</p>
     </div>
 
-    {% for tour in tournaments %}
-    <div style="margin-bottom: 50px;">
-        <a href="{{ url_for('tournament', name=tour.url_name) }}" style="text-decoration: none; color: inherit;">
-            <div class="elite-card">
-                
-                <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; overflow: hidden; z-index: 1;">
-                    <img src="{{ url_for('static', filename='img/tournaments/' + (tour.name|lower|replace(' ', '_')) + '.png') }}" 
-                         style="width: 100%; height: 100%; object-fit: cover; mask-image: linear-gradient(to left, black, transparent); -webkit-mask-image: linear-gradient(to left, black, transparent); opacity: 0.4;"
-                         onerror="this.src='{{ url_for('static', filename='img/tournaments/default.png') }}';">
+    <div class="elite-grid-container">
+        {% for tour in tournaments %}
+        <a href="{{ url_for('tournament', name=tour.url_name) }}" class="tournament-card-elite">
+            
+            <div class="card-banner" style="background-image: url('{{ url_for('static', filename='img/tournaments/' + (tour.name|lower|replace(' ', '_')) + '.png') }}'), url('{{ url_for('static', filename='img/tournaments/default.png') }}');"></div>
+            
+            <div class="card-overlay"></div>
+
+            <div class="tournament-date-badge">
+                <div style="font-size: 0.5rem; color: #888; font-weight: 900; text-transform: uppercase;">Event Date</div>
+                <div style="font-size: 0.85rem; color: #fff; font-weight: 800;">{{ tour.date if tour.date else "COMING SOON" }}</div>
+            </div>
+
+            <div class="card-content">
+                <div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <span style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.6rem; font-weight: 900;">LIVE</span>
+                        <span style="border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.6rem; font-weight: 900;">{{ tour.xp_reward }} XP</span>
+                    </div>
+                    <h2 style="font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: -1.5px; line-height: 1;">
+                        {{ tour.name }}
+                    </h2>
                 </div>
 
-                <div style="position: relative; z-index: 2; padding: 50px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                    
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                     <div>
-                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                            <span style="background: var(--primary); color: white; padding: 5px 12px; border-radius: 5px; font-size: 0.6rem; font-weight: 900; text-transform: uppercase;">● LIVE NOW</span>
-                            <span style="color: #666; font-size: 0.6rem; font-weight: 800; letter-spacing: 2px;">EST. 2026</span>
-                        </div>
-
-                        <h2 class="glow-text" style="font-size: 2.8rem; margin: 0; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; width: 60%;">
-                            {{ tour.name }}
-                        </h2>
-
-                        <div style="display: flex; gap: 15px; margin-top: 25px;">
-                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px;">
-                                <div style="font-size: 0.5rem; color: #555; font-weight: 800; margin-bottom: 2px;">TIER</div>
-                                <div style="color: gold; font-weight: 900; font-size: 0.8rem;">S-LEVEL</div>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px;">
-                                <div style="font-size: 0.5rem; color: #555; font-weight: 800; margin-bottom: 2px;">REWARD</div>
-                                <div style="color: var(--primary); font-weight: 900; font-size: 0.8rem;">{{ tour.xp_reward }} XP</div>
-                            </div>
-                        </div>
+                        <div style="font-size: 0.6rem; color: #666; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">Prize Pool</div>
+                        <div style="font-size: 1.8rem; font-weight: 900; color: #fff;">{{ tour.prize_pool }}</div>
                     </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                        <div>
-                            <p style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-bottom: 5px;">TOTAL PRIZE POOL</p>
-                            <p style="font-size: 2rem; font-weight: 900; color: #fff; margin: 0; letter-spacing: -1px;">{{ tour.prize_pool }}</p>
-                        </div>
-
-                        <button class="elite-btn">ENTER HUB</button>
+                    
+                    <div style="padding: 15px 35px; background: white; color: black; border-radius: 15px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase;">
+                        Enter Hub
                     </div>
                 </div>
-
-                <div style="position: absolute; bottom: -20px; right: -20px; width: 150px; height: 150px; background: var(--primary); filter: blur(100px); opacity: 0.1;"></div>
             </div>
         </a>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
