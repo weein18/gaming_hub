@@ -367,7 +367,8 @@ def tournament(name):
     tournament_matches = Match.query.filter(
         Match.tournament_name.ilike(real_db_name),
         Match.date == selected_date
-    ).order_by(Match.time.asc()).all()
+    ).all()
+    tournament_matches.sort(key=lambda x: datetime.strptime(x.time.strip(), '%H:%M') if ':' in x.time else x.time)
     user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
     preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
     return render_template('tournament.html',
