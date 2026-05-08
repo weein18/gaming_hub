@@ -354,7 +354,6 @@ def tournament(name):
     all_dates = [d[0] for d in all_dates_query if d[0]]
     def parse_date_string(date_str):
         try:
-            # Убираем окончания (st, nd, rd, th), если они есть, для корректного парсинга
             clean_date = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_str)
             return datetime.strptime(f"{clean_date} 2026", "%B %d %Y")
         except:
@@ -421,7 +420,7 @@ def admin_add_tournament():
             new_t = Tournament(
                 name=request.form.get('name'),
                 prize_pool=request.form.get('prize_pool'),
-                date=request.form.get('dates'),
+                date=request.form.get('date'),
                 xp_reward=request.form.get('xp_reward') 
             )
             db.session.add(new_t)
