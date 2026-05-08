@@ -189,17 +189,12 @@ def login():
 
 @app.route('/matches')
 def matches():
-    active_tournaments = db.session.query(Match.tournament_name).filter(
+    upcoming_tournament_names = db.session.query(Match.tournament_name).filter(
         Match.status == 'Upcoming'
     ).distinct().all()
-    tournaments = []
-    for t in active_tournaments:
-        name = t[0]
-        tournaments.append({
-            'display_name': name,
-            'url_name': name.lower().replace(' ', '-')
-        })   
-    return render_template('games/matches.html', tournaments=tournaments)
+    active_names = [t[0] for t in upcoming_tournament_names]
+    active_tournaments = Tournament.query.filter(Tournament.name.in_(active_names)).all()
+    return render_template('games/matches.html', tournaments=active_tournaments)
 
 @app.route('/profile/<username>')
 @login_required
@@ -385,7 +380,7 @@ def all_tournaments():
 
 @app.route('/admin/add_match', methods=['GET', 'POST'])
 @login_required
-def admin_add_match():
+def add_match():
     if not current_user.is_admin:
         return redirect(url_for('index'))
     if request.method == 'POST':
@@ -406,13 +401,13 @@ def admin_add_match():
         db.session.add(new_match)
         db.session.commit()
         flash('Match added successfully!', 'success')
-        return redirect(url_for('admin_add_match'))
+        return redirect(url_for('add_match'))
     all_tournaments = Tournament.query.all()
-    return render_template('add_match.html', tournaments=all_tournaments)
+    return render_template('admin/add_match.html', tournaments=all_tournaments)
 
 @app.route("/admin/add_tournament", methods=["GET", "POST"])
 @login_required
-def admin_add_tournament():
+def add_tournament():
         if not current_user.is_admin:
             flash("Only admin page!!!")
             return redirect(url_for("index"))
@@ -425,7 +420,7 @@ def admin_add_tournament():
             )
             db.session.add(new_t)
             db.session.commit()
-            return redirect(url_for('admin_add_match'))
+            return redirect(url_for('matches'))
         return render_template('admin/add_tournament.html')
 
 @app.route('/predict/<int:match_id>', methods=['POST'])
