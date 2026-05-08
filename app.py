@@ -341,30 +341,37 @@ def dashboard():
 @app.route('/tournament/<name>')
 @login_required
 def tournament(name):
-    clean_name = name.replace('-', ' ') 
+    url_name = name.replace('-', ' ') 
+    tournament_info = Tournament.query.filter(Tournament.name.ilike(url_name)).first()
+    if tournament_info:
+        real_db_name = tournament_info.name
+    else:
+        real_db_name = url_name
     selected_date = request.args.get('date')
     all_dates_query = db.session.query(Match.date).filter(
-        Match.tournament_name == clean_name
+        Match.tournament_name.ilike(real_db_name)
     ).distinct().all()
     all_dates = [d[0] for d in all_dates_query if d[0]]
     def parse_date_string(date_str):
         try:
             clean_date = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_str)
-            return datetime.strptime(f"{clean_date} 2026", "%B %d %Y")
+            return datetime.strptime(clean_date, "%B %d")
         except:
-            return datetime.min
+            try:
+                return datetime.strptime(clean_date, "%B %d %Y")
+            except:
+                return datetime.min
     all_dates.sort(key=parse_date_string)
     if not selected_date and all_dates:
         selected_date = all_dates[0]
     tournament_matches = Match.query.filter(
-        Match.tournament_name == clean_name,
+        Match.tournament_name.ilike(real_db_name),
         Match.date == selected_date
     ).order_by(Match.time.asc()).all()
-    tournament_info = Tournament.query.filter_by(name=clean_name).first()
     user_predictions = Prediction.query.filter_by(user_id=current_user.id).all()
     preds_dict = {p.match_id: p.prediction_score for p in user_predictions}
     return render_template('tournament.html',
-                           tournament_name=clean_name,
+                           tournament_name=real_db_name,
                            tournament=tournament_info,
                            matches=tournament_matches,
                            all_dates=all_dates,
