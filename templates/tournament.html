@@ -87,7 +87,7 @@
                         <button name="predicted_score" value="{{ score }}" 
                                 onclick="event.stopPropagation();"
                                 class="bet-btn {% if current_pred == score %}active-pred{% endif %}"
-                                {% if match.status == 'Finished' %}disabled{% endif %}
+                                {% if match.status == 'Finished' or match.is_started() %}disabled{% endif %}
                                 style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {{ btn_style }}">
                             {{ score }}
                         </button>
