@@ -79,7 +79,11 @@ class Match(db.Model):
     predictions = db.relationship('Prediction', backref='match', lazy=True)
     def is_started(self):
         try:
-            match_dt_str = f"{self.date} 2026 {self.time}"
+            t = self.time.strip()
+            if ':' in t:
+                hour, minute = t.split(':')
+                t = f"{int(hour):02d}:{int(minute):02d}"
+            match_dt_str = f"{self.date.strip()} 2026 {t}"
             match_dt = datetime.strptime(match_dt_str, "%B %d %Y %H:%M")
             return datetime.now() >= match_dt
         except:

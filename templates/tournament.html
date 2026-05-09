@@ -88,9 +88,11 @@
                                 onclick="event.stopPropagation();"
                                 class="bet-btn {% if current_pred == score %}active-pred{% endif %}"
                                 {% if match.status == 'Finished' or match.is_started() %}disabled{% endif %}
-                                style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {{ btn_style }}">
+                                style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {{ btn_style }} 
+                                    {% if match.is_started() and match.status != 'Finished' %} opacity: 0.4; cursor: not-allowed; {% endif %}">
                             {{ score }}
                         </button>
+
                     {% endfor %}
                 </form>
 
