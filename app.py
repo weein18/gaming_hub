@@ -488,7 +488,10 @@ def close_match(match_id):
             if pred.prediction_score == final_score:
                 pred.is_correct = True
                 user = db.session.get(User, pred.user_id)
-                user.xp += 100
+                if user:
+                    user.xp += 100
+                else:
+                    print(f"Warning: User with ID {pred.user_id} not found for prediction {pred.id}")
         db.session.commit()
         flash(f"Match {match.team1} vs {match.team2} closed with score {final_score}!") 
     return redirect(url_for('manage_matches'))
