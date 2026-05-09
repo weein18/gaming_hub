@@ -80,21 +80,16 @@ class Match(db.Model):
     def is_started(self):
         try:
             now = datetime.now()
-            # Парсим только месяц и день (например, "May 09")
-            # %b — для коротких имен (May), %B — для полных (May)
-            match_dt = datetime.strptime(self.date.strip(), "%B %d")
-            
-            # Устанавливаем текущий год, чтобы сравнение было корректным
-            match_dt = match_dt.replace(year=now.year)
-            
-            # Добавляем часы и минуты
-            h, m = self.time.strip().split(':')
-            match_dt = match_dt.replace(hour=int(h), minute=int(m))
-
-            # Если сейчас время больше или равно времени матча — он начался
+            d_str = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', self.date.strip())
+            t_str = self.time.strip()
+            if ':' in t_str:
+                h, m = t_str.split(':')
+                t_str = f"{int(h):02d}:{int(m):02d}"
+            match_dt_str = f"{d_str} {now.year} {t_str}"
+            match_dt = datetime.strptime(match_dt_str, "%B %d %Y %H:%M")
             return now >= match_dt
         except Exception as e:
-            print(f"DEBUG Error: {e}")
+            print(f"DEBUG ERROR for match {self.id}: {e}")
             return False
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
