@@ -80,17 +80,18 @@ class Match(db.Model):
     def is_started(self):
         try:
             now = datetime.now()
-            d_str = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', self.date.strip())
+            clean_date = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', self.date.strip())
             t_str = self.time.strip()
             if ':' in t_str:
                 h, m = t_str.split(':')
                 t_str = f"{int(h):02d}:{int(m):02d}"
-            match_dt_str = f"{d_str} {now.year} {t_str}"
+            match_dt_str = f"{clean_date} {now.year} {t_str}"
             match_dt = datetime.strptime(match_dt_str, "%B %d %Y %H:%M")
             return now >= match_dt
         except Exception as e:
-            print(f"DEBUG ERROR for match {self.id}: {e}")
-            return False
+            # Если что-то пошло не так, выводим ошибку в консоль и блокируем ставку
+            print(f"!!! Ошибка парсинга матча {self.id}: {e}")
+            return True
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
