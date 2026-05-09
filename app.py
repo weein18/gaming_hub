@@ -78,21 +78,24 @@ class Match(db.Model):
     match_type = db.Column(db.String(10), default="BO3")
     predictions = db.relationship('Prediction', backref='match', lazy=True)
     def is_started(self):
-        try:
-            now = datetime.now()
-            date_str = self.date.strip()
-            time_str = self.time.strip()
-            if ':' in time_str:
-                h, m = time_str.split(':')
-                time_str = f"{int(h):02d}:{int(m):02d}"
-            format_str = "%B %d %Y %H:%M" if len(date_str.split()[0]) > 3 else "%b %d %Y %H:%M"
-            match_dt_str = f"{date_str} 2026 {time_str}"
-            match_dt = datetime.strptime(match_dt_str, format_str)
-            print(f"--- DEBUG: Match {self.team1} | Match Time: {match_dt} | Now: {now} ---")
-            return now >= match_dt
-        except Exception as e:
-            print(f"--- DEBUG ERROR: {e} ---")
-            return False
+    try:
+        now = datetime.now()
+        # Парсим только месяц и день (например, "May 09")
+        # %b — для коротких имен (May), %B — для полных (May)
+        match_dt = datetime.strptime(self.date.strip(), "%B %d")
+        
+        # Устанавливаем текущий год, чтобы сравнение было корректным
+        match_dt = match_dt.replace(year=now.year)
+        
+        # Добавляем часы и минуты
+        h, m = self.time.strip().split(':')
+        match_dt = match_dt.replace(hour=int(h), minute=int(m))
+
+        # Если сейчас время больше или равно времени матча — он начался
+        return now >= match_dt
+    except Exception as e:
+        print(f"DEBUG Error: {e}")
+        return False
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
