@@ -78,24 +78,24 @@ class Match(db.Model):
     match_type = db.Column(db.String(10), default="BO3")
     predictions = db.relationship('Prediction', backref='match', lazy=True)
     def is_started(self):
-    try:
-        now = datetime.now()
-        # Парсим только месяц и день (например, "May 09")
-        # %b — для коротких имен (May), %B — для полных (May)
-        match_dt = datetime.strptime(self.date.strip(), "%B %d")
-        
-        # Устанавливаем текущий год, чтобы сравнение было корректным
-        match_dt = match_dt.replace(year=now.year)
-        
-        # Добавляем часы и минуты
-        h, m = self.time.strip().split(':')
-        match_dt = match_dt.replace(hour=int(h), minute=int(m))
+        try:
+            now = datetime.now()
+            # Парсим только месяц и день (например, "May 09")
+            # %b — для коротких имен (May), %B — для полных (May)
+            match_dt = datetime.strptime(self.date.strip(), "%B %d")
+            
+            # Устанавливаем текущий год, чтобы сравнение было корректным
+            match_dt = match_dt.replace(year=now.year)
+            
+            # Добавляем часы и минуты
+            h, m = self.time.strip().split(':')
+            match_dt = match_dt.replace(hour=int(h), minute=int(m))
 
-        # Если сейчас время больше или равно времени матча — он начался
-        return now >= match_dt
-    except Exception as e:
-        print(f"DEBUG Error: {e}")
-        return False
+            # Если сейчас время больше или равно времени матча — он начался
+            return now >= match_dt
+        except Exception as e:
+            print(f"DEBUG Error: {e}")
+            return False
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
