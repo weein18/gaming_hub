@@ -77,6 +77,13 @@ class Match(db.Model):
     final_score = db.Column(db.String(10), default='')
     match_type = db.Column(db.String(10), default="BO3")
     predictions = db.relationship('Prediction', backref='match', lazy=True)
+    def is_started(self):
+        try:
+            match_dt_str = f"{self.date} 2026 {self.time}"
+            match_dt = datetime.strptime(match_dt_str, "%B %d %Y %H:%M")
+            return datetime.now() >= match_dt
+        except:
+            return False
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -435,8 +442,8 @@ def add_tournament():
 @login_required
 def predict(match_id):
     match = Match.query.get_or_404(match_id)
-    if match.status != 'Upcoming':
-        flash("You can only predict on upcoming matches! Too late.")
+    if match.status != 'Upcoming' or match.is_started():
+        flash("Too late! The match has already started or finished.")
         return redirect(request.referrer)
     score = request.form.get('predicted_score') 
     existing = Prediction.query.filter_by(user_id=current_user.id, match_id=match_id).first()
