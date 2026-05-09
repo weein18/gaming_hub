@@ -87,12 +87,14 @@
                         <button name="predicted_score" value="{{ score }}" 
                                 onclick="event.stopPropagation();"
                                 class="bet-btn {% if current_pred == score %}active-pred{% endif %}"
-                                {{ 'disabled' if match.status == 'Finished' or match.is_started() else '' }}
-                                style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {{ btn_style }} 
+                                
+                                {% if match.status == 'Finished' or match.is_started() %} disabled {% endif %}
+                                
+                                style="width: 100%; font-size: 0.8rem; padding: 10px 5px; {{ btn_style }}
                                     {% if match.status == 'Finished' or match.is_started() %}
-                                    opacity: 0.3 !important; 
-                                    pointer-events: none !important; 
-                                    cursor: not-allowed !important;
+                                        opacity: 0.2 !important; 
+                                        pointer-events: none !important; 
+                                        filter: grayscale(1);
                                     {% endif %}">
                             {{ score }}
                         </button>

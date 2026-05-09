@@ -79,15 +79,19 @@ class Match(db.Model):
     predictions = db.relationship('Prediction', backref='match', lazy=True)
     def is_started(self):
         try:
-            print(f"DEBUG: Current Server Time: {datetime.now()}") # Добавь это!
-            t = self.time.strip()
-            if ':' in t:
-                hour, minute = t.split(':')
-                t = f"{int(hour):02d}:{int(minute):02d}"
-            match_dt_str = f"{self.date.strip()} 2026 {t}"
-            match_dt = datetime.strptime(match_dt_str, "%B %d %Y %H:%M")
-            return datetime.now() >= match_dt
-        except:
+            now = datetime.now()
+            date_str = self.date.strip()
+            time_str = self.time.strip()
+            if ':' in time_str:
+                h, m = time_str.split(':')
+                time_str = f"{int(h):02d}:{int(m):02d}"
+            format_str = "%B %d %Y %H:%M" if len(date_str.split()[0]) > 3 else "%b %d %Y %H:%M"
+            match_dt_str = f"{date_str} 2026 {time_str}"
+            match_dt = datetime.strptime(match_dt_str, format_str)
+            print(f"--- DEBUG: Match {self.team1} | Match Time: {match_dt} | Now: {now} ---")
+            return now >= match_dt
+        except Exception as e:
+            print(f"--- DEBUG ERROR: {e} ---")
             return False
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
