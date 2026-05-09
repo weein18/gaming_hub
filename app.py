@@ -79,6 +79,7 @@ class Match(db.Model):
     predictions = db.relationship('Prediction', backref='match', lazy=True)
     def is_started(self):
         try:
+            print(f"DEBUG: Current Server Time: {datetime.now()}") # Добавь это!
             t = self.time.strip()
             if ':' in t:
                 hour, minute = t.split(':')
