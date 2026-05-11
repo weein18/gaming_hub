@@ -11,6 +11,7 @@ from sqlalchemy import or_
 import re
 import dns.resolver
 from datetime import datetime, timedelta
+import pytz
 
 
 
@@ -79,19 +80,19 @@ class Match(db.Model):
     predictions = db.relationship('Prediction', backref='match', lazy=True)
     def is_started(self):
         try:
-            now = datetime.now()
+            germany_tz = pytz.timezone('Europe/Berlin')
+            now = datetime.now(germany_tz).replace(tzinfo=None)
             clean_date = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', self.date.strip())
             t_str = self.time.strip()
             if ':' in t_str:
                 h, m = t_str.split(':')
                 t_str = f"{int(h):02d}:{int(m):02d}"
-            match_dt_str = f"{clean_date} {now.year} {t_str}"
-            match_dt = datetime.strptime(match_dt_str, "%B %d %Y %H:%M")
+            match_dt = datetime.strptime(f"{clean_date} 2026 {t_str}", "%B %d %Y %H:%M")
+            print(f"--- MATCH {self.id} --- Germany Now: {now} | Match Time: {match_dt}")
             return now >= match_dt
         except Exception as e:
-            # Если что-то пошло не так, выводим ошибку в консоль и блокируем ставку
-            print(f"!!! Ошибка парсинга матча {self.id}: {e}")
-            return True
+            print(f"!!! TIME ERROR: {e}")
+            return False
 class Tournament(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
