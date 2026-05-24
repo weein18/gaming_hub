@@ -691,48 +691,55 @@ def auto_fetch_pandascore_matches():
             for item in matches:
                 if not item.get('opponents') or len(item['opponents']) < 2:
                     continue
-                team1_name = item["opponents"][0]["opponent"]["name"]
-                team2_name = item["opponents"][1]["opponent"]["name"]
+                league_tier = item.get('league', {}).get('tier')
+                if league_tier not in ['s', 'a']:
+                    continue
                 api_league_name = item['league']['name'].strip()
+                league_logo = item['league'].get('image_url') or "/static/images/default-tournament.png"
+                api_prize = item.get('series', {}).get('prize_pool')
+                final_prize_pool = f"${api_prize}" if api_prize else "TBD"
                 existing_tournament = Tournament.query.filter(Tournament.name.ilike(api_league_name)).first()
                 if existing_tournament:
                     final_tournament_name = existing_tournament.name
+                    if final_prize_pool != "TBD" and existing_tournament.prize_pool == "TBD":
+                        existing_tournament.prize_pool = final_prize_pool
+                    # existing_tournament.image_url = league_logo
                 else:
                     new_t = Tournament(
                         name=api_league_name, 
-                        prize_pool="TBD", 
+                        prize_pool=final_prize_pool, 
                         date="Ongoing", 
                         xp_reward="100 XP"
+                        # image_url=league_logo
                     )
                     db.session.add(new_t)
                     db.session.commit()
                     final_tournament_name = new_t.name
-
                 if not item.get('begin_at'):
                     continue
                 utc_time = datetime.strptime(item['begin_at'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
                 local_time = utc_time.astimezone(pytz.timezone('Europe/Berlin'))
-                date_str = local_time.strftime("%B %d")  # "May 24"
-                time_str = local_time.strftime("%H:%M")  # "21:30"
+                date_str = local_time.strftime("%B %d")  
+                time_str = local_time.strftime("%H:%M")  
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
                 existing_match = Match.query.filter_by(
-                    team1=team1_name, 
-                    team2=team2_name, 
+                    team1=item["opponents"][0]["opponent"]["name"], 
+                    team2=item["opponents"][1]["opponent"]["name"], 
                     date=date_str, 
                     time=time_str
                 ).first()
                 if not existing_match:
                     new_match = Match(
                         tournament_name=final_tournament_name,
-                        team1=team1_name, 
-                        team2=team2_name,
+                        team1=item["opponents"][0]["opponent"]["name"], 
+                        team2=item["opponents"][1]["opponent"]["name"],
                         date=date_str, 
                         time=time_str,
                         match_type=match_type_str, 
                         status="Upcoming"
                     )
                     db.session.add(new_match)
-                    print(f"[BG-TASK] Added match: {team1_name} vs {team2_name} in tour. {final_tournament_name}")
+                    print(f"[BG-TASK] Добавлен топовый матч: {new_match.team1} vs {new_match.team2}")
             db.session.commit()
             print("[BG-TASK] DATABASE WAS UPDATED")
     except Exception as e:
@@ -746,9 +753,9 @@ def test_api_now():
     try:
         print("[TEST] Ручной запуск обновления матчей...")
         auto_fetch_pandascore_matches()
-        return "Робот успешно выполнился! Проверяй логи Render и свою админку.", 200
+        return "All matches are there, check render", 200
     except Exception as e:
-        return f"Что-то пошло не так внутри функции: {e}", 500
+        return f"Something went wrong: {e}", 500
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
