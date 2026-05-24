@@ -686,10 +686,7 @@ def auto_fetch_pandascore_matches():
             print(f"[BG-TASK] API ERROR: {response.status_code}")
             return
         matches = response.json()
-        print(f"[BG-TASK] !!! Успешно скачано {len(matches)} матчей из PandaScore !!!")
-        print("=== ВЕРИФИКАЦИЯ ОТВЕТА API ===")
-        print(matches)
-        print("==============================")
+        print(f"[BG-TASK] !!! {len(matches)} matches were donwloaded from PandaScore !!!")
         with app.app_context():
             for item in matches:
                 if not item.get('opponents') or len(item['opponents']) < 2:
@@ -735,14 +732,23 @@ def auto_fetch_pandascore_matches():
                         status="Upcoming"
                     )
                     db.session.add(new_match)
-                    print(f"[BG-TASK] Добавлен матч: {team1_name} vs {team2_name} в турнир {final_tournament_name}")
+                    print(f"[BG-TASK] Added match: {team1_name} vs {team2_name} in tour. {final_tournament_name}")
             db.session.commit()
-            print("[BG-TASK] База данных Supabase успешно обновлена фоновым процессом!")
+            print("[BG-TASK] DATABASE WAS UPDATED")
     except Exception as e:
-        print(f"[BG-TASK] Критическая ошибка в фоновом таске: {e}")
+        print(f"[BG-TASK] ERROR: {e}")
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12)
 scheduler.start()
+
+@app.route('/test-api-now')
+def test_api_now():
+    try:
+        print("[TEST] Ручной запуск обновления матчей...")
+        auto_fetch_pandascore_matches()
+        return "Робот успешно выполнился! Проверяй логи Render и свою админку.", 200
+    except Exception as e:
+        return f"Что-то пошло не так внутри функции: {e}", 500
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
