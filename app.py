@@ -686,7 +686,10 @@ def auto_fetch_pandascore_matches():
             print(f"[BG-TASK] API ERROR: {response.status_code}")
             return
         matches = response.json()
-        print(f"[BG-TASK] Успешно скачано {len(matches)} матчей из PandaScore. Синхронизируем...")
+        print(f"[BG-TASK] !!! Успешно скачано {len(matches)} матчей из PandaScore !!!")
+        print("=== ВЕРИФИКАЦИЯ ОТВЕТА API ===")
+        print(matches)
+        print("==============================")
         with app.app_context():
             for item in matches:
                 if not item.get('opponents') or len(item['opponents']) < 2:
