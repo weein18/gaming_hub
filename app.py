@@ -12,8 +12,59 @@ import re
 import dns.resolver
 from datetime import datetime, timedelta
 import pytz
+import requests
 
 
+
+
+PANDASCORE_TOKEN = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
+def fetch_and_save_matches():
+    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={PANDASCORE_TOKEN}&per_page=50"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"API ERROR: {response.status_code}")
+        return
+    matches = response.json()
+    print(f"Become {len(matches)} !!!")
+    with app.app_context():
+        for item in matches:
+            if not item.get('opponents') or len(item['opponents']) < 2:
+                continue
+            team1_name = item["opponents"][0]["opponent"]["name"]
+            team2_name = item["opponents"][1]["opponent"]["name"]
+            tournament = item ["league"]["name"]
+            if item.get("serie") and item["serie"]["name"]:
+                tournament += f"{item["serie"]["name"]}"
+            if not item.get('begin_at'):
+                continue
+            utc_time = datetime.strptime(item["begin_at"], "%Y-%m-%dT%H:%M:%SZ")
+            utc_time = utc_time.replace(tzinfo=pytz.utc)
+            local_tz = pytz.timezone("Europe/Berlin")
+            local_time = utc_time.astimezone(local_tz)
+            date_str = local_time.strftime("%B %d")
+            time_str = local_time.strftime("%H:%M")
+            maps_count = item.get('number_of_games', 3)
+            match_type_str = f"BO{maps_count}" 
+            existing = Match.query.filter_by(
+                team1=team1_name,
+                team2=team2_name,
+                date=date_str,
+                time=time_str
+            ).first()
+            if not existing:
+                new_match = Match(
+                    tournament_name=tournament,
+                    team1=team1_name,
+                    team2=team2_name,
+                    date=date_str,
+                    time=time_str,
+                    match_type=match_type_str,
+                    status="Upcoming"
+                )
+                db.session.add(new_match)
+                print(f" Added: {team1_name} vs {team2_name} ({match_type_str}) — {tournament}")
+        db.session.commit()
+        print("All matches and tournaments are added!")
 
 
 if not os.path.exists('instance'):
@@ -626,4 +677,5 @@ def privacy():
     return render_template('privacy.html')
 
 if __name__ == '__main__':
+    fetch_and_save_matches()
     app.run(debug=False)

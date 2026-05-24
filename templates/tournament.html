@@ -72,6 +72,8 @@
                     
                     {% if match.match_type == 'BO5' %}
                         {% set scores = ['3-0', '3-1', '3-2', '2-3', '1-3', '0-3'] %}
+                    {% elif match.match_type == 'BO1' %}
+                        {% set scores = ['1-0', '0-1'] %}
                     {% else %}
                         {% set scores = ['2-0', '2-1', '1-2', '0-2'] %}
                     {% endif %}
