@@ -13,58 +13,59 @@ import dns.resolver
 from datetime import datetime, timedelta
 import pytz
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 
 
-PANDASCORE_TOKEN = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-def fetch_and_save_matches():
-    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={PANDASCORE_TOKEN}&per_page=50"
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"API ERROR: {response.status_code}")
-        return
-    matches = response.json()
-    print(f"Become {len(matches)} !!!")
-    with app.app_context():
-        for item in matches:
-            if not item.get('opponents') or len(item['opponents']) < 2:
-                continue
-            team1_name = item["opponents"][0]["opponent"]["name"]
-            team2_name = item["opponents"][1]["opponent"]["name"]
-            tournament = item ["league"]["name"]
-            if item.get("serie") and item["serie"]["name"]:
-                tournament += f"{item["serie"]["name"]}"
-            if not item.get('begin_at'):
-                continue
-            utc_time = datetime.strptime(item["begin_at"], "%Y-%m-%dT%H:%M:%SZ")
-            utc_time = utc_time.replace(tzinfo=pytz.utc)
-            local_tz = pytz.timezone("Europe/Berlin")
-            local_time = utc_time.astimezone(local_tz)
-            date_str = local_time.strftime("%B %d")
-            time_str = local_time.strftime("%H:%M")
-            maps_count = item.get('number_of_games', 3)
-            match_type_str = f"BO{maps_count}" 
-            existing = Match.query.filter_by(
-                team1=team1_name,
-                team2=team2_name,
-                date=date_str,
-                time=time_str
-            ).first()
-            if not existing:
-                new_match = Match(
-                    tournament_name=tournament,
-                    team1=team1_name,
-                    team2=team2_name,
-                    date=date_str,
-                    time=time_str,
-                    match_type=match_type_str,
-                    status="Upcoming"
-                )
-                db.session.add(new_match)
-                print(f" Added: {team1_name} vs {team2_name} ({match_type_str}) — {tournament}")
-        db.session.commit()
-        print("All matches and tournaments are added!")
+# PANDASCORE_TOKEN = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
+# def fetch_and_save_matches():
+#     url = f"https://api.pandascore.co/csgo/matches/upcoming?token={PANDASCORE_TOKEN}&per_page=50"
+#     response = requests.get(url)
+#     if response.status_code != 200:
+#         print(f"API ERROR: {response.status_code}")
+#         return
+#     matches = response.json()
+#     print(f"Become {len(matches)} !!!")
+#     with app.app_context():
+#         for item in matches:
+#             if not item.get('opponents') or len(item['opponents']) < 2:
+#                 continue
+#             team1_name = item["opponents"][0]["opponent"]["name"]
+#             team2_name = item["opponents"][1]["opponent"]["name"]
+#             tournament = item ["league"]["name"]
+#             if item.get("serie") and item["serie"]["name"]:
+#                 tournament += f"{item["serie"]["name"]}"
+#             if not item.get('begin_at'):
+#                 continue
+#             utc_time = datetime.strptime(item["begin_at"], "%Y-%m-%dT%H:%M:%SZ")
+#             utc_time = utc_time.replace(tzinfo=pytz.utc)
+#             local_tz = pytz.timezone("Europe/Berlin")
+#             local_time = utc_time.astimezone(local_tz)
+#             date_str = local_time.strftime("%B %d")
+#             time_str = local_time.strftime("%H:%M")
+#             maps_count = item.get('number_of_games', 3)
+#             match_type_str = f"BO{maps_count}" 
+#             existing = Match.query.filter_by(
+#                 team1=team1_name,
+#                 team2=team2_name,
+#                 date=date_str,
+#                 time=time_str
+#             ).first()
+#             if not existing:
+#                 new_match = Match(
+#                     tournament_name=tournament,
+#                     team1=team1_name,
+#                     team2=team2_name,
+#                     date=date_str,
+#                     time=time_str,
+#                     match_type=match_type_str,
+#                     status="Upcoming"
+#                 )
+#                 db.session.add(new_match)
+#                 print(f" Added: {team1_name} vs {team2_name} ({match_type_str}) — {tournament}")
+#         db.session.commit()
+#         print("All matches and tournaments are added!")
 
 
 if not os.path.exists('instance'):
@@ -676,6 +677,70 @@ def add_security_headers(response):
 def privacy():
     return render_template('privacy.html')
 
+def auto_fetch_pandascore_matches():
+    token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
+    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=50"
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code != 200:
+            print(f"[BG-TASK] API ERROR: {response.status_code}")
+            return
+        matches = response.json()
+        print(f"[BG-TASK] Успешно скачано {len(matches)} матчей из PandaScore. Синхронизируем...")
+        with app.app_context():
+            for item in matches:
+                if not item.get('opponents') or len(item['opponents']) < 2:
+                    continue
+                team1_name = item["opponents"][0]["opponent"]["name"]
+                team2_name = item["opponents"][1]["opponent"]["name"]
+                api_league_name = item['league']['name'].strip()
+                existing_tournament = Tournament.query.filter(Tournament.name.ilike(api_league_name)).first()
+                if existing_tournament:
+                    final_tournament_name = existing_tournament.name
+                else:
+                    new_t = Tournament(
+                        name=api_league_name, 
+                        prize_pool="TBD", 
+                        date="Ongoing", 
+                        xp_reward="100 XP"
+                    )
+                    db.session.add(new_t)
+                    db.session.commit()
+                    final_tournament_name = new_t.name
+
+                if not item.get('begin_at'):
+                    continue
+                utc_time = datetime.strptime(item['begin_at'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
+                local_time = utc_time.astimezone(pytz.timezone('Europe/Berlin'))
+                date_str = local_time.strftime("%B %d")  # "May 24"
+                time_str = local_time.strftime("%H:%M")  # "21:30"
+                match_type_str = f"BO{item.get('number_of_games', 3)}"
+                existing_match = Match.query.filter_by(
+                    team1=team1_name, 
+                    team2=team2_name, 
+                    date=date_str, 
+                    time=time_str
+                ).first()
+                if not existing_match:
+                    new_match = Match(
+                        tournament_name=final_tournament_name,
+                        team1=team1_name, 
+                        team2=team2_name,
+                        date=date_str, 
+                        time=time_str,
+                        match_type=match_type_str, 
+                        status="Upcoming"
+                    )
+                    db.session.add(new_match)
+                    print(f"[BG-TASK] Добавлен матч: {team1_name} vs {team2_name} в турнир {final_tournament_name}")
+            db.session.commit()
+            print("[BG-TASK] База данных Supabase успешно обновлена фоновым процессом!")
+    except Exception as e:
+        print(f"[BG-TASK] Критическая ошибка в фоновом таске: {e}")
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12)
+scheduler.start()
+
 if __name__ == '__main__':
-    fetch_and_save_matches()
+    auto_fetch_pandascore_matches()
     app.run(debug=False)
