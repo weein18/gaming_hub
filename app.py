@@ -757,6 +757,17 @@ def test_api_now():
     except Exception as e:
         return f"Something went wrong: {e}", 500
 
+@app.route('/clear-database-garbage-999')
+def clear_garbage():
+    try:
+        with app.app_context():
+            db.session.query(Match).delete()
+            db.session.query(Tournament).delete()
+            db.session.commit()
+        return "База полностью очищена! Теперь она стерильна.", 200
+    except Exception as e:
+        return f"Ошибка при очистке: {e}", 500
+
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
     app.run(debug=False)
