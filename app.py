@@ -751,22 +751,27 @@ scheduler.start()
 @app.route('/test-api-now')
 def test_api_now():
     try:
-        print("[TEST] Ручной запуск обновления матчей...")
-        auto_fetch_pandascore_matches()
-        return "All matches are there, check render", 200
+        token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
+        url = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=50"
+        response = requests.get(url, timeout=10)
+        matches = response.json()
+        print(f"=== ADDING MATCHES: {len(matches)}) ===")
+        for item in matches:
+            if not item.get('opponents') or len(item['opponents']) < 2:
+                continue
+            league_tier = item.get('league', {}).get('tier')
+            api_league_name = item['league']['name'].strip()
+            if league_tier in ['s', 'a']:
+                league_logo = item['league'].get('image_url')
+                api_prize = item.get('series', {}).get('prize_pool')
+                final_prize_pool = f"${api_prize}" if api_prize else "TBD"
+                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier.upper()} | Призовой: {final_prize_pool}")
+                print(f"Ссылка на логотип: {league_logo}")
+                print("-" * 40)
+        print("=== THE END OF THE TEST ===")
+        return "Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые.", 200
     except Exception as e:
-        return f"Something went wrong: {e}", 500
-
-@app.route('/clear-database-garbage-999')
-def clear_garbage():
-    try:
-        with app.app_context():
-            db.session.query(Match).delete()
-            db.session.query(Tournament).delete()
-            db.session.commit()
-        return "База полностью очищена! Теперь она стерильна.", 200
-    except Exception as e:
-        return f"Ошибка при очистке: {e}", 500
+        return f"Ошибка при тесте: {e}", 500
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
