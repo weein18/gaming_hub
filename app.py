@@ -363,7 +363,7 @@ def dashboard():
     for pred in all_user_preds:
         if pred.is_correct is True:
             win_streak += 1
-        elif pred.is_correcr is False:
+        elif pred.is_correct is False:
             break
         else:
             continue
