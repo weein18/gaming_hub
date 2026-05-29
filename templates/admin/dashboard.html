@@ -20,7 +20,7 @@
         backdrop-filter: blur(20px);
         border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 30px;
+        padding: 25px;
         position: relative;
     }
 
@@ -30,7 +30,7 @@
         letter-spacing: 2px;
         color: #555;
         text-transform: uppercase;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
         display: block;
     }
 
@@ -51,60 +51,96 @@
     .history-row.hidden-row {
         display: none;
     }
+
+    .mini-stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+        font-size: 0.75rem;
+    }
 </style>
 
 <div class="main-container" style="padding-top: 140px; max-width: 1300px; margin: 0 auto;">
     
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
         <div>
             <h1 style="font-size: 2.5rem; font-weight: 950; margin: 0; letter-spacing: -1px;">COMMAND <span style="color: var(--accent);">CENTER</span></h1>
             <p style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">LIVE PERFORMANCE TRACKER</p>
         </div>
     </div>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div style="padding: 15px; margin-bottom: 20px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; background: {% if category == 'success' %}rgba(40,167,69,0.1){% else %}rgba(255,59,59,0.1){% endif %}; border: 1px solid {% if category == 'success' %}var(--success){% else %}var(--accent){% endif %}; color: #fff;">
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <div class="dashboard-wrapper">
         
-        <div class="glass-box" style="height: fit-content;">
-            <div style="margin-bottom: 30px; position: relative;">
-                {% if current_user.avatar and 'base64' in current_user.avatar %}
-                    <img src="{{ current_user.avatar }}" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
-                {% else %}
-                    <img src="{{ url_for('static', filename='img/default_avatar.png') }}" onerror="this.src='https://via.placeholder.com/320x320?text=No+Avatar'" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
-                {% endif %}
-                
-                <div style="position: absolute; bottom: 15px; left: 15px;">
-                    <div style="background: var(--accent); color: #fff; padding: 4px 10px; font-size: 0.55rem; font-weight: 900; border-radius: 3px; letter-spacing: 1px;">
-                        {{ current_user.rank.upper() if current_user.rank else 'SILVER I' }}
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+            <div class="glass-box" style="height: fit-content;">
+                <div style="margin-bottom: 20px; position: relative;">
+                    {% if current_user.avatar and 'base64' in current_user.avatar %}
+                        <img src="{{ current_user.avatar }}" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/default_avatar.png') }}" onerror="this.src='https://via.placeholder.com/320x320?text=No+Avatar'" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
+                    {% endif %}
+                    
+                    <div style="position: absolute; bottom: 15px; left: 15px;">
+                        <div style="background: var(--accent); color: #fff; padding: 4px 10px; font-size: 0.55rem; font-weight: 900; border-radius: 3px; letter-spacing: 1px;">
+                            {{ current_user.rank.upper() if current_user.rank else 'SILVER I' }}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div style="margin-bottom: 25px;">
-                <span class="stat-label">user nickname</span>
-                <div style="font-size: 1.6rem; font-weight: 900; color: #fff;">{{ current_user.username }}</div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-                    <span class="stat-label" style="margin-bottom: 5px;">XP</span>
-                    <span style="font-weight: 900; font-size: 1.1rem; color: #fff;">{{ current_user.xp }}</span>
+                <div style="margin-bottom: 20px;">
+                    <span class="stat-label">user nickname</span>
+                    <div style="font-size: 1.6rem; font-weight: 900; color: #fff;">{{ current_user.username }}</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-                    <span class="stat-label" style="margin-bottom: 5px;">ACCURACY</span>
-                    <span style="font-weight: 900; font-size: 1.1rem; color: var(--accent);">{{ accuracy }}%</span>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                        <span class="stat-label" style="margin-bottom: 3px;">XP</span>
+                        <span style="font-weight: 900; font-size: 1.1rem; color: #fff;">{{ current_user.xp }}</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                        <span class="stat-label" style="margin-bottom: 3px;">ACCURACY</span>
+                        <span style="font-weight: 900; font-size: 1.1rem; color: var(--accent);">{{ accuracy }}%</span>
+                    </div>
                 </div>
+
+                <a href="{{ url_for('settings') }}" style="display: block; margin-top: 15px; padding: 12px; border: 1px solid #fff; color: #fff; text-align: center; border-radius: 8px; font-size: 0.65rem; font-weight: 900; text-decoration: none; transition: 0.3s; letter-spacing: 1px; text-transform: uppercase;">
+                    EDIT IDENTITY
+                </a>
             </div>
 
-            <a href="{{ url_for('settings') }}" style="display: block; margin-top: 20px; padding: 15px; border: 1px solid #fff; color: #fff; text-align: center; border-radius: 8px; font-size: 0.65rem; font-weight: 900; text-decoration: none; transition: 0.3s; letter-spacing: 1px;">
-                EDIT IDENTITY
-            </a>
+            <div class="glass-box">
+                <span class="stat-label">GLOBAL ANALYTICS</span>
+                <div class="mini-stat-row">
+                    <span style="color: #666;">Favorite Team</span>
+                    <span style="color: #fff; font-weight: 700;">{{ current_user.favorite_team if current_user.favorite_team else "Not Set" }}</span>
+                </div>
+                <div class="mini-stat-row">
+                    <span style="color: #666;">Predictions Accuracy</span>
+                    <span style="color: var(--success); font-weight: 700;">{{ accuracy }}%</span>
+                </div>
+                <div class="mini-stat-row">
+                    <span style="color: #666;">Rank Status</span>
+                    <span style="color: #fff; font-weight: 700; text-transform: uppercase; font-size: 0.7rem;">Verified ✔</span>
+                </div>
+            </div>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 30px;">
             
             <div class="glass-box" style="background: linear-gradient(to right, rgba(13,13,13,0.9), rgba(255,59,59,0.03));">
                 <span class="stat-label">RANK EVOLUTION</span>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
                     <div style="text-align: center; width: 140px;">
                         <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
                             <img src="{{ url_for('static', filename='img/ranks/' + current_user.rank.lower().replace(' ', '_') + '.png') }}" 
@@ -138,33 +174,34 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                 <div class="glass-box">
                     <span class="stat-label">MISSIONS</span>
-                    <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; font-weight: 900;">ACTIVE PREDICTIONS</h3>
-                    <p style="color: #555; font-size: 0.75rem; margin-bottom: 25px;">Gain XP by predicting professional match outcomes.</p>
-                    <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.7rem; font-weight: 900; text-decoration: none; border-bottom: 1px solid var(--accent);">OPEN MATCH LIST →</a>
+                    <h3 style="margin: 0 0 5px 0; font-size: 1rem; font-weight: 900;">ACTIVE MATCHES</h3>
+                    <p style="color: #444; font-size: 0.7rem; margin-bottom: 20px;">Predict global games.</p>
+                    <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.65rem; font-weight: 900; text-decoration: none; border-bottom: 1px solid var(--accent); text-transform: uppercase;">GO TO LIST →</a>
                 </div>
 
                 <div class="glass-box" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <span class="stat-label">STREAK CENTER</span>
-                        <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 5px;">
-                            <span style="font-size: 2rem; font-weight: 950; color: #fff; line-height: 1;">
-                                {{ win_streak if win_streak is defined else 0 }}
-                            </span>
-                            <span style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
-                                Current Win Streak 💀
-                            </span>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 5px;">
+                            <span style="font-size: 1.8rem; font-weight: 950; color: #fff;">{{ win_streak if win_streak is defined else 0 }}</span>
+                            <span style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">WIN STREAK 🔥</span>
                         </div>
                     </div>
-                    
-                    <div style="border-top: 1px solid rgba(255,255,255,0.02); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.7rem; color: #555; font-weight: 700;">Total Predictions:</span>
-                        <span style="font-family: monospace; font-size: 0.85rem; color: #fff; font-weight: 800;">
-                            {{ recent_predictions|length if recent_predictions else 0 }} logged
-                        </span>
+                </div>
+
+                <div class="glass-box" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(255, 59, 59, 0.15);">
+                    <div>
+                        <span class="stat-label" style="color: var(--accent);">SECURITY KNOB</span>
+                        <h3 style="margin: 0 0 10px 0; font-size: 0.9rem; font-weight: 900; color: #fff;">IDENTITY PROTECTION</h3>
                     </div>
+                    <form action="{{ url_for('request_password_reset') }}" method="POST">
+                        <button type="submit" style="width: 100%; background: rgba(255,59,59,0.07); border: 1px solid var(--accent); color: #fff; font-size: 0.6rem; font-weight: 900; padding: 10px; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;">
+                            📧 RESET PASSWORD
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -172,7 +209,7 @@
                 <span class="stat-label">PREDICTION HISTORY</span>
                 
                 {% if recent_predictions %}
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem;">
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem;">
                         <thead>
                             <tr style="text-align: left; color: #444; font-weight: 900; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px;">
                                 <th style="padding: 10px; border-bottom: 1px solid var(--border);">Match Event</th>
@@ -190,12 +227,10 @@
                                             Professional Match
                                         {% endif %}
                                     </td>
-                                    
                                     <td style="padding: 12px 10px; font-family: monospace; font-weight: 700; font-size: 0.9rem; 
                                         color: {% if pred.is_correct %}var(--success){% else %}var(--accent){% endif %};">
                                         {{ pred.prediction_score if pred.prediction_score else "TBD" }}
                                     </td>
-                                    
                                     <td style="padding: 12px 10px;">
                                         {% if pred.is_correct is none %}
                                             <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1);">Pending</span>

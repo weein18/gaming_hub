@@ -18,56 +18,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 
 
-# PANDASCORE_TOKEN = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-# def fetch_and_save_matches():
-#     url = f"https://api.pandascore.co/csgo/matches/upcoming?token={PANDASCORE_TOKEN}&per_page=50"
-#     response = requests.get(url)
-#     if response.status_code != 200:
-#         print(f"API ERROR: {response.status_code}")
-#         return
-#     matches = response.json()
-#     print(f"Become {len(matches)} !!!")
-#     with app.app_context():
-#         for item in matches:
-#             if not item.get('opponents') or len(item['opponents']) < 2:
-#                 continue
-#             team1_name = item["opponents"][0]["opponent"]["name"]
-#             team2_name = item["opponents"][1]["opponent"]["name"]
-#             tournament = item ["league"]["name"]
-#             if item.get("serie") and item["serie"]["name"]:
-#                 tournament += f"{item["serie"]["name"]}"
-#             if not item.get('begin_at'):
-#                 continue
-#             utc_time = datetime.strptime(item["begin_at"], "%Y-%m-%dT%H:%M:%SZ")
-#             utc_time = utc_time.replace(tzinfo=pytz.utc)
-#             local_tz = pytz.timezone("Europe/Berlin")
-#             local_time = utc_time.astimezone(local_tz)
-#             date_str = local_time.strftime("%B %d")
-#             time_str = local_time.strftime("%H:%M")
-#             maps_count = item.get('number_of_games', 3)
-#             match_type_str = f"BO{maps_count}" 
-#             existing = Match.query.filter_by(
-#                 team1=team1_name,
-#                 team2=team2_name,
-#                 date=date_str,
-#                 time=time_str
-#             ).first()
-#             if not existing:
-#                 new_match = Match(
-#                     tournament_name=tournament,
-#                     team1=team1_name,
-#                     team2=team2_name,
-#                     date=date_str,
-#                     time=time_str,
-#                     match_type=match_type_str,
-#                     status="Upcoming"
-#                 )
-#                 db.session.add(new_match)
-#                 print(f" Added: {team1_name} vs {team2_name} ({match_type_str}) — {tournament}")
-#         db.session.commit()
-#         print("All matches and tournaments are added!")
-
-
 if not os.path.exists('instance'):
     os.makedirs('instance')
 
@@ -90,15 +40,16 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax',
 )
 
-# app.config.update(
-#     MAIL_SERVER='smtp.gmail.com',
-#     MAIL_PORT=587,
-#     MAIL_USE_TLS=True,
-#     MAIL_USERNAME='your-email@gmail.com',
-#     MAIL_PASSWORD='your-app-password'
-# )
-# mail = Mail(app)
-# s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'elitehub040@gmail.com')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'qhtsdaclltewmwwd')
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -574,44 +525,63 @@ def close_match(match_id):
 def how_it_works():
     return render_template('how_it_works.html')
 
-# @app.route('/forgot-password', methods=['GET', 'POST'])
-# def forgot_password():
-#     if request.method == 'POST':
-#         email = request.form.get('email')
-#         user = User.query.filter_by(email=email).first()
-#         if user:
-#             token = s.dumps(email, salt='email-confirm')
-#             link = url_for('reset_password', token=token, _external=True)
-#             msg = Message('Password Reset Request', 
-#                           sender='your-email@gmail.com', 
-#                           recipients=[email])
-#             msg.body = f'Your link to reset password: {link}'
-#             mail.send(msg)
-#             flash("Check your email! Reset link sent.")
-#         else:
-#             flash("User with this email not found.")
-#     return render_template('auth/forgot_password.html')
+@app.route('/request-password-reset', methods=['POST'])
+@login_required
+def request_password_reset():
+    email = current_user.email
+    user = User.query.filter_by(email=email).first()
+    if user:
+        token = s.dumps(email, salt='password-reset-salt')
+        link = url_for('reset_password', token=token, _external=True)
+        
+        try:
+            msg = Message(
+                subject='Password Reset Request — Command Center', 
+                sender=app.config['MAIL_USERNAME'], 
+                recipients=[email]
+            )
+            msg.body = f'''Hello {user.username},
 
-# @app.route('/reset-password/<token>', methods=['GET', 'POST'])
-# def reset_password(token):
-#     try:
-#         email = s.loads(token, salt='password-reset-salt', max_age=1800)
-#     except:
-#         flash("The reset link is invalid or has expired.")
-#         return redirect(url_for('login'))
-#     if request.method == 'POST':
-#         new_pass = request.form.get('password')
-#         confirm_pass = request.form.get('confirm_password')
-#         if new_pass != confirm_pass:
-#             flash("Passwords do not match!")
-#             return render_template('auth/reset_password_form.html')
-#         user = User.query.filter_by(email=email).first()
-#         if user:
-#             user.password = generate_password_hash(new_pass, method='pbkdf2:sha256')
-#             db.session.commit()
-#             flash("Your password has been updated!")
-#             return redirect(url_for('login'))
-#     return render_template('auth/reset_password_form.html')
+You requested a password reset from your Command Center dashboard. 
+To pick a new password, click on the link below:
+
+{link}
+
+This link will expire in 30 minutes. If you did not make this request, simply ignore this email.
+'''
+            mail.send(msg)
+            flash("Check your email inbox! We have dispatched a secure reset link.", "success")
+        except Exception as e:
+            print(f"!!! MAIL SENDING ERROR: {e}")
+            flash("Failed to send mail. Please verify mail server configuration.", "danger")
+    else:
+        flash("Account security context error. User not found.", "danger")
+    return redirect(url_for('dashboard'))
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=1800)
+    except Exception as e:
+        print(f"!!! INVALID OR EXPIRED TOKEN: {e}")
+        flash("The reset link is invalid or has expired.", "danger")
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        new_pass = request.form.get('password')
+        confirm_pass = request.form.get('confirm_password')
+        if not new_pass or len(new_pass) < 8:
+            flash("New password is too short! Minimum 8 characters required.", "danger")
+            return render_template('auth/reset_password_form.html')
+        if new_pass != confirm_pass:
+            flash("Passwords do not match!", "danger")
+            return render_template('auth/reset_password_form.html')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(new_pass, method='pbkdf2:sha256')
+            db.session.commit()
+            flash("Your password has been successfully updated! Please log in.", "success")
+            return redirect(url_for('login'))
+    return render_template('auth/reset_password_form.html')
 
 @app.route('/leaderboard')
 @login_required
