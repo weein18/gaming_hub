@@ -361,12 +361,12 @@ def dashboard():
     all_user_preds = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).all()
     win_streak = 0
     for pred in all_user_preds:
-        if pred.is_correct:
+        if pred.is_correct is True:
             win_streak += 1
-        elif pred.status == "Upcoming":
-            continue
-        else:
+        elif pred.is_correcr is False:
             break
+        else:
+            continue
     xp = user.xp
     if xp >= 9500:   
         user.rank, next_rank, current_threshold, next_threshold = 'The Global Elite', 'MAX', 10000
