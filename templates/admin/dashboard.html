@@ -48,41 +48,24 @@
         object-fit: contain;
     }
 
-    .history-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        font-size: 0.8rem;
+    .history-row.hidden-row {
+        display: none;
     }
 
-    .history-table th {
-        text-align: left;
-        color: #444;
-        font-weight: 900;
-        padding: 10px;
-        border-bottom: 1px solid var(--border);
-        text-transform: uppercase;
-        font-size: 0.65rem;
-        letter-spacing: 1px;
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: #28a745;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #28a745;
+        animation: blink-status 2s infinite;
     }
 
-    .history-table td {
-        padding: 12px 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        color: #aaa;
+    @keyframes blink-status {
+        0% { opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { opacity: 0.3; }
     }
-
-    .badge {
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.65rem;
-        font-weight: 900;
-        text-transform: uppercase;
-    }
-
-    .badge-win { background: rgba(40, 167, 69, 0.1); color: var(--success); border: 1px solid rgba(40, 167, 69, 0.2); }
-    .badge-lose { background: rgba(255, 59, 59, 0.1); color: var(--accent); border: 1px solid rgba(255, 59, 59, 0.2); }
-    .badge-pending { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
 </style>
 
 <div class="main-container" style="padding-top: 140px; max-width: 1300px; margin: 0 auto;">
@@ -92,9 +75,22 @@
             <h1 style="font-size: 2.5rem; font-weight: 950; margin: 0; letter-spacing: -1px;">COMMAND <span style="color: var(--accent);">CENTER</span></h1>
             <p style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">SYSTEM STATUS: OPERATIONAL</p>
         </div>
-        <div style="text-align: right;">
-            <span class="stat-label">LOCAL TIME</span>
-            <span style="font-family: monospace; font-size: 1.2rem; color: #fff;" id="clock">00:00:00</span>
+        
+        <div style="display: flex; gap: 25px; align-items: center; text-align: right;">
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); padding: 8px 15px; border-radius: 6px;">
+                <span class="stat-label" style="margin-bottom: 2px;">PREDICTIONS LOGGED</span>
+                <span style="font-family: monospace; font-size: 0.95rem; color: #fff; font-weight: 800;">
+                    {{ recent_predictions|length if recent_predictions else 0 }} ACTIVE
+                </span>
+            </div>
+
+            <div>
+                <span class="stat-label">SYSTEM UPTIME</span>
+                <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+                    <div class="pulse-dot"></div>
+                    <span style="font-family: monospace; font-size: 1.1rem; color: #fff; font-weight: 700;" id="clock">00:00:00</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -105,9 +101,7 @@
                 {% if current_user.avatar and 'base64' in current_user.avatar %}
                     <img src="{{ current_user.avatar }}" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
                 {% else %}
-                    <img src="{{ url_for('static', filename='img/default_avatar.png') }}" 
-                        onerror="this.src='https://via.placeholder.com/320x320?text=No+Avatar'" 
-                        style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
+                    <img src="{{ url_for('static', filename='img/default_avatar.png') }}" onerror="this.src='https://via.placeholder.com/320x320?text=No+Avatar'" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
                 {% endif %}
                 
                 <div style="position: absolute; bottom: 15px; left: 15px;">
@@ -119,13 +113,13 @@
 
             <div style="margin-bottom: 25px;">
                 <span class="stat-label">user nickname</span>
-                <div style="font-size: 1.6rem; font-weight: 900; color: #fff;">{{ user.username }}</div>
+                <div style="font-size: 1.6rem; font-weight: 900; color: #fff;">{{ current_user.username }}</div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-                    <span class="stat-label" style="margin-bottom: 5px;">XP COUNTER</span>
-                    <span style="font-weight: 900; font-size: 1.1rem; color: #fff;">{{ user.xp }}</span>
+                    <span class="stat-label" style="margin-bottom: 5px;">XP</span>
+                    <span style="font-weight: 900; font-size: 1.1rem; color: #fff;">{{ current_user.xp }}</span>
                 </div>
                 <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
                     <span class="stat-label" style="margin-bottom: 5px;">ACCURACY</span>
@@ -139,17 +133,16 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 30px;">
-
+            
             <div class="glass-box" style="background: linear-gradient(to right, rgba(13,13,13,0.9), rgba(255,59,59,0.03));">
                 <span class="stat-label">RANK EVOLUTION</span>
-                
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
                     <div style="text-align: center; width: 140px;">
                         <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-                            <img src="{{ url_for('static', filename='img/ranks/' + user.rank.lower().replace(' ', '_') + '.png') }}" 
-                                 class="rank-img" onerror="this.src='https://via.placeholder.com/120x45?text={{ user.rank }}'">
+                            <img src="{{ url_for('static', filename='img/ranks/' + current_user.rank.lower().replace(' ', '_') + '.png') }}" 
+                                 class="rank-img" onerror="this.src='https://via.placeholder.com/120x45?text={{ current_user.rank }}'">
                         </div>
-                        <div style="font-size: 0.7rem; font-weight: 900; color: #fff; text-transform: uppercase;">{{ user.rank }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 900; color: #fff; text-transform: uppercase;">{{ current_user.rank }}</div>
                     </div>
 
                     <div style="flex-grow: 1; padding: 0 40px;">
@@ -157,11 +150,9 @@
                             <span style="color: var(--accent);">PROGRESS</span>
                             <span style="color: #666;">NEXT RANK: {{ next_threshold }} XP</span>
                         </div>
-
                         <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
                             <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
                         </div>
-
                         <div style="text-align: center; margin-top: 15px;">
                             <span style="font-size: 0.55rem; color: #444; font-weight: 800; letter-spacing: 2px;">
                                 {{ progress_percent }}% OF CURRENT TIER COMPLETED
@@ -179,86 +170,79 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 300px; gap: 30px;">
-                <div class="glass-box" style="background: linear-gradient(135deg, rgba(255, 59, 59, 0.02), var(--panel-bg));">
-                    <span class="stat-label" style="color: var(--accent);">HOT MATCH FOR PREDICTION</span>
-                    {% if featured_match %}
-                        <div style="margin: 15px 0;">
-                            <div style="font-size: 1.2rem; font-weight: 900; color: #fff; letter-spacing: -0.5px;">
-                                {{ featured_match.team1 }} <span style="color: var(--accent); font-size: 0.85rem;">VS</span> {{ featured_match.team2 }}
-                            </div>
-                            <div style="font-size: 0.65rem; color: #555; text-transform: uppercase; font-weight: 700; margin-top: 5px;">
-                                {{ featured_match.tournament_name }} | {{ featured_match.match_type }}
-                            </div>
-                        </div>
-                        <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.7rem; font-weight: 900; text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 2px; text-transform: uppercase; letter-spacing: 1px;">
-                            MAKE PREDICTION NOW →
-                        </a>
-                    {% else %}
-                        <div style="margin: 15px 0;">
-                            <p style="color: #555; font-size: 0.75rem; margin: 0;">No active S-Tier matches today. Check back later!</p>
-                        </div>
-                        <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.7rem; font-weight: 900; text-decoration: none; border-bottom: 1px solid #444;">OPEN MATCH LIST →</a>
-                    {% endif %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div class="glass-box">
+                    <span class="stat-label">MISSIONS</span>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; font-weight: 900;">ACTIVE PREDICTIONS</h3>
+                    <p style="color: #555; font-size: 0.75rem; margin-bottom: 25px;">Gain XP by predicting professional match outcomes.</p>
+                    <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.7rem; font-weight: 900; text-decoration: none; border-bottom: 1px solid var(--accent);">OPEN MATCH LIST →</a>
                 </div>
 
-                <div class="glass-box" style="display: flex; flex-direction: column; justify-content: center;">
-                    <span class="stat-label">WIN STREAK</span>
-                    <div style="font-size: 1.4rem; font-weight: 900; color: #fff; margin-top: 5px;">
-                        {% if win_streak > 0 %}
-                            🔥 {{ win_streak }} IN A ROW
-                        {% else %}
-                            0 💀
-                        {% endif %}
+                <div class="glass-box">
+                    <span class="stat-label">STATUS</span>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 0.7rem; color: #444;">NETWORK</span>
+                            <span style="font-size: 0.7rem; color: #28a745; font-weight: 900;">STABLE</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 0.7rem; color: #444;">DATABASE</span>
+                            <span style="font-size: 0.7rem; color: #fff; font-weight: 900;">CONNECTED</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="glass-box">
-                <span class="stat-label">PREDICTION HISTORY (LAST 10)</span>
+                <span class="stat-label">PREDICTION HISTORY</span>
                 
-                {% if recent_predictions and predictions_count > 0 %}
-                    <table class="history-table">
+                {% if recent_predictions %}
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem;">
                         <thead>
-                            <tr>
-                                <th>Match Event</th>
-                                <th>Your Pick</th>
-                                <th>Outcome</th>
+                            <tr style="text-align: left; color: #444; font-weight: 900; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px;">
+                                <th style="padding: 10px; border-bottom: 1px solid var(--border);">Match Event</th>
+                                <th style="padding: 10px; border-bottom: 1px solid var(--border);">Your Pick (Score)</th>
+                                <th style="padding: 10px; border-bottom: 1px solid var(--border);">Outcome</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for pred in recent_predictions %}
-                                <tr>
-                                    <td style="font-weight: 700; color: #fff;">
+                                <tr class="history-row {% if loop.index > 3 %}hidden-row{% endif %}" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+                                    <td style="padding: 12px 10px; color: #fff; font-weight: 700;">
                                         {% if pred.match %}
                                             {{ pred.match.team1 }} vs {{ pred.match.team2 }}
-                                        {% elif pred.match_name %}
-                                            {{ pred.match_name }}
-                                        {% elif pred.match_id %}
-                                            Match #{{ pred.match_id }}
                                         {% else %}
-                                            Professional CS Match
+                                            Professional Match
                                         {% endif %}
                                     </td>
-                                    <td style="font-family: monospace; font-weight: 700; color: var(--accent);">
-                                        {{ pred.predicted_winner if pred.predicted_winner else "TBD" }}
+                                    <td style="padding: 12px 10px; font-family: monospace; font-weight: 700; color: var(--accent); font-size: 0.9rem;">
+                                        {{ pred.prediction_score if pred.prediction_score else "TBD" }}
                                     </td>
-                                    <td>
+                                    <td style="padding: 12px 10px;">
                                         {% if pred.is_correct is none %}
-                                            <span class="badge badge-pending">Pending</span>
+                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1);">Pending</span>
                                         {% elif pred.is_correct %}
-                                            <span class="badge badge-win">Won</span>
+                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.2);">Won</span>
                                         {% else %}
-                                            <span class="badge badge-lose">Lost</span>
+                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(255, 59, 59, 0.1); color: var(--accent); border: 1px solid rgba(255, 59, 59, 0.2);">Lost</span>
                                         {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+
+                    {% if recent_predictions|length > 3 %}
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button id="toggleHistoryBtn" style="background: none; border: 1px solid var(--border); color: #666; font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.3s; text-transform: uppercase;">
+                                Show Full History ({{ recent_predictions|length }})
+                            </button>
+                        </div>
+                    {% endif %}
+
                 {% else %}
-                    <div style="text-align: center; padding: 30px 0; color: #444; font-size: 0.8rem; font-weight: 700;">
-                        You haven't made any predictions yet. Open the match list to start earning XP!
+                    <div style="text-align: center; padding: 20px 0; color: #444; font-size: 0.75rem; font-weight: 700;">
+                        No prediction data available.
                     </div>
                 {% endif %}
             </div>
@@ -274,5 +258,29 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    const toggleBtn = document.getElementById('toggleHistoryBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const hiddenRows = document.querySelectorAll('.history-row.hidden-row');
+            const allRows = document.querySelectorAll('.history-row');
+            
+            if (hiddenRows.length > 0) {
+                hiddenRows.forEach(row => row.classList.remove('hidden-row'));
+                this.innerText = "Collapse History";
+                this.style.color = "var(--accent)";
+                this.style.borderColor = "var(--accent)";
+            } else {
+                allRows.forEach((row, index) => {
+                    if (index >= 3) {
+                        row.classList.add('hidden-row');
+                    }
+                });
+                this.innerText = "Show Full History (" + allRows.length + ")";
+                this.style.color = "#666";
+                this.style.borderColor = "var(--border)";
+            }
+        });
+    }
 </script>
 {% endblock %}
