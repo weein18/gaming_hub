@@ -358,51 +358,72 @@ def dashboard():
     total_preds = Prediction.query.filter_by(user_id=user.id).count()
     correct_preds = Prediction.query.filter_by(user_id=user.id, is_correct=True).count()
     accuracy = int((correct_preds / total_preds) * 100) if total_preds > 0 else 0
+    all_user_preds = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).all()
+    win_streak = 0
+    for pred in all_user_preds:
+        if pred.is_correct:
+            win_streak += 1
+        elif pred.status == "Upcoming":
+            continue
+        else:
+            break
     xp = user.xp
     if xp >= 9500:   
-        user.rank, next_rank, next_threshold = 'The Global Elite', 'MAX', 10000
+        user.rank, next_rank, current_threshold, next_threshold = 'The Global Elite', 'MAX', 10000
     elif xp >= 8900: 
-        user.rank, next_rank, next_threshold = 'Supreme Master First Class', 'The Global Elite', 9500
+        user.rank, next_rank, current_threshold, next_threshold = 'Supreme Master First Class', 'The Global Elite', 9500
     elif xp >= 8300: 
-        user.rank, next_rank, next_threshold = 'Legendary Eagle Master', 'Supreme Master First Class', 8900
+        user.rank, next_rank, current_threshold, next_threshold = 'Legendary Eagle Master', 'Supreme Master First Class', 8900
     elif xp >= 7700: 
-        user.rank, next_rank, next_threshold = 'Legendary Eagle', 'Legendary Eagle Master', 8300
+        user.rank, next_rank, current_threshold, next_threshold = 'Legendary Eagle', 'Legendary Eagle Master', 8300
     elif xp >= 7100: 
-        user.rank, next_rank, next_threshold = 'Distinguished Master Guardian', 'Legendary Eagle', 7700
+        user.rank, next_rank, current_threshold, next_threshold = 'Distinguished Master Guardian', 'Legendary Eagle', 7700
     elif xp >= 6500: 
-        user.rank, next_rank, next_threshold = 'Master Guardian Elite', 'Distinguished Master Guardian', 7100
+        user.rank, next_rank, current_threshold, next_threshold = 'Master Guardian Elite', 'Distinguished Master Guardian', 7100
     elif xp >= 5900: 
-        user.rank, next_rank, next_threshold = 'Master Guardian II', 'Master Guardian Elite', 6500
+        user.rank, next_rank, current_threshold, next_threshold = 'Master Guardian II', 'Master Guardian Elite', 6500
     elif xp >= 5300: 
-        user.rank, next_rank, next_threshold = 'Master Guardian I', 'Master Guardian II', 5900
+        user.rank, next_rank, current_threshold, next_threshold = 'Master Guardian I', 'Master Guardian II', 5900
     elif xp >= 4700: 
-        user.rank, next_rank, next_threshold = 'Gold Nova Master', 'Master Guardian I', 5300
+        user.rank, next_rank, current_threshold, next_threshold = 'Gold Nova Master', 'Master Guardian I', 5300
     elif xp >= 4100: 
-        user.rank, next_rank, next_threshold = 'Gold Nova III', 'Gold Nova Master', 4700
+        user.rank, next_rank, current_threshold, next_threshold = 'Gold Nova III', 'Gold Nova Master', 4700
     elif xp >= 3500: 
-        user.rank, next_rank, next_threshold = 'Gold Nova II', 'Gold Nova III', 4100
+        user.rank, next_rank, current_threshold, next_threshold = 'Gold Nova II', 'Gold Nova III', 4100
     elif xp >= 2900: 
-        user.rank, next_rank, next_threshold = 'Gold Nova I', 'Gold Nova II', 3500
+        user.rank, next_rank, current_threshold, next_threshold = 'Gold Nova I', 'Gold Nova II', 3500
     elif xp >= 2300: 
-        user.rank, next_rank, next_threshold = 'Silver Elite Master', 'Gold Nova I', 2900
+        user.rank, next_rank, current_threshold, next_threshold = 'Silver Elite Master', 'Gold Nova I', 2900
     elif xp >= 1700: 
-        user.rank, next_rank, next_threshold = 'Silver Elite', 'Silver Elite Master', 2300
+        user.rank, next_rank, current_threshold, next_threshold = 'Silver Elite', 'Silver Elite Master', 2300
     elif xp >= 1100: 
-        user.rank, next_rank, next_threshold = 'Silver IV', 'Silver Elite', 1700
+        user.rank, next_rank, current_threshold, next_threshold = 'Silver IV', 'Silver Elite', 1700
     elif xp >= 600:  
-        user.rank, next_rank, next_threshold = 'Silver III', 'Silver IV', 1100
+        user.rank, next_rank, current_threshold, next_threshold = 'Silver III', 'Silver IV', 1100
     elif xp >= 300:  
-        user.rank, next_rank, next_threshold = 'Silver II', 'Silver III', 600
+        user.rank, next_rank, current_threshold, next_threshold = 'Silver II', 'Silver III', 600
     else:            
-        user.rank, next_rank, next_threshold = 'Silver I', 'Silver II', 300
+        user.rank, next_rank, current_threshold, next_threshold = 'Silver I', 'Silver II', 300
     db.session.commit()
+    if user.rank == 'The Global Elite':
+        progress_percent = 100
+    else:
+        xp_in_current_level = xp - current_threshold
+        level_duration = next_threshold - current_threshold
+        progress_percent = int((xp_in_current_level / level_duration) * 100)
+        progress_percent = max(0, min(100, progress_percent))
+    featured_match = Match.query.filter_by(status="Upcoming").first()
     recent_predictions = Prediction.query.filter_by(user_id=user.id).order_by(Prediction.id.desc()).limit(10).all()
     return render_template('admin/dashboard.html', 
                            user=user, 
                            accuracy=accuracy, 
                            total_wins=correct_preds,
+                           total_preds=total_preds,
                            next_rank=next_rank,
                            next_threshold=next_threshold,
+                           progress_percent=progress_percent,
+                           win_streak=win_streak,
+                           featured_match=featured_match,
                            predictions_count=len(recent_predictions),
                            recent_predictions=recent_predictions)
 
