@@ -51,21 +51,6 @@
     .history-row.hidden-row {
         display: none;
     }
-
-    .pulse-dot {
-        width: 6px;
-        height: 6px;
-        background: #28a745;
-        border-radius: 50%;
-        box-shadow: 0 0 8px #28a745;
-        animation: blink-status 2s infinite;
-    }
-
-    @keyframes blink-status {
-        0% { opacity: 0.3; }
-        50% { opacity: 1; }
-        100% { opacity: 0.3; }
-    }
 </style>
 
 <div class="main-container" style="padding-top: 140px; max-width: 1300px; margin: 0 auto;">
@@ -73,24 +58,7 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
         <div>
             <h1 style="font-size: 2.5rem; font-weight: 950; margin: 0; letter-spacing: -1px;">COMMAND <span style="color: var(--accent);">CENTER</span></h1>
-            <p style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">SYSTEM STATUS: OPERATIONAL</p>
-        </div>
-        
-        <div style="display: flex; gap: 25px; align-items: center; text-align: right;">
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); padding: 8px 15px; border-radius: 6px;">
-                <span class="stat-label" style="margin-bottom: 2px;">PREDICTIONS LOGGED</span>
-                <span style="font-family: monospace; font-size: 0.95rem; color: #fff; font-weight: 800;">
-                    {{ recent_predictions|length if recent_predictions else 0 }} ACTIVE
-                </span>
-            </div>
-
-            <div>
-                <span class="stat-label">SYSTEM UPTIME</span>
-                <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
-                    <div class="pulse-dot"></div>
-                    <span style="font-family: monospace; font-size: 1.1rem; color: #fff; font-weight: 700;" id="clock">00:00:00</span>
-                </div>
-            </div>
+            <p style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">LIVE PERFORMANCE TRACKER</p>
         </div>
     </div>
 
@@ -178,17 +146,24 @@
                     <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.7rem; font-weight: 900; text-decoration: none; border-bottom: 1px solid var(--accent);">OPEN MATCH LIST →</a>
                 </div>
 
-                <div class="glass-box">
-                    <span class="stat-label">STATUS</span>
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="font-size: 0.7rem; color: #444;">NETWORK</span>
-                            <span style="font-size: 0.7rem; color: #28a745; font-weight: 900;">STABLE</span>
+                <div class="glass-box" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <span class="stat-label">STREAK CENTER</span>
+                        <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 5px;">
+                            <span style="font-size: 2rem; font-weight: 950; color: #fff; line-height: 1;">
+                                {{ win_streak if win_streak is defined else 0 }}
+                            </span>
+                            <span style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                                Current Win Streak 💀
+                            </span>
                         </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="font-size: 0.7rem; color: #444;">DATABASE</span>
-                            <span style="font-size: 0.7rem; color: #fff; font-weight: 900;">CONNECTED</span>
-                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid rgba(255,255,255,0.02); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.7rem; color: #555; font-weight: 700;">Total Predictions:</span>
+                        <span style="font-family: monospace; font-size: 0.85rem; color: #fff; font-weight: 800;">
+                            {{ recent_predictions|length if recent_predictions else 0 }} logged
+                        </span>
                     </div>
                 </div>
             </div>
@@ -215,9 +190,12 @@
                                             Professional Match
                                         {% endif %}
                                     </td>
-                                    <td style="padding: 12px 10px; font-family: monospace; font-weight: 700; color: var(--accent); font-size: 0.9rem;">
+                                    
+                                    <td style="padding: 12px 10px; font-family: monospace; font-weight: 700; font-size: 0.9rem; 
+                                        color: {% if pred.is_correct %}var(--success){% else %}var(--accent){% endif %};">
                                         {{ pred.prediction_score if pred.prediction_score else "TBD" }}
                                     </td>
+                                    
                                     <td style="padding: 12px 10px;">
                                         {% if pred.is_correct is none %}
                                             <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1);">Pending</span>
@@ -252,13 +230,6 @@
 </div>
 
 <script>
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString();
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
     const toggleBtn = document.getElementById('toggleHistoryBtn');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', function() {
