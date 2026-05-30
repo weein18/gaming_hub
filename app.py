@@ -583,6 +583,35 @@ def reset_password(token):
             return redirect(url_for('login'))
     return render_template('auth/reset_password_form.html')
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            token = s.dumps(email, salt='password-reset-salt')
+            link = url_for('reset_password', token=token, _external=True)
+            
+            try:
+                msg = Message(
+                    subject='Password Reset Request — Elite Hub',
+                    sender=app.config['MAIL_USERNAME'],
+                    recipients=[email]
+                )
+                msg.body = f"Hello {user.username},\n\nTo reset your password, please click the secure link below:\n\n{link}\n\nThis link is valid for 30 minutes."
+                mail.send(msg)
+                flash("A secure recovery link has been sent to your email inbox.", "success")
+                return redirect(url_for('login'))
+            except Exception as e:
+                print(f"!!! MAIL SENDING ERROR: {e}")
+                flash("Mail transmission failure. Please try again later.", "danger")
+        else:
+            flash("If this email exists in our system, a reset link has been dispatched.", "success")
+            return redirect(url_for('login'))
+            
+    return render_template('auth/forgot_password.html')
+
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
