@@ -558,7 +558,7 @@ This link will expire in 30 minutes. If you did not make this request, simply ig
         flash("Account security context error. User not found.", "danger")
     return redirect(url_for('dashboard'))
 
-@app.route('/forgot-password/<token>', methods=['GET', 'POST'])
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     try:
         email = s.loads(token, salt='password-reset-salt', max_age=1800)
