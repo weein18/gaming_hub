@@ -4,236 +4,199 @@
 <style>
     :root {
         --accent: #ff3b3b;
-        --glass-bg: rgba(10, 10, 10, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.04);
-        --glass-glow: rgba(255, 59, 59, 0.15);
+        --glass-bg: rgba(13, 13, 13, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.05);
         --text-muted: #555555;
     }
 
-    .dashboard-container {
-        max-width: 1650px;
-        margin: 120px auto 0 auto;
-        padding: 0 40px 80px 40px;
+    /* Главный каркас — убираем дикую ширину, подстраиваемся под твой базовый шаблон */
+    .dashboard-grid-layout {
         display: grid;
-        grid-template-columns: 350px 1fr;
-        gap: 35px;
-        box-sizing: border-box;
+        grid-template-columns: 320px 1fr; /* Левая колонка профиля + правая зона стат */
+        gap: 30px;
+        margin-top: 50px;
+        padding-bottom: 60px;
+        width: 100%;
     }
 
+    /* #glass-card : Стеклянная карточка с размытием фона */
     .ios-glass-card {
         background: var(--glass-bg);
-        backdrop-filter: blur(30px) saturate(190%);
-        -webkit-backdrop-filter: blur(30px) saturate(190%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
         border-top: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
-        padding: 30px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
-                    inset 0 1px 1px rgba(255, 255, 255, 0.02);
+        border-radius: 16px;
+        padding: 25px;
+        transition: all 0.4s ease;
     }
 
     .ios-glass-card:hover {
-        transform: translateY(-5px) scale(1.005);
-        background: rgba(15, 15, 15, 0.5);
-        border-color: rgba(255, 59, 59, 0.25);
-        box-shadow: 0 40px 80px rgba(255, 59, 59, 0.04), 0 0 1px rgba(255, 59, 59, 0.2);
+        transform: translateY(-3px);
+        border-color: rgba(255, 59, 59, 0.2);
     }
 
-    .ios-avatar-wrapper {
+    /* #avatar : Контейнер аватарки */
+    .pfp-container {
         position: relative;
-        width: 130px;
-        height: 130px;
-        margin: 0 auto 25px auto;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px auto;
     }
 
-    .ios-avatar {
+    .pfp-img {
         width: 100%;
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
         border: 2px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
-    .ios-avatar-glow {
-        position: absolute;
-        top: -5px; left: -5px; right: -5px; bottom: -5px;
-        border-radius: 50%;
-        border: 2px dashed rgba(255, 59, 59, 0.3);
-        animation: rotateGlow 20s linear infinite;
-    }
-
-    @keyframes rotateGlow {
-        100% { transform: rotate(360deg); }
-    }
-
+    /* #labels : Маленькие аккуратные заголовки */
     .ios-label {
         font-size: 0.65rem;
         font-weight: 900;
-        letter-spacing: 2.5px;
+        letter-spacing: 2px;
         color: var(--text-muted);
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         display: block;
     }
 
-    .stats-grid {
+    /* Сетка для 3-х верхних блоков статистики */
+    .stats-triple-row {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 25px;
-        margin-bottom: 35px;
+        gap: 20px;
+        margin-bottom: 30px;
     }
 
-    .ios-progress-track {
+    /* #progress-bar : Полоса опыта */
+    .ios-xp-track {
         width: 100%;
-        height: 8px;
+        height: 6px;
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
-        margin-top: 15px;
+        border-radius: 10px;
+        margin-top: 12px;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.01);
     }
 
-    .ios-progress-bar {
+    .ios-xp-fill {
         height: 100%;
         background: linear-gradient(90deg, var(--accent), #ff6b6b);
-        box-shadow: 0 0 20px var(--accent);
-        border-radius: 20px;
+        box-shadow: 0 0 15px var(--accent);
     }
 
-    .ios-table {
+    /* Стилизация таблицы прогнозов */
+    .ios-table-view {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
-        text-align: left;
     }
 
-    .ios-table th {
-        padding: 16px 20px;
-        font-size: 0.7rem;
+    .ios-table-view th {
+        padding: 12px 15px;
+        font-size: 0.65rem;
         font-weight: 800;
-        letter-spacing: 1.5px;
         color: #444;
         text-transform: uppercase;
+        letter-spacing: 1px;
         border-bottom: 1px solid rgba(255,255,255,0.03);
     }
 
-    .ios-table td {
-        padding: 20px;
-        font-size: 0.85rem;
-        color: #eee;
+    .ios-table-view td {
+        padding: 15px;
+        font-size: 0.8rem;
+        color: #ddd;
         border-bottom: 1px solid rgba(255,255,255,0.02);
     }
 
-    .ios-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .ios-btn {
+    /* #buttons : Кнопки */
+    .ios-action-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.05);
         color: #fff;
-        padding: 12px 24px;
-        border-radius: 14px;
-        font-size: 0.75rem;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 0.7rem;
         font-weight: 800;
-        letter-spacing: 1px;
         text-transform: uppercase;
         cursor: pointer;
         transition: all 0.3s ease;
         text-decoration: none;
     }
 
-    .ios-btn:hover {
+    .ios-action-btn:hover {
         background: #fff;
         color: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(255,255,255,0.1);
     }
 
-    .ios-btn.accent-btn {
-        background: var(--accent);
-        border: none;
-        box-shadow: 0 10px 25px rgba(255, 59, 59, 0.2);
-    }
-
-    .ios-btn.accent-btn:hover {
-        background: #ff5252;
-        color: #fff;
-        box-shadow: 0 15px 30px rgba(255, 59, 59, 0.35);
-    }
-
-    .badge-status {
-        padding: 6px 14px;
-        border-radius: 10px;
-        font-size: 0.65rem;
+    /* Статусы */
+    .status-pill {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.6rem;
         font-weight: 900;
-        letter-spacing: 1px;
         text-transform: uppercase;
-        display: inline-block;
     }
-    .badge-status.won { background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; }
-    .badge-status.lost { background: rgba(255, 59, 59, 0.1); border: 1px solid var(--accent); color: var(--accent); }
-    .badge-status.pending { background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; color: #ffc107; }
+    .status-pill.won { background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid #28a745; }
+    .status-pill.lost { background: rgba(255, 59, 59, 0.1); color: var(--accent); border: 1px solid var(--accent); }
+    .status-pill.pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid #ffc107; }
 
     .hidden-row { display: none !important; }
 
-    @media (max-width: 1100px) {
-        .dashboard-container {
-            grid-template-columns: 1fr;
-            padding: 0 20px 40px 20px;
-            margin-top: 100px;
-        }
-        .stats-grid {
+    @media (max-width: 1000px) {
+        .dashboard-grid-layout, .stats-triple-row {
             grid-template-columns: 1fr;
         }
     }
 </style>
-<div class="dashboard-container">
+
+<div class="dashboard-grid-layout">
 
     <aside class="ios-glass-card" style="text-align: center; height: fit-content;">
-        <div class="ios-avatar-wrapper">
-            <div class="ios-avatar-glow"></div>
+        
+        <div class="pfp-container">
             {% if current_user.avatar %}
-                <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" class="ios-avatar" alt="Avatar">
+                <img src="data:image/jpeg;base64,{{ current_user.avatar }}" class="pfp-img" alt="Profile Picture">
             {% else %}
-                <img src="{{ url_for('static', filename='uploads/default_avatar.jpg') }}" class="ios-avatar" alt="Default Avatar">
+                <svg class="pfp-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="background: rgba(255,255,255,0.02); color: #333; padding: 20px;">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
             {% endif %}
         </div>
 
-        <span class="ios-label" style="margin-bottom: 5px;">WELCOME BACK</span>
-        <h2 style="font-size: 1.6rem; font-weight: 950; margin: 0 0 8px 0; letter-spacing: -0.5px; color: #fff;">
+        <span class="ios-label" style="margin-bottom: 2px;">WELCOME BACK</span>
+        <h2 style="font-size: 1.4rem; font-weight: 900; margin: 0 0 5px 0; color: #fff; letter-spacing: -0.5px;">
             {{ current_user.username }}
         </h2>
-        <p style="color: #666; font-size: 0.75rem; font-weight: 700; margin: 0 0 30px 0; letter-spacing: 1px;">
-            ELITE HUB USER
+        <p style="color: #444; font-size: 0.7rem; font-weight: 700; margin: 0 0 25px 0; letter-spacing: 1px;">
+            PREDICTOR PROFILE
         </p>
 
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.04); margin: 0 0 25px 0;">
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.04); margin: 0 0 20px 0;">
 
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-            <a href="{{ url_for('settings') }}" class="ios-btn">⚙️ Edit Profile</a>
-            <a href="{{ url_for('request_password_reset') }}" class="ios-btn">🔒 Security Creds</a>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="{{ url_for('settings') }}" class="ios-action-btn">⚙️ Edit Profile</a>
+            <a href="{{ url_for('request_password_reset') }}" class="ios-action-btn">🔒 Security</a>
         </div>
     </aside>
 
     <main style="display: flex; flex-direction: column;">
         
-        <div class="stats-grid">
+        <div class="stats-triple-row">
             
-            <div class="ios-glass-card" style="display: flex; align-items: center; gap: 25px;">
-                <div style="width: 70px; height: 70px; border-radius: 18px; background: rgba(255,59,59,0.08); border: 1px solid rgba(255,59,59,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; color: var(--accent); box-shadow: 0 10px 20px rgba(255,59,59,0.05);">
+            <div class="ios-glass-card" style="display: flex; align-items: center; gap: 20px;">
+                <div style="width: 55px; height: 55px; border-radius: 12px; background: rgba(255,59,59,0.05); border: 1px solid rgba(255,59,59,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: var(--accent);">
                     {{ current_user.level }}
                 </div>
                 <div>
-                    <span class="ios-label">CURRENT RANK</span>
-                    <span style="font-size: 1.5rem; font-weight: 900; color: #fff; display: block; letter-spacing: -0.5px;">LEVEL {{ current_user.level }}</span>
+                    <span class="ios-label">RANK LEVEL</span>
+                    <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">LEVEL {{ current_user.level }}</span>
                 </div>
             </div>
 
@@ -241,23 +204,23 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                     <div>
                         <span class="ios-label">EXPERIENCE</span>
-                        <span style="font-size: 1.5rem; font-weight: 900; color: #fff; display: block; letter-spacing: -0.5px;">{{ current_user.xp }} <span style="font-size: 0.85rem; color: #444;">XP</span></span>
+                        <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">{{ current_user.xp }} <span style="font-size: 0.75rem; color: #333;">XP</span></span>
                     </div>
-                    <span style="font-size: 0.7rem; font-weight: 800; color: #444; letter-spacing: 1px;">/ 1000 MAX</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #444;">/ 1000 MAX</span>
                 </div>
-                <div class="ios-progress-track">
-                    <div class="ios-progress-bar" style="width: {{ (current_user.xp / 1000) * 100 }}%;"></div>
+                <div class="ios-xp-track">
+                    <div class="ios-xp-fill" style="width: {{ (current_user.xp / 1000) * 100 }}%;"></div>
                 </div>
             </div>
 
-            <div class="ios-glass-card" style="display: flex; align-items: center; gap: 25px;">
-                <div style="width: 70px; height: 70px; border-radius: 18px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; color: #fff;">
-                    🧬
+            <div class="ios-glass-card" style="display: flex; align-items: center; gap: 20px;">
+                <div style="width: 55px; height: 55px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                    🎯
                 </div>
                 <div>
                     <span class="ios-label">TOTAL FORECASTS</span>
-                    <span style="font-size: 1.5rem; font-weight: 900; color: #fff; display: block; letter-spacing: -0.5px;">
-                        {{ recent_predictions|length }} ACTIVE
+                    <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">
+                        {{ recent_predictions|length }} TRACKED
                     </span>
                 </div>
             </div>
@@ -265,40 +228,36 @@
         </div>
 
         <div class="ios-glass-card" style="flex: 1;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div>
-                    <span class="ios-label">ACTIVITY LOG</span>
-                    <h3 style="font-size: 1.3rem; font-weight: 900; margin: 0; color: #fff; letter-spacing: -0.5px;">RECENT PREDICTIONS</h3>
-                </div>
-            </div>
+            <span class="ios-label">USER ACTIVITY</span>
+            <h3 style="font-size: 1.1rem; font-weight: 900; margin: 0 0 15px 0; color: #fff;">RECENT PREDICTIONS</h3>
 
             {% if recent_predictions %}
                 <div style="overflow-x: auto;">
-                    <table class="ios-table">
+                    <table class="ios-table-view">
                         <thead>
                             <tr>
-                                <th>Match Event</th>
-                                <th>Your Forecast</th>
-                                <th>Live Status</th>
+                                <th>Match</th>
+                                <th>Prediction</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for pred in recent_predictions %}
                                 <tr class="history-row {% if loop.index > 5 %}hidden-row{% endif %}">
                                     <td style="font-weight: 700;">
-                                        <span style="font-size: 0.65rem; color: #444; display: block; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px;">{{ pred.match_type }}</span>
-                                        {{ pred.team1 }} <span style="color: var(--accent); font-size: 0.75rem; margin: 0 4px;">VS</span> {{ pred.team2 }}
+                                        <span style="font-size: 0.6rem; color: #444; display: block; font-weight: 800; margin-bottom: 2px;">{{ pred.match_type }}</span>
+                                        {{ pred.team1 }} <span style="color: var(--accent); font-size: 0.7rem;">VS</span> {{ pred.team2 }}
                                     </td>
-                                    <td style="font-weight: 800; letter-spacing: 0.5px;">
-                                        Predicted: <span style="color: #fff; background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02);">{{ pred.predicted_score }}</span>
+                                    <td style="font-weight: 700;">
+                                        {{ pred.predicted_score }}
                                     </td>
                                     <td>
                                         {% if pred.status == 'won' %}
-                                            <span class="badge-status won">🏆 WIN +{{ pred.xp_gained }} XP</span>
+                                            <span class="status-pill won">WIN +{{ pred.xp_gained }} XP</span>
                                         {% elif pred.status == 'lost' %}
-                                            <span class="badge-status lost">❌ LOST</span>
+                                            <span class="status-pill lost">LOST</span>
                                         {% else %}
-                                            <span class="badge-status pending">⏳ EVALUATING</span>
+                                            <span class="status-pill pending">PENDING</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -308,23 +267,21 @@
                 </div>
 
                 {% if recent_predictions|length > 5 %}
-                    <div style="text-align: center; margin-top: 30px;">
-                        <button id="toggleHistoryBtn" class="ios-btn">
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button id="toggleHistoryBtn" class="ios-action-btn">
                             Show Full History ({{ recent_predictions|length }})
                         </button>
                     </div>
                 {% endif %}
 
             {% else %}
-                <div style="text-align: center; padding: 60px 0; border: 1px dashed rgba(255,255,255,0.03); border-radius: 16px; margin-top: 20px;">
-                    <div style="font-size: 2rem; margin-bottom: 15px;">🎮</div>
-                    <p style="color: #444; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 25px;">
-                        No corporate predictions found in the database.
+                <div style="text-align: center; padding: 40px 0;">
+                    <p style="color: #444; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                        No prediction logs found.
                     </p>
-                    <a href="{{ url_for('matches') }}" class="ios-btn accent-btn">START PREDICTING →</a>
+                    <a href="{{ url_for('matches') }}" class="ios-action-btn" style="background: var(--accent); border: none;">Start Predicting →</a>
                 </div>
             {% endif %}
-
         </div>
 
     </main>
@@ -338,26 +295,13 @@
             const allRows = document.querySelectorAll('.history-row');
             
             if (hiddenRows.length > 0) {
-                hiddenRows.forEach(row => {
-                    row.classList.remove('hidden-row');
-                    row.style.opacity = '0';
-                    setTimeout(() => {
-                        row.style.transition = 'opacity 0.4s ease';
-                        row.style.opacity = '1';
-                    }, 10);
-                });
+                hiddenRows.forEach(row => row.classList.remove('hidden-row'));
                 this.innerText = "Collapse History";
-                this.style.color = "var(--accent)";
-                this.style.borderColor = "rgba(255, 59, 59, 0.2)";
             } else {
                 allRows.forEach((row, index) => {
-                    if (index >= 5) {
-                        row.classList.add('hidden-row');
-                    }
+                    if (index >= 5) row.classList.add('hidden-row');
                 });
                 this.innerText = "Show Full History (" + allRows.length + ")";
-                this.style.color = "#fff";
-                this.style.borderColor = "rgba(255,255,255,0.05)";
             }
         });
     }
