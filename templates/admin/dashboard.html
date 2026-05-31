@@ -1,287 +1,333 @@
 {% extends "base.html" %}
 {% block content %}
+
 <style>
     :root {
         --accent: #ff3b3b;
-        --panel-bg: rgba(13, 13, 13, 0.85);
-        --border: rgba(255, 255, 255, 0.05);
-        --success: #28a745;
+        --glass-bg: rgba(10, 10, 10, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.04);
+        --glass-glow: rgba(255, 59, 59, 0.15);
+        --text-muted: #555555;
     }
 
-    .dashboard-wrapper {
+    .dashboard-container {
+        max-width: 1650px;
+        margin: 120px auto 0 auto;
+        padding: 0 40px 80px 40px;
         display: grid;
-        grid-template-columns: 380px 1fr;
-        gap: 30px;
-        padding-bottom: 50px;
+        grid-template-columns: 350px 1fr;
+        gap: 35px;
+        box-sizing: border-box;
     }
 
-    .glass-box {
-        background: var(--panel-bg);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 25px;
+    .ios-glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(30px) saturate(190%);
+        -webkit-backdrop-filter: blur(30px) saturate(190%);
+        border: 1px solid var(--glass-border);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 30px;
         position: relative;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 1px rgba(255, 255, 255, 0.02);
     }
 
-    .stat-label {
-        font-size: 0.6rem;
+    .ios-glass-card:hover {
+        transform: translateY(-5px) scale(1.005);
+        background: rgba(15, 15, 15, 0.5);
+        border-color: rgba(255, 59, 59, 0.25);
+        box-shadow: 0 40px 80px rgba(255, 59, 59, 0.04), 0 0 1px rgba(255, 59, 59, 0.2);
+    }
+
+    .ios-avatar-wrapper {
+        position: relative;
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 25px auto;
+    }
+
+    .ios-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .ios-avatar-glow {
+        position: absolute;
+        top: -5px; left: -5px; right: -5px; bottom: -5px;
+        border-radius: 50%;
+        border: 2px dashed rgba(255, 59, 59, 0.3);
+        animation: rotateGlow 20s linear infinite;
+    }
+
+    @keyframes rotateGlow {
+        100% { transform: rotate(360deg); }
+    }
+
+    .ios-label {
+        font-size: 0.65rem;
         font-weight: 900;
-        letter-spacing: 2px;
-        color: #555;
+        letter-spacing: 2.5px;
+        color: var(--text-muted);
         text-transform: uppercase;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         display: block;
     }
 
-    .progress-fill {
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        margin-bottom: 35px;
+    }
+
+    .ios-progress-track {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        margin-top: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.01);
+    }
+
+    .ios-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, var(--accent), #fff);
-        box-shadow: 0 0 15px var(--accent);
-        transition: width 1s ease-in-out;
+        background: linear-gradient(90deg, var(--accent), #ff6b6b);
+        box-shadow: 0 0 20px var(--accent);
+        border-radius: 20px;
     }
 
-    .rank-img {
-        max-width: 120px;
-        max-height: 50px;
-        filter: drop-shadow(0 0 8px rgba(255, 59, 59, 0.3));
-        object-fit: contain;
+    .ios-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        text-align: left;
     }
 
-    .history-row.hidden-row {
-        display: none;
+    .ios-table th {
+        padding: 16px 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        color: #444;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
     }
 
-    .mini-stat-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
+    .ios-table td {
+        padding: 20px;
+        font-size: 0.85rem;
+        color: #eee;
         border-bottom: 1px solid rgba(255,255,255,0.02);
-        font-size: 0.75rem;
     }
 
-    /* Стили для нормальных уведомлений */
-    .flash-notice {
-        padding: 15px; 
-        margin-bottom: 25px; 
-        border-radius: 8px; 
-        font-size: 0.8rem; 
-        font-weight: 700;
-        color: #fff;
-        background: rgba(255, 59, 59, 0.1);
-        border: 1px solid var(--accent);
+    .ios-table tr:last-child td {
+        border-bottom: none;
     }
-    .flash-notice.success {
-        background: rgba(40, 167, 69, 0.1);
-        border: 1px solid var(--success);
+
+    .ios-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .ios-btn:hover {
+        background: #fff;
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+    }
+
+    .ios-btn.accent-btn {
+        background: var(--accent);
+        border: none;
+        box-shadow: 0 10px 25px rgba(255, 59, 59, 0.2);
+    }
+
+    .ios-btn.accent-btn:hover {
+        background: #ff5252;
+        color: #fff;
+        box-shadow: 0 15px 30px rgba(255, 59, 59, 0.35);
+    }
+
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.65rem;
+        font-weight: 900;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+    .badge-status.won { background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; }
+    .badge-status.lost { background: rgba(255, 59, 59, 0.1); border: 1px solid var(--accent); color: var(--accent); }
+    .badge-status.pending { background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; color: #ffc107; }
+
+    .hidden-row { display: none !important; }
+
+    @media (max-width: 1100px) {
+        .dashboard-container {
+            grid-template-columns: 1fr;
+            padding: 0 20px 40px 20px;
+            margin-top: 100px;
+        }
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
+<div class="dashboard-container">
 
-<div class="main-container" style="padding-top: 140px; max-width: 1300px; margin: 0 auto;">
-    
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-        <div>
-            <h1 style="font-size: 2.5rem; font-weight: 950; margin: 0; letter-spacing: -1px;">COMMAND <span style="color: var(--accent);">CENTER</span></h1>
-            <p style="font-size: 0.65rem; color: #444; font-weight: 800; letter-spacing: 2px; margin-top: 5px;">LIVE PERFORMANCE TRACKER</p>
+    <aside class="ios-glass-card" style="text-align: center; height: fit-content;">
+        <div class="ios-avatar-wrapper">
+            <div class="ios-avatar-glow"></div>
+            {% if current_user.avatar %}
+                <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" class="ios-avatar" alt="Avatar">
+            {% else %}
+                <img src="{{ url_for('static', filename='uploads/default_avatar.jpg') }}" class="ios-avatar" alt="Default Avatar">
+            {% endif %}
         </div>
-    </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div style="margin-bottom: 25px;">
-                {% for category, msg in messages %}
-                    {% if msg and msg.strip() %}
-                        <div class="flash-notice {% if category == 'success' %}success{% endif %}">
-                            {{ msg }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+        <span class="ios-label" style="margin-bottom: 5px;">WELCOME BACK</span>
+        <h2 style="font-size: 1.6rem; font-weight: 950; margin: 0 0 8px 0; letter-spacing: -0.5px; color: #fff;">
+            {{ current_user.username }}
+        </h2>
+        <p style="color: #666; font-size: 0.75rem; font-weight: 700; margin: 0 0 30px 0; letter-spacing: 1px;">
+            ELITE HUB USER
+        </p>
 
-    <div class="dashboard-wrapper">
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.04); margin: 0 0 25px 0;">
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="{{ url_for('edit_profile') }}" class="ios-btn">⚙️ Edit Profile</a>
+            <a href="{{ url_for('request_password_reset') }}" class="ios-btn">🔒 Security Creds</a>
+        </div>
+    </aside>
+
+    <main style="display: flex; flex-direction: column;">
         
-        <div style="display: flex; flex-direction: column; gap: 30px;">
-            <div class="glass-box" style="height: fit-content;">
-                <div style="margin-bottom: 20px; position: relative;">
-                    {% if current_user.avatar and 'base64' in current_user.avatar %}
-                        <img src="{{ current_user.avatar }}" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='img/default_avatar.png') }}" onerror="this.src='https://via.placeholder.com/320x320?text=No+Avatar'" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px;">
-                    {% endif %}
-                    
-                    <div style="position: absolute; bottom: 15px; left: 15px;">
-                        <div style="background: var(--accent); color: #fff; padding: 4px 10px; font-size: 0.55rem; font-weight: 900; border-radius: 3px; letter-spacing: 1px;">
-                            {{ current_user.rank.upper() if current_user.rank else 'SILVER I' }}
-                        </div>
-                    </div>
+        <div class="stats-grid">
+            
+            <div class="ios-glass-card" style="display: flex; align-items: center; gap: 25px;">
+                <div style="width: 70px; height: 70px; border-radius: 18px; background: rgba(255,59,59,0.08); border: 1px solid rgba(255,59,59,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; color: var(--accent); box-shadow: 0 10px 20px rgba(255,59,59,0.05);">
+                    {{ current_user.level }}
                 </div>
-
-                <div style="margin-bottom: 20px;">
-                    <span class="stat-label">user nickname</span>
-                    <div style="font-size: 1.6rem; font-weight: 900; color: #fff;">{{ current_user.username }}</div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-                        <span class="stat-label" style="margin-bottom: 3px;">XP</span>
-                        <span style="font-weight: 900; font-size: 1.1rem; color: #fff;">{{ current_user.xp }}</span>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-                        <span class="stat-label" style="margin-bottom: 3px;">ACCURACY</span>
-                        <span style="font-weight: 900; font-size: 1.1rem; color: var(--accent);">{{ accuracy }}%</span>
-                    </div>
-                </div>
-
-                <a href="{{ url_for('settings') }}" style="display: block; margin-top: 15px; padding: 12px; border: 1px solid #fff; color: #fff; text-align: center; border-radius: 8px; font-size: 0.65rem; font-weight: 900; text-decoration: none; transition: 0.3s; letter-spacing: 1px; text-transform: uppercase;">
-                    EDIT IDENTITY
-                </a>
-            </div>
-
-            <div class="glass-box">
-                <span class="stat-label">GLOBAL ANALYTICS</span>
-                <div class="mini-stat-row">
-                    <span style="color: #666;">Favorite Team</span>
-                    <span style="color: #fff; font-weight: 700;">{{ current_user.favorite_team if current_user.favorite_team else "Not Set" }}</span>
-                </div>
-                <div class="mini-stat-row">
-                    <span style="color: #666;">Predictions Accuracy</span>
-                    <span style="color: var(--success); font-weight: 700;">{{ accuracy }}%</span>
-                </div>
-                <div class="mini-stat-row">
-                    <span style="color: #666;">Rank Status</span>
-                    <span style="color: #fff; font-weight: 700; text-transform: uppercase; font-size: 0.7rem;">Verified ✔</span>
+                <div>
+                    <span class="ios-label">CURRENT RANK</span>
+                    <span style="font-size: 1.5rem; font-weight: 900; color: #fff; display: block; letter-spacing: -0.5px;">LEVEL {{ current_user.level }}</span>
                 </div>
             </div>
+
+            <div class="ios-glass-card" style="display: flex; flex-direction: column; justify-content: center;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div>
+                        <span class="ios-label">EXPERIENCE</span>
+                        <span style="font-size: 1.5rem; font-weight: 900; color: #fff; display: block; letter-spacing: -0.5px;">{{ current_user.xp }} <span style="font-size: 0.85rem; color: #444;">XP</span></span>
+                    </div>
+                    <span style="font-size: 0.7rem; font-weight: 800; color: #444; letter-spacing: 1px;">/ 1000 MAX</span>
+                </div>
+                <div class="ios-progress-track">
+                    <div class="ios-progress-bar" style="width: {{ (current_user.xp / 1000) * 100 }}%;"></div>
+                </div>
+            </div>
+
+            <div class="ios-glass-card" style="display: flex; align-items: center; gap: 25px;">
+                <div style="width: 70px; height: 70px; border-radius: 18px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; color: #fff;">
+                    🧬
+                </div>
+                <div>
+                    <span class="ios-label">TOTAL FORECASTS</span>
+                    <span style="font-size: 1.5rem; font-weight: 900; color: #fff; display: block; letter-spacing: -0.5px;">
+                        {{ recent_predictions|length }} ACTIVE
+                    </span>
+                </div>
+            </div>
+
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 30px;">
-            
-            <div class="glass-box" style="background: linear-gradient(to right, rgba(13,13,13,0.9), rgba(255,59,59,0.03));">
-                <span class="stat-label">RANK EVOLUTION</span>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
-                    <div style="text-align: center; width: 140px;">
-                        <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-                            <img src="{{ url_for('static', filename='img/ranks/' + current_user.rank.lower().replace(' ', '_') + '.png') }}" 
-                                 class="rank-img" onerror="this.src='https://via.placeholder.com/120x45?text={{ current_user.rank }}'">
-                        </div>
-                        <div style="font-size: 0.7rem; font-weight: 900; color: #fff; text-transform: uppercase;">{{ current_user.rank }}</div>
-                    </div>
-
-                    <div style="flex-grow: 1; padding: 0 40px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-family: monospace; font-size: 0.65rem;">
-                            <span style="color: var(--accent);">PROGRESS</span>
-                            <span style="color: #666;">NEXT RANK: {{ next_threshold }} XP</span>
-                        </div>
-                        <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
-                            <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
-                        </div>
-                        <div style="text-align: center; margin-top: 15px;">
-                            <span style="font-size: 0.55rem; color: #444; font-weight: 800; letter-spacing: 2px;">
-                                {{ progress_percent }}% OF CURRENT TIER COMPLETED
-                            </span>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; width: 140px; opacity: 0.4;">
-                        <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-                            <img src="{{ url_for('static', filename='img/ranks/' + next_rank.lower().replace(' ', '_') + '.png') }}" 
-                                 class="rank-img" style="filter: grayscale(1);" onerror="this.src='https://via.placeholder.com/120x45?text={{ next_rank }}'">
-                        </div>
-                        <div style="font-size: 0.55rem; font-weight: 800; color: #555;">{{ next_rank.upper() }}</div>
-                    </div>
+        <div class="ios-glass-card" style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <span class="ios-label">ACTIVITY LOG</span>
+                    <h3 style="font-size: 1.3rem; font-weight: 900; margin: 0; color: #fff; letter-spacing: -0.5px;">RECENT PREDICTIONS</h3>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
-                <div class="glass-box">
-                    <span class="stat-label">MISSIONS</span>
-                    <h3 style="margin: 0 0 5px 0; font-size: 1rem; font-weight: 900;">ACTIVE MATCHES</h3>
-                    <p style="color: #444; font-size: 0.7rem; margin-bottom: 20px;">Predict global games.</p>
-                    <a href="{{ url_for('matches') }}" style="color: #fff; font-size: 0.65rem; font-weight: 900; text-decoration: none; border-bottom: 1px solid var(--accent); text-transform: uppercase;">GO TO LIST →</a>
-                </div>
-
-                <div class="glass-box" style="display: flex; flex-direction: column; justify-content: space-between;">
-                    <div>
-                        <span class="stat-label">STREAK CENTER</span>
-                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 5px;">
-                            <span style="font-size: 1.8rem; font-weight: 950; color: #fff;">{{ win_streak if win_streak is defined else 0 }}</span>
-                            <span style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">WIN STREAK 🔥</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-box" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(255, 59, 59, 0.15);">
-                    <div>
-                        <span class="stat-label" style="color: var(--accent);">SECURITY KNOB</span>
-                        <h3 style="margin: 0 0 10px 0; font-size: 0.9rem; font-weight: 900; color: #fff;">IDENTITY PROTECTION</h3>
-                    </div>
-                    <form action="{{ url_for('request_password_reset') }}" method="POST">
-                        <button type="submit" style="width: 100%; background: rgba(255,59,59,0.07); border: 1px solid var(--accent); color: #fff; font-size: 0.6rem; font-weight: 900; padding: 10px; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;">
-                            📧 RESET PASSWORD
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="glass-box">
-                <span class="stat-label">PREDICTION HISTORY</span>
-                
-                {% if recent_predictions %}
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem;">
+            {% if recent_predictions %}
+                <div style="overflow-x: auto;">
+                    <table class="ios-table">
                         <thead>
-                            <tr style="text-align: left; color: #444; font-weight: 900; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px;">
-                                <th style="padding: 10px; border-bottom: 1px solid var(--border);">Match Event</th>
-                                <th style="padding: 10px; border-bottom: 1px solid var(--border);">Your Pick (Score)</th>
-                                <th style="padding: 10px; border-bottom: 1px solid var(--border);">Outcome</th>
+                            <tr>
+                                <th>Match Event</th>
+                                <th>Your Forecast</th>
+                                <th>Live Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for pred in recent_predictions %}
-                                <tr class="history-row {% if loop.index > 3 %}hidden-row{% endif %}" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-                                    <td style="padding: 12px 10px; color: #fff; font-weight: 700;">
-                                        {% if pred.match %}
-                                            {{ pred.match.team1 }} vs {{ pred.match.team2 }}
-                                        {% else %}
-                                            Professional Match
-                                        {% endif %}
+                                <tr class="history-row {% if loop.index > 5 %}hidden-row{% endif %}">
+                                    <td style="font-weight: 700;">
+                                        <span style="font-size: 0.65rem; color: #444; display: block; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px;">{{ pred.match_type }}</span>
+                                        {{ pred.team1 }} <span style="color: var(--accent); font-size: 0.75rem; margin: 0 4px;">VS</span> {{ pred.team2 }}
                                     </td>
-                                    <td style="padding: 12px 10px; font-family: monospace; font-weight: 700; font-size: 0.9rem; 
-                                        color: {% if pred.is_correct %}var(--success){% else %}var(--accent){% endif %};">
-                                        {{ pred.prediction_score if pred.prediction_score else "TBD" }}
+                                    <td style="font-weight: 800; letter-spacing: 0.5px;">
+                                        Predicted: <span style="color: #fff; background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02);">{{ pred.predicted_score }}</span>
                                     </td>
-                                    <td style="padding: 12px 10px;">
-                                        {% if pred.is_correct is none %}
-                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1);">Pending</span>
-                                        {% elif pred.is_correct %}
-                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.2);">Won</span>
+                                    <td>
+                                        {% if pred.status == 'won' %}
+                                            <span class="badge-status won">🏆 WIN +{{ pred.xp_gained }} XP</span>
+                                        {% elif pred.status == 'lost' %}
+                                            <span class="badge-status lost">❌ LOST</span>
                                         {% else %}
-                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; background: rgba(255, 59, 59, 0.1); color: var(--accent); border: 1px solid rgba(255, 59, 59, 0.2);">Lost</span>
+                                            <span class="badge-status pending">⏳ EVALUATING</span>
                                         {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
 
-                    {% if recent_predictions|length > 3 %}
-                        <div style="text-align: center; margin-top: 20px;">
-                            <button id="toggleHistoryBtn" style="background: none; border: 1px solid var(--border); color: #666; font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.3s; text-transform: uppercase;">
-                                Show Full History ({{ recent_predictions|length }})
-                            </button>
-                        </div>
-                    {% endif %}
-
-                {% else %}
-                    <div style="text-align: center; padding: 20px 0; color: #444; font-size: 0.75rem; font-weight: 700;">
-                        No prediction data available.
+                {% if recent_predictions|length > 5 %}
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button id="toggleHistoryBtn" class="ios-btn">
+                            Show Full History ({{ recent_predictions|length }})
+                        </button>
                     </div>
                 {% endif %}
-            </div>
+
+            {% else %}
+                <div style="text-align: center; padding: 60px 0; border: 1px dashed rgba(255,255,255,0.03); border-radius: 16px; margin-top: 20px;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">🎮</div>
+                    <p style="color: #444; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 25px;">
+                        No corporate predictions found in the database.
+                    </p>
+                    <a href="{{ url_for('matches') }}" class="ios-btn accent-btn">START PREDICTING →</a>
+                </div>
+            {% endif %}
 
         </div>
-    </div>
+
+    </main>
 </div>
 
 <script>
@@ -292,21 +338,29 @@
             const allRows = document.querySelectorAll('.history-row');
             
             if (hiddenRows.length > 0) {
-                hiddenRows.forEach(row => row.classList.remove('hidden-row'));
+                hiddenRows.forEach(row => {
+                    row.classList.remove('hidden-row');
+                    row.style.opacity = '0';
+                    setTimeout(() => {
+                        row.style.transition = 'opacity 0.4s ease';
+                        row.style.opacity = '1';
+                    }, 10);
+                });
                 this.innerText = "Collapse History";
                 this.style.color = "var(--accent)";
-                this.style.borderColor = "var(--accent)";
+                this.style.borderColor = "rgba(255, 59, 59, 0.2)";
             } else {
                 allRows.forEach((row, index) => {
-                    if (index >= 3) {
+                    if (index >= 5) {
                         row.classList.add('hidden-row');
                     }
                 });
                 this.innerText = "Show Full History (" + allRows.length + ")";
-                this.style.color = "#666";
-                this.style.borderColor = "var(--border)";
+                this.style.color = "#fff";
+                this.style.borderColor = "rgba(255,255,255,0.05)";
             }
         });
     }
 </script>
+
 {% endblock %}
