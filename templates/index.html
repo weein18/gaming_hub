@@ -1,127 +1,655 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap');
 
-<div class="hero-container">
-    <div class="hero-content">
-        <div style="display: inline-block; padding: 5px 15px; background: rgba(227,6,19,0.1); border-left: 3px solid var(--primary); color: var(--primary); font-size: 0.7rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase;">
-            Become an Elite Predictor
-        </div>
-        
-        <h1 class="hero-title">
-            TRACK. <br>
-            <span class="highlight">PREDICT.</span> <br>
-            DOMINATE.
-        </h1>
-        
-        <p class="hero-subtitle">
-            Join the most advanced hub for esports fans. Predict match scores, earn XP, and climb the global rankings.
-        </p>
+    :root {
+        --accent: #ff3b3b;
+        --accent-dim: rgba(255,59,59,0.12);
+        --accent-glow: rgba(255,59,59,0.25);
+        --success: #30d158;
+        --blue: #0a84ff;
 
-        <div class="hero-btns">
-            <a href="{{ url_for('matches') }}" class="liquid-btn" style="padding: 18px 45px; font-size: 1rem;">PLAY NOW</a>
-            <a href="{{url_for('how_it_works')}}" class="outline-btn">HOW IT WORKS</a>
-        </div>
-    </div>
+        --glass-bg: rgba(28,28,30,0.72);
+        --glass-bg-light: rgba(44,44,46,0.55);
+        --glass-border: rgba(255,255,255,0.09);
+        --glass-border-hover: rgba(255,255,255,0.16);
+        --glass-shine: rgba(255,255,255,0.04);
 
-    <div class="hero-visual">
-        <div class="floating-card" style="width: 400px; padding: 40px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05);">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <p style="font-size: 0.6rem; color: #444; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">Platform Live Data</p>
-            </div>
-            
-            <div style="margin-bottom: 30px;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
-                    <span style="font-size: 0.8rem; color: #888; font-weight: 600;">TOTAL PLAYERS</span>
-                    <span style="font-size: 2.5rem; font-weight: 900; line-height: 1;">{{ stats.total_users }}</span>
-                </div>
-                <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
-                    <div style="width: 75%; height: 100%; background: var(--primary); box-shadow: 0 0 15px var(--primary);"></div>
-                </div>
-            </div>
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255,255,255,0.55);
+        --text-tertiary: rgba(255,255,255,0.28);
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
-                <div style="text-align: center;">
-                    <div style="color: var(--primary); font-size: 1.5rem; font-weight: 900;">{{ stats.active_matches }}</div>
-                    <div style="font-size: 0.55rem; color: #444; font-weight: 800; letter-spacing: 1px;">ACTIVE EVENTS</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="color: #fff; font-size: 1.5rem; font-weight: 900;">{{ stats.total_predictions }}</div>
-                    <div style="font-size: 0.55rem; color: #444; font-weight: 800; letter-spacing: 1px;">PREDICTIONS MADE</div>
-                </div>
-            </div>
-        </div>
-    </div>
+        --blur: blur(40px) saturate(200%);
+        --blur-light: blur(20px) saturate(180%);
+
+        --r-xl: 22px;
+        --r-lg: 16px;
+        --r-md: 12px;
+
+        --shadow-glass: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: #000;
+        font-family: 'Geist', -apple-system, sans-serif;
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+    }
+
+    /* ── Atmosphere ─────────────────────────────────── */
+    .atmo {
+        position: fixed; inset: 0;
+        pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .atmo-orb {
+        position: absolute; border-radius: 50%;
+        filter: blur(80px);
+    }
+    .atmo-orb-1 {
+        width: 80vw; height: 80vw;
+        top: -30%; left: -20%;
+        background: radial-gradient(circle, rgba(255,59,59,0.07) 0%, transparent 65%);
+        animation: drift1 20s ease-in-out infinite;
+    }
+    .atmo-orb-2 {
+        width: 60vw; height: 60vw;
+        bottom: -10%; right: -15%;
+        background: radial-gradient(circle, rgba(10,132,255,0.05) 0%, transparent 65%);
+        animation: drift2 26s ease-in-out infinite;
+    }
+    .atmo-orb-3 {
+        width: 40vw; height: 40vw;
+        top: 40%; left: 50%;
+        background: radial-gradient(circle, rgba(255,59,59,0.03) 0%, transparent 65%);
+        animation: drift3 32s ease-in-out infinite;
+    }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,4%)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
+    @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-5%,5%)} }
+
+    /* ── Page Wrapper ───────────────────────────────── */
+    .page-wrap {
+        position: relative; z-index: 1;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+    }
+
+    /* ── Glass Utility ──────────────────────────────── */
+    .glass {
+        background: var(--glass-bg);
+        backdrop-filter: var(--blur);
+        -webkit-backdrop-filter: var(--blur);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-xl);
+        box-shadow: var(--shadow-glass);
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .glass::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--glass-shine) 0%, transparent 50%);
+        pointer-events: none; border-radius: inherit;
+    }
+    .glass:hover { border-color: var(--glass-border-hover); }
+
+    /* ── HERO ───────────────────────────────────────── */
+    .hero {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 40px;
+        padding-top: 120px;
+        padding-bottom: 80px;
+    }
+
+    .hero-left { animation: fadeUp 0.7s ease both; }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(255,59,59,0.25);
+        border-radius: 100px;
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 28px;
+    }
+    .hero-eyebrow-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .hero-title {
+        font-size: clamp(3.5rem, 7vw, 7rem);
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        line-height: 0.92;
+        margin-bottom: 28px;
+        text-transform: uppercase;
+    }
+    .hero-title .hl {
+        color: var(--accent);
+        text-shadow: 0 0 60px rgba(255,59,59,0.35);
+    }
+    .hero-title .stroke {
+        -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+        color: transparent;
+    }
+
+    .hero-sub {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        line-height: 1.65;
+        max-width: 460px;
+        margin-bottom: 42px;
+        font-weight: 400;
+    }
+
+    .hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 15px 36px;
+        background: var(--accent);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-radius: 100px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 8px 28px rgba(255,59,59,0.4);
+        transition: all 0.25s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 36px rgba(255,59,59,0.55);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 15px 28px;
+        background: var(--glass-bg-light);
+        backdrop-filter: var(--blur-light);
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-radius: 100px;
+        border: 1px solid var(--glass-border);
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .btn-ghost:hover {
+        color: var(--text-primary);
+        border-color: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.06);
+    }
+
+    /* Hero right — stats card */
+    .hero-right { animation: fadeUp 0.7s ease 0.15s both; }
+
+    .stats-card { padding: 36px; }
+
+    .stats-card-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-tertiary);
+        margin-bottom: 30px;
+    }
+    .live-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 8px var(--success);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .stat-main {
+        margin-bottom: 28px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat-main-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text-tertiary);
+        margin-bottom: 8px;
+        display: block;
+    }
+    .stat-main-num {
+        font-size: 4rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        line-height: 1;
+        margin-bottom: 14px;
+    }
+    .progress-track {
+        height: 4px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 100px;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), #ff8080);
+        border-radius: 100px;
+        box-shadow: 0 0 12px rgba(255,59,59,0.5);
+        animation: growBar 1.5s cubic-bezier(0.25,1,0.5,1) 0.5s both;
+    }
+    @keyframes growBar { from{width:0} to{width:75%} }
+
+    .stats-mini-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    .stat-mini {
+        background: var(--glass-bg-light);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-lg);
+        padding: 18px;
+    }
+    .stat-mini-val {
+        font-size: 1.8rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 5px;
+    }
+    .stat-mini-val.accent { color: var(--accent); }
+    .stat-mini-label {
+        font-size: 0.52rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text-tertiary);
+    }
+
+    /* ── FEATURES ───────────────────────────────────── */
+    .section-gap { padding: 100px 0 0; }
+
+    .section-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        animation: fadeUp 0.6s ease both;
+    }
+    .section-title {
+        font-size: clamp(1.6rem, 3vw, 2.4rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+    }
+    .section-title .hl { color: var(--accent); }
+    .section-link {
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: gap 0.2s;
+    }
+    .section-link:hover { gap: 10px; }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.6fr 1fr;
+        gap: 16px;
+        animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    .f-card { padding: 32px; }
+    .f-card-icon {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--accent-dim);
+        border: 1px solid rgba(255,59,59,0.2);
+        border-radius: var(--r-md);
+        color: var(--accent);
+        font-size: 1.1rem;
+        margin-bottom: 22px;
+    }
+    .f-card-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+    }
+    .f-card-body {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        line-height: 1.65;
+    }
+
+    /* Center feature card — bigger, glowing */
+    .f-card-hero {
+        padding: 40px;
+        background: rgba(255,59,59,0.04) !important;
+        border-color: rgba(255,59,59,0.22) !important;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+    }
+    .f-card-hero:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(255,59,59,0.2), var(--shadow-glass);
+        border-color: rgba(255,59,59,0.45) !important;
+    }
+    .f-card-hero-icon {
+        width: 64px; height: 64px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255,59,59,0.1);
+        border: 1px solid rgba(255,59,59,0.25);
+        border-radius: 20px;
+        color: var(--accent);
+        font-size: 1.6rem;
+        margin: 0 auto 24px;
+    }
+    .f-card-hero-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+    .f-card-hero-body {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.65;
+        margin-bottom: 22px;
+    }
+    .f-card-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+    }
+
+    /* ── UPCOMING MATCHES ───────────────────────────── */
+    .matches-section { padding: 100px 0 0; animation: fadeUp 0.6s ease 0.05s both; }
+
+    .matches-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+    }
+
+    .match-card {
+        padding: 26px;
+        transition: all 0.3s ease;
+    }
+    .match-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,0.16);
+    }
+    .match-tag {
+        font-size: 0.52rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text-tertiary);
+        margin-bottom: 18px;
+        display: block;
+    }
+    .match-teams {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    .match-team {
+        font-size: 1rem;
+        font-weight: 800;
+        flex: 1;
+        letter-spacing: -0.01em;
+    }
+    .match-team:last-child { text-align: right; }
+    .match-vs {
+        font-size: 0.55rem;
+        font-weight: 900;
+        letter-spacing: 0.2em;
+        color: var(--accent);
+        background: var(--accent-dim);
+        border: 1px solid rgba(255,59,59,0.2);
+        padding: 4px 10px;
+        border-radius: 100px;
+        flex-shrink: 0;
+    }
+    .match-meta {
+        font-size: 0.65rem;
+        color: var(--text-tertiary);
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .match-btn {
+        display: block;
+        text-align: center;
+        padding: 12px;
+        background: var(--glass-bg-light);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-md);
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+    .match-btn:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.18);
+        color: var(--text-primary);
+    }
+
+    /* ── ANIMATIONS ─────────────────────────────────── */
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 1000px) {
+        .hero { grid-template-columns: 1fr; min-height: auto; }
+        .hero-right { display: none; }
+        .features-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+        .page-wrap { padding: 0 14px 60px; }
+        .hero { padding-top: 110px; }
+        .features-grid { grid-template-columns: 1fr; }
+        .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+</style>
+
+<!-- Atmosphere -->
+<div class="atmo">
+    <div class="atmo-orb atmo-orb-1"></div>
+    <div class="atmo-orb atmo-orb-2"></div>
+    <div class="atmo-orb atmo-orb-3"></div>
 </div>
 
-<section id="features" class="features-grid">
-    <div class="f-card">
-        <i class="fas fa-bolt" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
-        <h3 style="margin-bottom: 15px;">FAST ENTRY</h3>
-        <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Predict results in two clicks and track your accuracy in real-time.</p>
-    </div>
-    <a href="{{ url_for('leaderboard') }}" class="feature-card-link" style="text-decoration: none; color: inherit;">
-        <div class="feature-card" style="
-            border: 1px solid var(--primary); 
-            padding: 40px; 
-            border-radius: 20px; 
-            text-align: center; 
-            transition: all 0.3s ease;
-            background: rgba(227, 6, 19, 0.05);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        ">
-            <div class="glow-effect"></div>
-            <i class="fas fa-trophy" style="font-size: 2rem; color: var(--primary); margin-bottom: 20px; display: block;"></i>       
-            <h3 style="font-size: 1.5rem; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">
-                GLOBAL RANKING
-            </h3>
-            <p style="color: #666; font-size: 0.9rem; line-height: 1.4;">
-                Earn XP for every correct score and reach the Global Elite rank. <br>
-                <span style="color: var(--primary); font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; margin-top: 15px; display: block;">
-                    VIEW LEADERBOARD →
-                </span>
-            </p>
-        </div>
-    </a>
-    <style>
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(227, 6, 19, 0.2);
-            background: rgba(227, 6, 19, 0.1) !important;
-            border-color: #fff !important;
-        }
-        .feature-card:hover h3 {
-            text-shadow: 0 0 15px var(--primary);
-        }
-    </style>
-    <div class="f-card">
-        <i class="fas fa-shield-alt" style="color: var(--primary); font-size: 2rem; margin-bottom: 20px;"></i>
-        <h3 style="margin-bottom: 15px;">SECURE DATA</h3>
-        <p style="font-size: 0.85rem; color: #666; line-height: 1.6;">Your gaming identity is protected with our encrypted system.</p>
-    </div>
-</section>
+<div class="page-wrap">
 
-<div class="container" style="padding-top: 100px; padding-bottom: 100px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
-        <h2 style="font-size: 2rem; margin: 0;">UPCOMING <span class="highlight">MATCHES</span></h2>
-        <a href="{{ url_for('matches') }}" style="color: var(--primary); text-decoration: none; font-weight: 800; font-size: 0.7rem; letter-spacing: 2px;">EXPLORE ALL →</a>
-    </div>
-
-    <div class="matches-grid">
-        {% for match in featured_matches %}
-        <div class="match-card">
-            <div style="font-size: 0.6rem; color: #444; margin-bottom: 15px; font-weight: 800;">{{ match.tournament_name }}</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
-                <span style="font-size: 1.2rem; font-weight: 800; flex: 1;">{{ match.team1 }}</span>
-                <span class="vs" style="margin: 0 20px;">VS</span>
-                <span style="font-size: 1.2rem; font-weight: 800; flex: 1;">{{ match.team2 }}</span>
+    <!-- ══ HERO ══════════════════════════════════════ -->
+    <section class="hero">
+        <div class="hero-left">
+            <div class="hero-eyebrow">
+                <span class="hero-eyebrow-dot"></span>
+                Become an Elite Predictor
             </div>
-            <div style="color: #666; font-size: 0.75rem; margin-bottom: 20px;">{{ match.date }} | {{ match.time }}</div>
-            <a href="{{ url_for('tournament', name=match.tournament_name.lower().replace(' ', '-')) }}" class="liquid-btn" style="width: 100%; box-sizing: border-box;">VIEW EVENT</a>
+            <h1 class="hero-title">
+                TRACK.<br>
+                <span class="hl">PREDICT.</span><br>
+                <span class="stroke">DOMINATE.</span>
+            </h1>
+            <p class="hero-sub">
+                Join the most advanced hub for esports fans. Predict match scores, earn XP, and climb the global rankings.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ url_for('matches') }}" class="btn-primary">
+                    Play Now
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="{{ url_for('how_it_works') }}" class="btn-ghost">
+                    How It Works
+                </a>
+            </div>
         </div>
-        {% endfor %}
-    </div>
+
+        <div class="hero-right">
+            <div class="glass stats-card">
+                <div class="stats-card-eyebrow">
+                    <span class="live-dot"></span>
+                    Platform Live Data
+                </div>
+
+                <div class="stat-main">
+                    <span class="stat-main-label">Total Players</span>
+                    <div class="stat-main-num">{{ stats.total_users }}</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width:75%"></div>
+                    </div>
+                </div>
+
+                <div class="stats-mini-grid">
+                    <div class="stat-mini">
+                        <div class="stat-mini-val accent">{{ stats.active_matches }}</div>
+                        <div class="stat-mini-label">Active Events</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-mini-val">{{ stats.total_predictions }}</div>
+                        <div class="stat-mini-label">Predictions Made</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ FEATURES ══════════════════════════════════ -->
+    <section class="section-gap">
+        <div class="section-header">
+            <div class="section-title">WHY <span class="hl">ELITE</span>HUB</div>
+        </div>
+        <div class="features-grid">
+
+            <div class="glass f-card">
+                <div class="f-card-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="f-card-title">Fast Entry</div>
+                <div class="f-card-body">Predict results in two clicks and track your accuracy in real-time.</div>
+            </div>
+
+            <a href="{{ url_for('leaderboard') }}" class="glass f-card-hero">
+                <div class="f-card-hero-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="f-card-hero-title">Global Ranking</div>
+                <div class="f-card-hero-body">
+                    Earn XP for every correct score and reach the Global Elite rank.
+                </div>
+                <div class="f-card-cta">
+                    View Leaderboard
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </a>
+
+            <div class="glass f-card">
+                <div class="f-card-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="f-card-title">Secure Data</div>
+                <div class="f-card-body">Your gaming identity is protected with our encrypted system.</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══ UPCOMING MATCHES ═══════════════════════════ -->
+    <section class="matches-section">
+        <div class="section-header">
+            <div class="section-title">UPCOMING <span class="hl">MATCHES</span></div>
+            <a href="{{ url_for('matches') }}" class="section-link">
+                Explore All
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+
+        <div class="matches-grid">
+            {% for match in featured_matches %}
+            <div class="glass match-card">
+                <span class="match-tag">{{ match.tournament_name }}</span>
+                <div class="match-teams">
+                    <span class="match-team">{{ match.team1 }}</span>
+                    <span class="match-vs">VS</span>
+                    <span class="match-team">{{ match.team2 }}</span>
+                </div>
+                <div class="match-meta">{{ match.date }} · {{ match.time }}</div>
+                <a href="{{ url_for('tournament', name=match.tournament_name.lower().replace(' ', '-')) }}" class="match-btn">
+                    View Event →
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
 </div>
 
 {% endblock %}
