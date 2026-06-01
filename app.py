@@ -779,7 +779,7 @@ scheduler.start()
 def test_api_now():
     try:
         token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-        url = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=100"
+        url = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=1000"
         response = requests.get(url, timeout=10)
         matches = response.json()
         print(f"=== ADDING MATCHES: {len(matches)}) ===")
@@ -803,6 +803,34 @@ def test_api_now():
 @app.route("/ping")
 def test_cron():
     return "ok"
+
+@app.route('/debug-leagues')
+def debug_leagues():
+    token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
+    url = f"https://pandascore.co{token}&filter[tier]=s,a&per_page=100"
+    try:
+        response = requests.get(url, timeout=10)
+        leagues = response.json()
+        html = "<h1>Список лиг S и A тира (CS2)</h1>"
+        html += "<table border='1' style='border-collapse: collapse; width: 100%;'>"
+        html += "<tr><th>ID</th><th>Tier</th><th>Name</th><th>Slug</th></tr>"
+        
+        for l in leagues:
+            html += f"""
+            <tr>
+                <td><b>{l['id']}</b></td>
+                <td style='text-transform: uppercase;'>{l['tier']}</td>
+                <td>{l['name']}</td>
+                <td>{l['slug']}</td>
+            </tr>
+            """
+        html += "</table>"
+        all_ids = ",".join([str(l['id']) for l in leagues])
+        html = f"<p><b>Строка для фильтра (league_id):</b> {all_ids}</p>" + html
+        return html
+    except Exception as e:
+        return f"Ошибка: {str(e)}"
+
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
