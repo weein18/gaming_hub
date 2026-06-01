@@ -706,14 +706,14 @@ def privacy():
 
 def auto_fetch_pandascore_matches():
     token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=1000&filter[league.tier]=s,a"
+    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=500"
     try:
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
             print(f"[BG-TASK] API ERROR: {response.status_code}")
             return
         matches = response.json()
-        print(f"[BG-TASK] !!! {len(matches)} matches were donwloaded from PandaScore !!!")
+        print(f"[BG-TASK] !!! {len(matches)} matches were downloaded from PandaScore !!!")
         with app.app_context():
             for item in matches:
                 if not item.get('opponents') or len(item['opponents']) < 2:
@@ -730,14 +730,12 @@ def auto_fetch_pandascore_matches():
                     final_tournament_name = existing_tournament.name
                     if final_prize_pool != "TBD" and existing_tournament.prize_pool == "TBD":
                         existing_tournament.prize_pool = final_prize_pool
-                    # existing_tournament.image_url = league_logo
                 else:
                     new_t = Tournament(
                         name=api_league_name, 
                         prize_pool=final_prize_pool, 
                         date="Ongoing", 
                         xp_reward="100 XP"
-                        # image_url=league_logo
                     )
                     db.session.add(new_t)
                     db.session.commit()
@@ -779,28 +777,31 @@ scheduler.start()
 def test_api_now():
     try:
         token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-        url = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=1000"
+        url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100"
         response = requests.get(url, timeout=10)
+        if response.status_code != 200:
+            return f"Ошибка API PandaScore! Статус-код: {response.status_code}. Текст: {response.text}", 400
         matches = response.json()
-        print(f"=== ADDING MATCHES: {len(matches)}) ===")
+        print(f"=== STARTING TEST: DOWNLOADED {len(matches)} UPCOMING MATCHES ===")
+        top_matches_found = 0
         for item in matches:
             if not item.get('opponents') or len(item['opponents']) < 2:
                 continue
             league_tier = item.get('league', {}).get('tier')
             api_league_name = item['league']['name'].strip()
-            print(f"Турнир: {api_league_name} | tier={league_tier}")
+            print(f"Сканируем игру: {item['opponents'][0]['opponent']['name']} vs {item['opponents'][1]['opponent']['name']} | Турнир: {api_league_name} | tier={league_tier}")
             if league_tier in ['s', 'a']:
+                top_matches_found += 1
                 league_logo = item['league'].get('image_url')
                 api_prize = item.get('series', {}).get('prize_pool')
                 final_prize_pool = f"${api_prize}" if api_prize else "TBD"
-                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier} | Призовой: {final_prize_pool}")
+                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier.upper()} | Призовой: {final_prize_pool}")
                 print(f"Ссылка на логотип: {league_logo}")
-                print(f"Турнир: {api_league_name} | tier={league_tier}")
                 print("-" * 40)
-        print("=== THE END OF THE TEST ===")
-        return f"Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые. [ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier}", 200
+        print(f"=== THE END OF THE TEST. FOUND S/A MATCHES: {top_matches_found} ===")
+        return f"Тест успешно выполнен! Найдено {top_matches_found} матчей S/A-тиров. Открывай логи Render и проверяй, отобразился ли там Мажор.", 200
     except Exception as e:
-        return f"Ошибка при тесте: {e}", 500
+        return f"Критическая ошибка при тесте: {e}", 500
 
 @app.route("/ping")
 def test_cron():
