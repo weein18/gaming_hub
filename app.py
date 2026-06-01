@@ -706,7 +706,7 @@ def privacy():
 
 def auto_fetch_pandascore_matches():
     token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100&filter[league.tier]=s,a"
+    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=1000&filter[league.tier]=s,a"
     try:
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
