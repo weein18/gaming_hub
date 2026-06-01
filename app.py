@@ -869,29 +869,53 @@ def sync_api_now():
 def test_cron():
     return "ok"
 
-@app.route('/debug-api')
+
+@app.route('/admin/fix-logos')
 @admin_required
-def debug_api():
+def fix_logos():
     if not getattr(current_user, 'is_admin', False):
         return "Admins only", 403
+
     token = os.getenv('PANDASCORE_TOKEN', 'sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg')
-    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=5"
-    res = requests.get(url, timeout=10)
-    matches = res.json()
-    output = []
-    for item in matches[:3]:
+    url_upcoming = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100"
+    url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=50"
+
+    res1 = requests.get(url_upcoming, timeout=10)
+    res2 = requests.get(url_past, timeout=10)
+    all_matches = res1.json() + (res2.json() if res2.status_code == 200 else [])
+
+    matches_fixed = 0
+    tournaments_fixed = 0
+    for item in all_matches:
         if not item.get('opponents') or len(item['opponents']) < 2:
             continue
-        output.append({
-            "match": f"{item['opponents'][0]['opponent']['name']} vs {item['opponents'][1]['opponent']['name']}",
-            "team1_logo": item['opponents'][0]['opponent'].get('image_url'),
-            "team2_logo": item['opponents'][1]['opponent'].get('image_url'),
-            "league_name": item['league']['name'],
-            "league_logo": item['league'].get('image_url'),
-            "series_full_name": item.get('series', {}).get('full_name'),
-        })
+        team1_name = item["opponents"][0]["opponent"]["name"]
+        team2_name = item["opponents"][1]["opponent"]["name"]
+        team1_logo = item["opponents"][0]["opponent"].get("image_url") or ''
+        team2_logo = item["opponents"][1]["opponent"].get("image_url") or ''
+        db_match = Match.query.filter_by(team1=team1_name, team2=team2_name).first()
+        if db_match:
+            if team1_logo:
+                db_match.team1_logo = team1_logo
+            if team2_logo:
+                db_match.team2_logo = team2_logo
+            matches_fixed += 1
+        league_name = item['league']['name'].strip()
+        league_logo = item['league'].get('image_url') or ''
+        if league_logo:
+            all_tournaments = Tournament.query.all()
+            for t in all_tournaments:
+                if league_name.upper() in t.name.upper() or t.name.upper() in league_name.upper():
+                    if not t.image_url:
+                        t.image_url = league_logo
+                        tournaments_fixed += 1
+    db.session.commit()
     from flask import jsonify
-    return jsonify(output)
+    return jsonify({
+        "status": "done",
+        "matches_updated": matches_fixed,
+        "tournaments_updated": tournaments_fixed
+    })
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
