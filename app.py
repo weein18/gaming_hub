@@ -117,7 +117,7 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-@app.tt_request
+@app.after_request
 def add_security_headers(response):
     # defens (Clickjacking)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
