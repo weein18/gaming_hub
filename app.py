@@ -704,6 +704,7 @@ def add_security_headers(response):
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https://cdn-api.pandascore.co; "
         "img-src 'self' data:; "
         "frame-ancestors 'none'; "
         "object-src 'none'; "
