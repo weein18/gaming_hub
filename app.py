@@ -779,7 +779,7 @@ scheduler.start()
 def test_api_now():
     try:
         token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-        url = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=50"
+        url = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=100"
         response = requests.get(url, timeout=10)
         matches = response.json()
         print(f"=== ADDING MATCHES: {len(matches)}) ===")
