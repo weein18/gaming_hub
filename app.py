@@ -706,22 +706,34 @@ def privacy():
 
 def auto_fetch_pandascore_matches():
     token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=500"
+    url = f"https://api.pandascore.co/csgo/matches?token={token}&per_page=500"
     try:
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
             print(f"[BG-TASK] API ERROR: {response.status_code}")
             return
         matches = response.json()
-        print(f"[BG-TASK] !!! {len(matches)} matches were downloaded from PandaScore !!!")
+        print(f"[BG-TASK] !!! {len(matches)} matches downloaded from PandaScore !!!")
+        status_mapping = {
+            "finished": "Finished",
+            "running": "Live",
+            "not_started": "Upcoming",
+            "postponed": "Postponed",
+            "canceled": "Canceled"
+        }
         with app.app_context():
             for item in matches:
                 if not item.get('opponents') or len(item['opponents']) < 2:
                     continue
-                league_tier = item.get('league', {}).get('tier')
-                if league_tier not in ['s', 'a']:
-                    continue
                 api_league_name = item['league']['name'].strip()
+                league_tier = item.get('league', {}).get('tier')
+                is_target_tournament = (league_tier in ['s', 'a']) or any(
+                    kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "S-Tier Series", "StarLadder"]
+                )
+                if not is_target_tournament:
+                    continue
+                api_status = item.get('status', 'not_started')
+                current_db_status = status_mapping.get(api_status, "Upcoming")
                 league_logo = item['league'].get('image_url') or "/static/images/default-tournament.png"
                 api_prize = item.get('series', {}).get('prize_pool')
                 final_prize_pool = f"${api_prize}" if api_prize else "TBD"
@@ -753,7 +765,11 @@ def auto_fetch_pandascore_matches():
                     date=date_str, 
                     time=time_str
                 ).first()
-                if not existing_match:
+                if existing_match:
+                    if existing_match.status != current_db_status:
+                        print(f"[BG-TASK] Обновлен статус матча {existing_match.team1} vs {existing_match.team2}: {existing_match.status} -> {current_db_status}")
+                        existing_match.status = current_db_status
+                else:
                     new_match = Match(
                         tournament_name=final_tournament_name,
                         team1=item["opponents"][0]["opponent"]["name"], 
@@ -761,17 +777,14 @@ def auto_fetch_pandascore_matches():
                         date=date_str, 
                         time=time_str,
                         match_type=match_type_str, 
-                        status="Upcoming"
+                        status=current_db_status
                     )
                     db.session.add(new_match)
-                    print(f"[BG-TASK] Добавлен топовый матч: {new_match.team1} vs {new_match.team2}")
+                    print(f"[BG-TASK] Добавлен топовый матч: {new_match.team1} vs {new_match.team2} ({current_db_status})")
             db.session.commit()
-            print("[BG-TASK] DATABASE WAS UPDATED")
+            print("[BG-TASK] DATABASE WAS UPDATED SUCCESSFULLY")
     except Exception as e:
         print(f"[BG-TASK] ERROR: {e}")
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12)
-scheduler.start()
 
 @app.route('/test-api-now')
 def test_api_now():
