@@ -117,7 +117,7 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-@app.after_request
+@app.tt_request
 def add_security_headers(response):
     # defens (Clickjacking)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
@@ -799,6 +799,10 @@ def test_api_now():
         return f"Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые. [ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier}", 200
     except Exception as e:
         return f"Ошибка при тесте: {e}", 500
+
+@app.route("/ping")
+def test_cron():
+    return "ok"
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
