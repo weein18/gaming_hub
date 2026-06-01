@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 import pytz
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-
+from functools import wraps
 
 
 
@@ -56,6 +56,16 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+def admin_required(f):
+    @wraps(f)
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_admin:
+            flash("Only admins can access this page!", "danger")
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 class User(UserMixin, db.Model):
@@ -787,32 +797,101 @@ def auto_fetch_pandascore_matches():
         print(f"[BG-TASK] ERROR: {e}")
 
 @app.route('/test-api-now')
+@admin_required
 def test_api_now():
+    if not getattr(current_user, 'is_admin', False):
+        flash("У вас нет прав администратора для доступа к этой странице!", "danger")
+        return redirect(url_for('index'))
     try:
         token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-        url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100"
+        url = f"https://api.pandascore.co/csgo/matches?token={token}&per_page=500"
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
             return f"Ошибка API PandaScore! Статус-код: {response.status_code}. Текст: {response.text}", 400
         matches = response.json()
-        print(f"=== STARTING TEST: DOWNLOADED {len(matches)} UPCOMING MATCHES ===")
+        print(f"=== STARTING TEST: DOWNLOADED {len(matches)} MATCHES ===")
         top_matches_found = 0
+        db_changes_count = 0
+        status_mapping = {
+            "finished": "Finished",
+            "running": "Live",
+            "not_started": "Upcoming",
+            "postponed": "Postponed",
+            "canceled": "Canceled"
+        }
         for item in matches:
             if not item.get('opponents') or len(item['opponents']) < 2:
                 continue
             league_tier = item.get('league', {}).get('tier')
             api_league_name = item['league']['name'].strip()
             print(f"Сканируем игру: {item['opponents'][0]['opponent']['name']} vs {item['opponents'][1]['opponent']['name']} | Турнир: {api_league_name} | tier={league_tier}")
-            if league_tier in ['s', 'a']:
+            is_target_tournament = (league_tier in ['s', 'a']) or any(
+                kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST"]
+            )
+            
+            if is_target_tournament:
                 top_matches_found += 1
-                league_logo = item['league'].get('image_url')
+                league_logo = item['league'].get('image_url') or "/static/images/default-tournament.png"
                 api_prize = item.get('series', {}).get('prize_pool')
                 final_prize_pool = f"${api_prize}" if api_prize else "TBD"
-                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier.upper()} | Призовой: {final_prize_pool}")
+                tier_display = league_tier.upper() if league_tier else "UNKNOWN (IEM/MAJOR)"
+                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {tier_display} | Призовой: {final_prize_pool}")
                 print(f"Ссылка на логотип: {league_logo}")
                 print("-" * 40)
+                api_status = item.get('status', 'not_started')
+                current_db_status = status_mapping.get(api_status, "Upcoming")
+                existing_tournament = Tournament.query.filter(Tournament.name.ilike(api_league_name)).first()
+                if existing_tournament:
+                    final_tournament_name = existing_tournament.name
+                else:
+                    new_t = Tournament(name=api_league_name, prize_pool=final_prize_pool, date="Ongoing", xp_reward="100 XP")
+                    db.session.add(new_t)
+                    db.session.commit()
+                    final_tournament_name = new_t.name
+                if not item.get('begin_at'):
+                    continue
+                utc_time = datetime.strptime(item['begin_at'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
+                local_time = utc_time.astimezone(pytz.timezone('Europe/Berlin'))
+                date_str = local_time.strftime("%B %d")  
+                time_str = local_time.strftime("%H:%M")  
+                match_type_str = f"BO{item.get('number_of_games', 3)}"
+                existing_match = Match.query.filter_by(
+                    team1=item["opponents"][0]["opponent"]["name"], 
+                    team2=item["opponents"][1]["opponent"]["name"], 
+                    date=date_str, 
+                    time=time_str
+                ).first()
+                
+                if existing_match:
+                    if existing_match.status != current_db_status:
+                        if current_db_status == "Finished":
+                            t1_id = item["opponents"][0]["opponent"]["id"]
+                            t2_id = item["opponents"][1]["opponent"]["id"]
+                            t1_score, t2_score = 0, 0
+                            for res in item.get('results', []):
+                                if res.get('team_id') == t1_id:
+                                    t1_score = res.get('score', 0)
+                                elif res.get('team_id') == t2_id:
+                                    t2_score = res.get('score', 0)
+                            existing_match.final_score = f"{t1_score}:{t2_score}"
+                            
+                        existing_match.status = current_db_status
+                        db_changes_count += 1
+                else:
+                    new_match = Match(
+                        tournament_name=final_tournament_name,
+                        team1=item["opponents"][0]["opponent"]["name"], 
+                        team2=item["opponents"][1]["opponent"]["name"],
+                        date=date_str, 
+                        time=time_str,
+                        match_type=match_type_str, 
+                        status=current_db_status
+                    )
+                    db.session.add(new_match)
+                    db_changes_count += 1
+        db.session.commit()
         print(f"=== THE END OF THE TEST. FOUND S/A MATCHES: {top_matches_found} ===")
-        return f"Тест успешно выполнен! Найдено {top_matches_found} матчей S/A-тиров. Открывай логи Render и проверяй, отобразился ли там Мажор.", 200
+        return f"Тест успешно выполнен! Найдено {top_matches_found} матчей IEM/Major. База данных успешно обновлена (добавлено/изменено статусов: {db_changes_count}). Открывай логи Render!", 200
     except Exception as e:
         return f"Критическая ошибка при тесте: {e}", 500
 
