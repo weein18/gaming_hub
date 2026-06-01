@@ -706,7 +706,7 @@ def privacy():
 
 def auto_fetch_pandascore_matches():
     token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=50"
+    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100&filter[league.tier]=s,a"
     try:
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
@@ -796,7 +796,7 @@ def test_api_now():
                 print(f"Ссылка на логотип: {league_logo}")
                 print("-" * 40)
         print("=== THE END OF THE TEST ===")
-        return "Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые.", 200
+        return f"Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые. [ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier.upper()} | Призовой: {final_prize_pool}", 200
     except Exception as e:
         return f"Ошибка при тесте: {e}", 500
 
