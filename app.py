@@ -783,12 +783,12 @@ def test_api_now():
         response = requests.get(url, timeout=10)
         matches = response.json()
         print(f"=== ADDING MATCHES: {len(matches)}) ===")
-        print(f"Турнир: {api_league_name} | tier={league_tier}")
         for item in matches:
             if not item.get('opponents') or len(item['opponents']) < 2:
                 continue
             league_tier = item.get('league', {}).get('tier')
             api_league_name = item['league']['name'].strip()
+            print(f"Турнир: {api_league_name} | tier={league_tier}")
             if league_tier in ['s', 'a']:
                 league_logo = item['league'].get('image_url')
                 api_prize = item.get('series', {}).get('prize_pool')
