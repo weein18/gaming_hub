@@ -796,7 +796,7 @@ def test_api_now():
                 print(f"Ссылка на логотип: {league_logo}")
                 print("-" * 40)
         print("=== THE END OF THE TEST ===")
-        return f"Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые. [ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier.upper()} | Призовой: {final_prize_pool}", 200
+        return f"Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые. [ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier} | Призовой: {final_prize_pool}", 200
     except Exception as e:
         return f"Ошибка при тесте: {e}", 500
 
