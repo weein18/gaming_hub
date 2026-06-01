@@ -800,15 +800,19 @@ def auto_fetch_pandascore_matches():
 @admin_required
 def test_api_now():
     if not getattr(current_user, 'is_admin', False):
-        flash("У вас нет прав администратора для доступа к этой странице!", "danger")
+        flash("У вас нет прав администратора!", "danger")
         return redirect(url_for('index'))
     try:
         token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-        url = f"https://api.pandascore.co/csgo/matches?token={token}&per_page=500"
-        response = requests.get(url, timeout=10)
-        if response.status_code != 200:
-            return f"Ошибка API PandaScore! Статус-код: {response.status_code}. Текст: {response.text}", 400
-        matches = response.json()
+        url_upcoming = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100"
+        url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=50"
+        res_upcoming = requests.get(url_upcoming, timeout=10)
+        res_past = requests.get(url_past, timeout=10)
+        if res_upcoming.status_code != 200:
+            return f"Ошибка API PandaScore! Статус-код: {res_upcoming.status_code}", 400
+        matches = res_upcoming.json()
+        if res_past.status_code == 200:
+            matches += res_past.json()
         print(f"=== STARTING TEST: DOWNLOADED {len(matches)} MATCHES ===")
         top_matches_found = 0
         db_changes_count = 0
@@ -826,9 +830,8 @@ def test_api_now():
             api_league_name = item['league']['name'].strip()
             print(f"Сканируем игру: {item['opponents'][0]['opponent']['name']} vs {item['opponents'][1]['opponent']['name']} | Турнир: {api_league_name} | tier={league_tier}")
             is_target_tournament = (league_tier in ['s', 'a']) or any(
-                kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST"]
+                kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "S-Tier Series", "StarLadder"]
             )
-            
             if is_target_tournament:
                 top_matches_found += 1
                 league_logo = item['league'].get('image_url') or "/static/images/default-tournament.png"
@@ -861,7 +864,6 @@ def test_api_now():
                     date=date_str, 
                     time=time_str
                 ).first()
-                
                 if existing_match:
                     if existing_match.status != current_db_status:
                         if current_db_status == "Finished":
@@ -874,7 +876,6 @@ def test_api_now():
                                 elif res.get('team_id') == t2_id:
                                     t2_score = res.get('score', 0)
                             existing_match.final_score = f"{t1_score}:{t2_score}"
-                            
                         existing_match.status = current_db_status
                         db_changes_count += 1
                 else:
@@ -891,7 +892,7 @@ def test_api_now():
                     db_changes_count += 1
         db.session.commit()
         print(f"=== THE END OF THE TEST. FOUND S/A MATCHES: {top_matches_found} ===")
-        return f"Тест успешно выполнен! Найдено {top_matches_found} матчей IEM/Major. База данных успешно обновлена (добавлено/изменено статусов: {db_changes_count}). Открывай логи Render!", 200
+        return f"Тест успешно выполнен! В логах обработано {top_matches_found} топ-матчей. База синхронизирована (изменений: {db_changes_count}).", 200
     except Exception as e:
         return f"Критическая ошибка при тесте: {e}", 500
 
