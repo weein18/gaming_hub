@@ -863,11 +863,35 @@ def sync_api_now():
         flash("✅ Sync complete! Matches, logos and tournaments updated.", "success")
     except Exception as e:
         flash(f"❌ Sync failed: {e}", "danger")
-    return redirect(url_for('manage_matches'))
+    return redirect(url_for('matches'))
 
 @app.route("/ping")
 def test_cron():
     return "ok"
+
+@app.route('/debug-api')
+@admin_required
+def debug_api():
+    if not getattr(current_user, 'is_admin', False):
+        return "Admins only", 403
+    token = os.getenv('PANDASCORE_TOKEN', 'sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg')
+    url = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=5"
+    res = requests.get(url, timeout=10)
+    matches = res.json()
+    output = []
+    for item in matches[:3]:
+        if not item.get('opponents') or len(item['opponents']) < 2:
+            continue
+        output.append({
+            "match": f"{item['opponents'][0]['opponent']['name']} vs {item['opponents'][1]['opponent']['name']}",
+            "team1_logo": item['opponents'][0]['opponent'].get('image_url'),
+            "team2_logo": item['opponents'][1]['opponent'].get('image_url'),
+            "league_name": item['league']['name'],
+            "league_logo": item['league'].get('image_url'),
+            "series_full_name": item.get('series', {}).get('full_name'),
+        })
+    from flask import jsonify
+    return jsonify(output)
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
