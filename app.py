@@ -716,14 +716,24 @@ def privacy():
 
 def auto_fetch_pandascore_matches():
     token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-    url = f"https://api.pandascore.co/csgo/matches?token={token}&per_page=500"
+    
+    url_upcoming = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=50"
+    url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=30"
+    
     try:
-        response = requests.get(url, timeout=10)
-        if response.status_code != 200:
-            print(f"[BG-TASK] API ERROR: {response.status_code}")
+        res_upcoming = requests.get(url_upcoming, timeout=10)
+        res_past = requests.get(url_past, timeout=10)
+        
+        if res_upcoming.status_code != 200:
+            print(f"[BG-TASK] API ERROR: {res_upcoming.status_code}")
             return
-        matches = response.json()
-        print(f"[BG-TASK] !!! {len(matches)} matches downloaded from PandaScore !!!")
+            
+        matches = res_upcoming.json()
+        if res_past.status_code == 200:
+            matches += res_past.json()
+            
+        print(f"[BG-TASK] !!! {len(matches)} matches downloaded for background sync !!!")
+        
         status_mapping = {
             "finished": "Finished",
             "running": "Live",
@@ -731,53 +741,92 @@ def auto_fetch_pandascore_matches():
             "postponed": "Postponed",
             "canceled": "Canceled"
         }
+        
         with app.app_context():
             for item in matches:
                 if not item.get('opponents') or len(item['opponents']) < 2:
                     continue
-                api_league_name = item['league']['name'].strip()
+                    
+                # 1. УМНАЯ СБОРКА ИМЕНИ ТУРНИРА (League + Series)
+                league_name = item['league']['name'].strip()
+                series_name = item.get('series', {}).get('full_name', '') or item.get('series', {}).get('name', '')
+                series_name = series_name.strip() if series_name else ""
+                
+                if series_name:
+                    if league_name.upper() in series_name.upper():
+                        api_league_name = series_name
+                    else:
+                        api_league_name = f"{league_name} {series_name}"
+                else:
+                    api_league_name = league_name
+
                 league_tier = item.get('league', {}).get('tier')
+                
                 is_target_tournament = (league_tier in ['s', 'a']) or any(
-                    kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "S-Tier Series", "StarLadder"]
+                    kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "S-TIER SERIES", "STARLADDER"]
                 )
+                
                 if not is_target_tournament:
                     continue
+                    
                 api_status = item.get('status', 'not_started')
                 current_db_status = status_mapping.get(api_status, "Upcoming")
-                league_logo = item['league'].get('image_url') or "/static/images/default-tournament.png"
-                api_prize = item.get('series', {}).get('prize_pool')
-                final_prize_pool = f"${api_prize}" if api_prize else "TBD"
+                
+                # 2. КРАСИВЫЙ ПАРСИНГ ПРИЗОВОГО ФОНДА
+                api_prize = item.get('series', {}).get('prize_pool') or item.get('tournament', {}).get('prize_pool')
+                if api_prize:
+                    if isinstance(api_prize, str):
+                        clean_prize = api_prize.replace("United States Dollar", "").replace("USD", "").strip()
+                        if clean_prize.isdigit():
+                            final_prize_pool = f"${int(clean_prize):,}"
+                        else:
+                            final_prize_pool = f"${clean_prize}"
+                    elif isinstance(api_prize, (int, float)):
+                        final_prize_pool = f"${int(api_prize):,}"
+                    else:
+                        final_prize_pool = f"${api_prize}"
+                else:
+                    final_prize_pool = "TBD"
+                
                 existing_tournament = Tournament.query.filter(Tournament.name.ilike(api_league_name)).first()
                 if existing_tournament:
                     final_tournament_name = existing_tournament.name
                     if final_prize_pool != "TBD" and existing_tournament.prize_pool == "TBD":
                         existing_tournament.prize_pool = final_prize_pool
                 else:
-                    new_t = Tournament(
-                        name=api_league_name, 
-                        prize_pool=final_prize_pool, 
-                        date="Ongoing", 
-                        xp_reward="100 XP"
-                    )
+                    new_t = Tournament(name=api_league_name, prize_pool=final_prize_pool, date="Ongoing", xp_reward="100 XP")
                     db.session.add(new_t)
                     db.session.commit()
                     final_tournament_name = new_t.name
+                    
                 if not item.get('begin_at'):
                     continue
+                    
                 utc_time = datetime.strptime(item['begin_at'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
                 local_time = utc_time.astimezone(pytz.timezone('Europe/Berlin'))
                 date_str = local_time.strftime("%B %d")  
                 time_str = local_time.strftime("%H:%M")  
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
+                
                 existing_match = Match.query.filter_by(
                     team1=item["opponents"][0]["opponent"]["name"], 
                     team2=item["opponents"][1]["opponent"]["name"], 
                     date=date_str, 
                     time=time_str
                 ).first()
+                
                 if existing_match:
                     if existing_match.status != current_db_status:
-                        print(f"[BG-TASK] Обновлен статус матча {existing_match.team1} vs {existing_match.team2}: {existing_match.status} -> {current_db_status}")
+                        if current_db_status == "Finished":
+                            t1_id = item["opponents"][0]["opponent"]["id"]
+                            t2_id = item["opponents"][1]["opponent"]["id"]
+                            t1_score, t2_score = 0, 0
+                            for res in item.get('results', []):
+                                if res.get('team_id') == t1_id:
+                                    t1_score = res.get('score', 0)
+                                elif res.get('team_id') == t2_id:
+                                    t2_score = res.get('score', 0)
+                            existing_match.final_score = f"{t1_score}:{t2_score}"
                         existing_match.status = current_db_status
                 else:
                     new_match = Match(
@@ -790,32 +839,42 @@ def auto_fetch_pandascore_matches():
                         status=current_db_status
                     )
                     db.session.add(new_match)
-                    print(f"[BG-TASK] Добавлен топовый матч: {new_match.team1} vs {new_match.team2} ({current_db_status})")
+                    
             db.session.commit()
             print("[BG-TASK] DATABASE WAS UPDATED SUCCESSFULLY")
     except Exception as e:
         print(f"[BG-TASK] ERROR: {e}")
 
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12)
+scheduler.start()
+
 @app.route('/test-api-now')
-@admin_required
+@login_required
 def test_api_now():
     if not getattr(current_user, 'is_admin', False):
         flash("У вас нет прав администратора!", "danger")
         return redirect(url_for('index'))
+
     try:
         token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
         url_upcoming = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100"
         url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=50"
+        
         res_upcoming = requests.get(url_upcoming, timeout=10)
         res_past = requests.get(url_past, timeout=10)
+        
         if res_upcoming.status_code != 200:
-            return f"Ошибка API PandaScore! Статус-код: {res_upcoming.status_code}", 400
+            return f"Ошибка API! Статус: {res_upcoming.status_code}", 400
+            
         matches = res_upcoming.json()
         if res_past.status_code == 200:
             matches += res_past.json()
-        print(f"=== STARTING TEST: DOWNLOADED {len(matches)} MATCHES ===")
+            
+        print(f"=== STARTING MANUAL TEST: PARSED {len(matches)} MATCHES ===")
         top_matches_found = 0
         db_changes_count = 0
+        
         status_mapping = {
             "finished": "Finished",
             "running": "Live",
@@ -823,26 +882,53 @@ def test_api_now():
             "postponed": "Postponed",
             "canceled": "Canceled"
         }
+        
         for item in matches:
             if not item.get('opponents') or len(item['opponents']) < 2:
                 continue
+                
+            league_name = item['league']['name'].strip()
+            series_name = item.get('series', {}).get('full_name', '') or item.get('series', {}).get('name', '')
+            series_name = series_name.strip() if series_name else ""
+            
+            if series_name:
+                if league_name.upper() in series_name.upper():
+                    api_league_name = series_name
+                else:
+                    api_league_name = f"{league_name} {series_name}"
+            else:
+                api_league_name = league_name
+
             league_tier = item.get('league', {}).get('tier')
-            api_league_name = item['league']['name'].strip()
-            print(f"Сканируем игру: {item['opponents'][0]['opponent']['name']} vs {item['opponents'][1]['opponent']['name']} | Турнир: {api_league_name} | tier={league_tier}")
+            
             is_target_tournament = (league_tier in ['s', 'a']) or any(
-                kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "S-Tier Series", "StarLadder"]
+                kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "S-TIER SERIES", "STARLADDER"]
             )
+            
             if is_target_tournament:
                 top_matches_found += 1
                 league_logo = item['league'].get('image_url') or "/static/images/default-tournament.png"
-                api_prize = item.get('series', {}).get('prize_pool')
-                final_prize_pool = f"${api_prize}" if api_prize else "TBD"
-                tier_display = league_tier.upper() if league_tier else "UNKNOWN (IEM/MAJOR)"
-                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {tier_display} | Призовой: {final_prize_pool}")
+                
+                api_prize = item.get('series', {}).get('prize_pool') or item.get('tournament', {}).get('prize_pool')
+                if api_prize:
+                    if isinstance(api_prize, str):
+                        clean_prize = api_prize.replace("United States Dollar", "").replace("USD", "").strip()
+                        final_prize_pool = f"${int(clean_prize):,}" if clean_prize.isdigit() else f"${clean_prize}"
+                    elif isinstance(api_prize, (int, float)):
+                        final_prize_pool = f"${int(api_prize):,}"
+                    else:
+                        final_prize_pool = f"${api_prize}"
+                else:
+                    final_prize_pool = "TBD"
+                
+                tier_display = league_tier.upper() if league_tier else "UNKNOWN"
+                print(f"[ПОДХОДИТ] Полное имя: {api_league_name} | Тир: {tier_display} | Призовой: {final_prize_pool}")
                 print(f"Ссылка на логотип: {league_logo}")
                 print("-" * 40)
+                
                 api_status = item.get('status', 'not_started')
                 current_db_status = status_mapping.get(api_status, "Upcoming")
+                
                 existing_tournament = Tournament.query.filter(Tournament.name.ilike(api_league_name)).first()
                 if existing_tournament:
                     final_tournament_name = existing_tournament.name
@@ -851,19 +937,23 @@ def test_api_now():
                     db.session.add(new_t)
                     db.session.commit()
                     final_tournament_name = new_t.name
+                    
                 if not item.get('begin_at'):
                     continue
+                    
                 utc_time = datetime.strptime(item['begin_at'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
                 local_time = utc_time.astimezone(pytz.timezone('Europe/Berlin'))
                 date_str = local_time.strftime("%B %d")  
                 time_str = local_time.strftime("%H:%M")  
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
+                
                 existing_match = Match.query.filter_by(
                     team1=item["opponents"][0]["opponent"]["name"], 
                     team2=item["opponents"][1]["opponent"]["name"], 
                     date=date_str, 
                     time=time_str
                 ).first()
+                
                 if existing_match:
                     if existing_match.status != current_db_status:
                         if current_db_status == "Finished":
@@ -890,11 +980,16 @@ def test_api_now():
                     )
                     db.session.add(new_match)
                     db_changes_count += 1
+                    
         db.session.commit()
-        print(f"=== THE END OF THE TEST. FOUND S/A MATCHES: {top_matches_found} ===")
-        return f"Тест успешно выполнен! В логах обработано {top_matches_found} топ-матчей. База синхронизирована (изменений: {db_changes_count}).", 200
+        print(f"=== THE END OF THE TEST. FOUND: {top_matches_found} ===")
+        return f"Успешно синхронизировано. Изменено записей: {db_changes_count}.", 200
     except Exception as e:
-        return f"Критическая ошибка при тесте: {e}", 500
+        return f"Критическая ошибка: {e}", 500
+
+if __name__ == '__main__':
+    auto_fetch_pandascore_matches()
+    app.run(debug=False)
 
 @app.route("/ping")
 def test_cron():
