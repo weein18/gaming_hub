@@ -783,6 +783,7 @@ def test_api_now():
         response = requests.get(url, timeout=10)
         matches = response.json()
         print(f"=== ADDING MATCHES: {len(matches)}) ===")
+        print(f"Турнир: {api_league_name} | tier={league_tier}")
         for item in matches:
             if not item.get('opponents') or len(item['opponents']) < 2:
                 continue
@@ -792,8 +793,9 @@ def test_api_now():
                 league_logo = item['league'].get('image_url')
                 api_prize = item.get('series', {}).get('prize_pool')
                 final_prize_pool = f"${api_prize}" if api_prize else "TBD"
-                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier.upper()} | Призовой: {final_prize_pool}")
+                print(f"[ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier} | Призовой: {final_prize_pool}")
                 print(f"Ссылка на логотип: {league_logo}")
+                print(f"Турнир: {api_league_name} | tier={league_tier}")
                 print("-" * 40)
         print("=== THE END OF THE TEST ===")
         return f"Тест запущен! Открывай логи Render и смотри, как подтягиваются логотипы и призовые. [ПОДХОДИТ] Турнир: {api_league_name} | Тир: {league_tier}", 200
@@ -803,34 +805,6 @@ def test_api_now():
 @app.route("/ping")
 def test_cron():
     return "ok"
-
-@app.route('/debug-leagues')
-def debug_leagues():
-    token = "sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg"
-    url = f"https://pandascore.co{token}&filter[tier]=s,a&per_page=100"
-    try:
-        response = requests.get(url, timeout=10)
-        leagues = response.json()
-        html = "<h1>Список лиг S и A тира (CS2)</h1>"
-        html += "<table border='1' style='border-collapse: collapse; width: 100%;'>"
-        html += "<tr><th>ID</th><th>Tier</th><th>Name</th><th>Slug</th></tr>"
-        
-        for l in leagues:
-            html += f"""
-            <tr>
-                <td><b>{l['id']}</b></td>
-                <td style='text-transform: uppercase;'>{l['tier']}</td>
-                <td>{l['name']}</td>
-                <td>{l['slug']}</td>
-            </tr>
-            """
-        html += "</table>"
-        all_ids = ",".join([str(l['id']) for l in leagues])
-        html = f"<p><b>Строка для фильтра (league_id):</b> {all_ids}</p>" + html
-        return html
-    except Exception as e:
-        return f"Ошибка: {str(e)}"
-
 
 if __name__ == '__main__':
     auto_fetch_pandascore_matches()
