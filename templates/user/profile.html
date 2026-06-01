@@ -4,7 +4,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap');
 
     :root {
-        --accent: #ff3b3b;
+        --accent: #e30613;
         --accent-dim: rgba(255,59,59,0.12);
         --accent-glow: rgba(255,59,59,0.3);
         --success: #30d158;
@@ -81,9 +81,6 @@
     /* ── Page ── */
     .page-wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 24px 100px; }
 
-    /* ════════════════════════════════════════════
-       HERO BANNER
-    ════════════════════════════════════════════ */
     .profile-hero {
         position: relative;
         min-height: 420px;
@@ -219,9 +216,6 @@
         color: var(--text-tertiary);
     }
 
-    /* ════════════════════════════════════════════
-       STATS BAR
-    ════════════════════════════════════════════ */
     .stats-bar {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -249,9 +243,6 @@
         font-size: 0.6rem; color: var(--text-tertiary); font-weight: 600;
     }
 
-    /* ════════════════════════════════════════════
-       MAIN GRID
-    ════════════════════════════════════════════ */
     .main-grid {
         display: grid;
         grid-template-columns: 1fr 1.4fr;
@@ -384,6 +375,59 @@
         position: absolute; top: 7px; right: 7px;
         width: 6px; height: 6px; border-radius: 50%;
         background: var(--gold); box-shadow: 0 0 6px var(--gold);
+    }
+
+    /* ── Badge Tooltips ── */
+    .badge-item { position: relative; }
+
+    .badge-tooltip {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        background: rgba(18,18,20,0.97);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
+        padding: 9px 13px;
+        width: max-content;
+        max-width: 180px;
+        text-align: center;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        z-index: 100;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .badge-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%; left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(255,255,255,0.12);
+    }
+    .badge-tooltip-title {
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    .badge-tooltip-desc {
+        font-size: 0.62rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+    .badge-item.earned .badge-tooltip-title { color: var(--gold); }
+    .badge-item.locked .badge-tooltip-title { color: var(--text-tertiary); }
+    .badge-item.locked .badge-tooltip-desc::before { content: '🔒 '; }
+
+    .badge-item:hover .badge-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
 
     /* Heatmap */
@@ -574,51 +618,100 @@
                         {% if wins >= 1 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">🎯</div>
                         <div class="badge-name">First Blood</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">First Blood</div>
+                            <div class="badge-tooltip-desc">Win your very first prediction</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if wins >= 10 %}earned{% else %}locked{% endif %}">
                         {% if wins >= 10 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">🔥</div>
                         <div class="badge-name">On Fire</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">On Fire</div>
+                            <div class="badge-tooltip-desc">Reach 10 correct predictions</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if acc >= 50 %}earned{% else %}locked{% endif %}">
                         {% if acc >= 50 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">🧠</div>
                         <div class="badge-name">Analyst</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Analyst</div>
+                            <div class="badge-tooltip-desc">Achieve 50% prediction accuracy</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if acc >= 70 %}earned{% else %}locked{% endif %}">
                         {% if acc >= 70 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">⚡</div>
                         <div class="badge-name">Sharp Mind</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Sharp Mind</div>
+                            <div class="badge-tooltip-desc">Hit 70% accuracy — better than most</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if xp >= 1000 %}earned{% else %}locked{% endif %}">
                         {% if xp >= 1000 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">💎</div>
                         <div class="badge-name">Elite</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Elite</div>
+                            <div class="badge-tooltip-desc">Earn 1,000 XP on the platform</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if wins >= 25 %}earned{% else %}locked{% endif %}">
                         {% if wins >= 25 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">🏆</div>
                         <div class="badge-name">Champion</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Champion</div>
+                            <div class="badge-tooltip-desc">Rack up 25 correct predictions</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if acc >= 80 %}earned{% else %}locked{% endif %}">
                         {% if acc >= 80 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">🎖️</div>
                         <div class="badge-name">Oracle</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Oracle</div>
+                            <div class="badge-tooltip-desc">Reach legendary 80% accuracy</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if xp >= 5000 %}earned{% else %}locked{% endif %}">
                         {% if xp >= 5000 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">👑</div>
                         <div class="badge-name">Royalty</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Royalty</div>
+                            <div class="badge-tooltip-desc">Accumulate 5,000 XP total</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if user.steam_url %}earned{% else %}locked{% endif %}">
                         {% if user.steam_url %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">🎮</div>
                         <div class="badge-name">Connected</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Connected</div>
+                            <div class="badge-tooltip-desc">Link your Steam profile to your account</div>
+                        </div>
                     </div>
+
                     <div class="badge-item {% if user.bio and user.bio|length > 20 %}earned{% else %}locked{% endif %}">
                         {% if user.bio and user.bio|length > 20 %}<div class="badge-earned-dot"></div>{% endif %}
                         <div class="badge-icon">📝</div>
                         <div class="badge-name">Storyteller</div>
+                        <div class="badge-tooltip">
+                            <div class="badge-tooltip-title">Storyteller</div>
+                            <div class="badge-tooltip-desc">Write a bio of at least 20 characters</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -691,26 +784,46 @@
 </div>
 
 <script>
-// Generate a seeded pseudo-random heatmap
-(function() {
+// ── Real Prediction Activity Heatmap ──────────────────────────────
+(function () {
     const grid = document.getElementById('heatmapGrid');
     if (!grid) return;
-    const seed = {{ user.xp }};
-    function rand(n) {
-        let x = Math.sin(n + seed * 0.001) * 10000;
-        return x - Math.floor(x);
-    }
-    const cells = 26 * 7; // ~6 months
-    for (let i = 0; i < cells; i++) {
-        const r = rand(i);
+
+    // Dates injected by Flask: list of "YYYY-MM-DD" strings
+    // In your Flask route add: prediction_dates=[p.created_at.strftime('%Y-%m-%d') for p in all_predictions]
+    const rawDates = {{ prediction_dates | tojson }};
+
+    // Count predictions per date
+    const counts = {};
+    rawDates.forEach(d => { counts[d] = (counts[d] || 0) + 1; });
+
+    // Build 26 weeks × 7 days grid ending today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const totalDays = 26 * 7;
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - totalDays + 1);
+
+    const maxCount = Math.max(...Object.values(counts), 1);
+
+    for (let i = 0; i < totalDays; i++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
+        const key = d.toISOString().slice(0, 10);
+        const c = counts[key] || 0;
+
+        // Normalise to 0–4
         let v = 0;
-        if (r > 0.85) v = 4;
-        else if (r > 0.7) v = 3;
-        else if (r > 0.55) v = 2;
-        else if (r > 0.4) v = 1;
+        if (c > 0) v = Math.min(4, Math.ceil((c / maxCount) * 4));
+
         const cell = document.createElement('div');
         cell.className = 'hm-cell';
         cell.setAttribute('data-v', v);
+
+        // Tooltip on hover
+        const label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        cell.title = c > 0 ? `${c} prediction${c > 1 ? 's' : ''} on ${label}` : `No predictions on ${label}`;
+
         grid.appendChild(cell);
     }
 })();

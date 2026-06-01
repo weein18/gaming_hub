@@ -245,10 +245,15 @@ def profile(username):
     elif xp >= 300:  user.rank = 'Silver II'
     else:            user.rank = 'Silver I'
     db.session.commit()
+    prediction_dates = [
+    p.created_at.strftime('%Y-%m-%d')
+    for p in Prediction.query.filter_by(user_id=user.id).all()
+    ]
     return render_template('user/profile.html', 
                            user=user, 
                            accuracy=accuracy, 
-                           total_wins=correct_preds)
+                           total_wins=correct_preds,
+                           prediction_dates=prediction_dates)
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
