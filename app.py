@@ -108,6 +108,7 @@ class Prediction(db.Model):
     match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
     prediction_score = db.Column(db.String(10), nullable=False)
     is_correct = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -248,6 +249,7 @@ def profile(username):
     prediction_dates = [
     p.created_at.strftime('%Y-%m-%d')
     for p in Prediction.query.filter_by(user_id=user.id).all()
+    if p.created_at is not None
     ]
     return render_template('user/profile.html', 
                            user=user, 
