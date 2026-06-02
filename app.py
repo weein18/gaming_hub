@@ -130,18 +130,18 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-@app.after_request
-def add_security_headers(response):
-    # defens (Clickjacking)
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    # defens( MIME-sniffing)
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    # filter XSS on old
-    response.headers['X-XSS-Protection'] = '1; mode=block'
-    # Content Security Policy (CSP)
-    # defens against XSS
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
-    return response
+# @app.after_request
+# def add_security_headers(response):
+#     # defens (Clickjacking)
+#     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+#     # defens( MIME-sniffing)
+#     response.headers['X-Content-Type-Options'] = 'nosniff'
+#     # filter XSS on old
+#     response.headers['X-XSS-Protection'] = '1; mode=block'
+#     # Content Security Policy (CSP)
+#     # defens against XSS
+#     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+#     return response
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -695,22 +695,17 @@ def user_history(username):
 
 @app.after_request
 def add_security_headers(response):
-    # clickjcking
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    # content guess
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    # CSP
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data: https://cdn-api.pandascore.co; "
-        "img-src 'self' data:; "
+        "img-src 'self' data: https:; "
         "frame-ancestors 'none'; "
         "object-src 'none'; "
         "base-uri 'self';"
     )
-    # (Strict-Transport-Security)
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     return response
 
@@ -719,134 +714,213 @@ def privacy():
     return render_template('privacy.html')
 
 def auto_fetch_pandascore_matches():
-    token = os.getenv('PANDASCORE_TOKEN', 'sBI07XYqWh_1MfcJn6b_O5rb-JkQZWtw_roTnEvAyntaRUVAKlg')
-    url_upcoming = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=50"
-    url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=30"
+    token = os.getenv("PANDASCORE_TOKEN", "")
+    if not token:
+        print("[BG-TASK] Missing PANDASCORE_TOKEN")
+        return
+
+    url_upcoming = f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100"
+    url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=60"
+
+    status_mapping = {
+        "finished": "Finished",
+        "running": "Live",
+        "not_started": "Upcoming",
+        "postponed": "Postponed",
+        "canceled": "Canceled",
+    }
+
+    def format_prize_pool(raw):
+        if raw is None or raw == "":
+            return "TBD"
+        if isinstance(raw, (int, float)):
+            return f"${int(raw):,}"
+        s = str(raw).strip()
+        digits = re.sub(r"[^\d]", "", s)
+        if digits:
+            return f"${int(digits):,}"
+        return s
+
+    def build_tournament_name(league_name, series_name, tournament_name):
+        league_name = (league_name or "").strip()
+        series_name = (series_name or "").strip()
+        tournament_name = (tournament_name or "").strip()
+
+        if tournament_name:
+            return tournament_name
+        if series_name and league_name:
+            if league_name.lower() in series_name.lower():
+                return series_name
+            return f"{league_name} {series_name}"
+        if series_name:
+            return series_name
+        if league_name:
+            return league_name
+        return "Unknown Tournament"
+
     try:
-        res_upcoming = requests.get(url_upcoming, timeout=10)
-        res_past = requests.get(url_past, timeout=10)
+        res_upcoming = requests.get(url_upcoming, timeout=15)
+        res_past = requests.get(url_past, timeout=15)
+
         if res_upcoming.status_code != 200:
-            print(f"[BG-TASK] API ERROR: {res_upcoming.status_code}")
+            print(f"[BG-TASK] Upcoming API ERROR: {res_upcoming.status_code} | {res_upcoming.text}")
             return
+
         matches = res_upcoming.json()
         if res_past.status_code == 200:
             matches += res_past.json()
-        print(f"[BG-TASK] {len(matches)} matches downloaded")
-        status_mapping = {
-            "finished": "Finished",
-            "running": "Live",
-            "not_started": "Upcoming",
-            "postponed": "Postponed",
-            "canceled": "Canceled"
-        }
+        else:
+            print(f"[BG-TASK] Past API WARN: {res_past.status_code}")
+
+        print(f"[BG-TASK] Downloaded {len(matches)} matches")
+
         with app.app_context():
             for item in matches:
-                if not item.get('opponents') or len(item['opponents']) < 2:
+                opponents = item.get("opponents") or []
+                if len(opponents) < 2:
                     continue
-                # --- FULL TOURNAMENT NAME (League + Series) ---
-                league_name = item['league']['name'].strip()
-                series_name = item.get('series', {}).get('full_name', '') or item.get('series', {}).get('name', '')
-                series_name = series_name.strip() if series_name else ""
-                if series_name:
-                    if league_name.upper() in series_name.upper():
-                        api_league_name = series_name
-                    else:
-                        api_league_name = f"{league_name} {series_name}"
-                else:
-                    api_league_name = league_name
-                league_tier = item.get('league', {}).get('tier')
-                is_target = (league_tier in ['s', 'a']) or any(
-                    kw in api_league_name.upper() for kw in ["IEM", "MAJOR", "INTEL EXTREME MASTERS", "ESL", "BLAST", "EPL", "EWC", "STARLADDER"]
+                if not opponents[0].get("opponent") or not opponents[1].get("opponent"):
+                    continue
+
+                league = item.get("league") or {}
+                series = item.get("series") or {}
+                tournament_api = item.get("tournament") or {}
+
+                league_name = league.get("name") or ""
+                series_name = series.get("full_name") or series.get("name") or ""
+                tournament_name_api = tournament_api.get("name") or ""
+
+                api_tournament_name = build_tournament_name(
+                    league_name=league_name,
+                    series_name=series_name,
+                    tournament_name=tournament_name_api,
+                )
+
+                # Keep major / notable tournaments
+                league_tier = (league.get("tier") or "").lower()
+                upper_name = api_tournament_name.upper()
+                is_target = (league_tier in ["s", "a"]) or any(
+                    kw in upper_name
+                    for kw in [
+                        "IEM",
+                        "MAJOR",
+                        "INTEL EXTREME MASTERS",
+                        "ESL",
+                        "BLAST",
+                        "EPL",
+                        "EWC",
+                        "STARLADDER",
+                    ]
                 )
                 if not is_target:
                     continue
-                # --- TOURNAMENT LOGO ---
-                league_logo = (
-                    item['league'].get('image_url') or
-                    item.get('serie', {}).get('image_url') or
-                    item.get('tournament', {}).get('image_url') or
-                    ''
+
+                tournament_logo = (
+                    tournament_api.get("image_url")
+                    or series.get("image_url")
+                    or league.get("image_url")
+                    or ""
                 )
-                # --- PRIZE POOL ---
-                api_prize = item.get('series', {}).get('prize_pool') or item.get('tournament', {}).get('prize_pool')
-                if api_prize:
-                    if isinstance(api_prize, (int, float)):
-                        final_prize_pool = f"${int(api_prize):,}"
-                    else:
-                        clean = str(api_prize).replace("United States Dollar", "").replace("USD", "").strip()
-                        final_prize_pool = f"${int(clean):,}" if clean.isdigit() else f"${clean}"
-                else:
-                    final_prize_pool = "TBD"
-                # --- TEAM LOGOS ---
-                team1_logo = item["opponents"][0]["opponent"].get("image_url") or ''
-                team2_logo = item["opponents"][1]["opponent"].get("image_url") or ''
-                # --- SAVE/UPDATE TOURNAMENT ---
-                existing_tournament = Tournament.query.filter(Tournament.name.ilike(api_league_name)).first()
+
+                raw_prize = (
+                    tournament_api.get("prizepool")
+                    or tournament_api.get("prize_pool")
+                    or series.get("prizepool")
+                    or series.get("prize_pool")
+                    or league.get("prizepool")
+                    or league.get("prize_pool")
+                )
+                final_prize_pool = format_prize_pool(raw_prize)
+
+                existing_tournament = Tournament.query.filter(
+                    Tournament.name.ilike(api_tournament_name)
+                ).first()
+
                 if existing_tournament:
                     final_tournament_name = existing_tournament.name
-                    if final_prize_pool != "TBD" and existing_tournament.prize_pool == "TBD":
+                    if tournament_logo and not existing_tournament.image_url:
+                        existing_tournament.image_url = tournament_logo
+                    if final_prize_pool != "TBD" and (
+                        not existing_tournament.prize_pool or existing_tournament.prize_pool == "TBD"
+                    ):
                         existing_tournament.prize_pool = final_prize_pool
-                    if league_logo and not existing_tournament.image_url:
-                        existing_tournament.image_url = league_logo  # fill logo if missing
                 else:
-                    new_t = Tournament(
-                        name=api_league_name,
+                    new_tournament = Tournament(
+                        name=api_tournament_name,
                         prize_pool=final_prize_pool,
                         date="Ongoing",
                         xp_reward="100 XP",
-                        image_url=league_logo
+                        image_url=tournament_logo,
                     )
-                    db.session.add(new_t)
-                    db.session.commit()
-                    final_tournament_name = new_t.name
-                if not item.get('begin_at'):
+                    db.session.add(new_tournament)
+                    db.session.flush()
+                    final_tournament_name = new_tournament.name
+
+                begin_at = item.get("begin_at")
+                if not begin_at:
                     continue
-                utc_time = datetime.strptime(item['begin_at'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
-                local_time = utc_time.astimezone(pytz.timezone('Europe/Berlin'))
+
+                utc_time = datetime.strptime(begin_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc)
+                local_time = utc_time.astimezone(pytz.timezone("Europe/Berlin"))
                 date_str = local_time.strftime("%B %d")
                 time_str = local_time.strftime("%H:%M")
+
+                team1_obj = opponents[0]["opponent"]
+                team2_obj = opponents[1]["opponent"]
+
+                team1_name = team1_obj.get("name") or "TBD"
+                team2_name = team2_obj.get("name") or "TBD"
+                team1_logo = team1_obj.get("image_url") or ""
+                team2_logo = team2_obj.get("image_url") or ""
+
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
-                api_status = item.get('status', 'not_started')
-                current_db_status = status_mapping.get(api_status, "Upcoming")
+                current_db_status = status_mapping.get(item.get("status", "not_started"), "Upcoming")
+
                 existing_match = Match.query.filter_by(
-                    team1=item["opponents"][0]["opponent"]["name"],
-                    team2=item["opponents"][1]["opponent"]["name"],
+                    team1=team1_name,
+                    team2=team2_name,
                     date=date_str,
-                    time=time_str
+                    time=time_str,
                 ).first()
+
                 if existing_match:
+                    existing_match.tournament_name = final_tournament_name
                     if team1_logo and not existing_match.team1_logo:
                         existing_match.team1_logo = team1_logo
                     if team2_logo and not existing_match.team2_logo:
                         existing_match.team2_logo = team2_logo
+                    existing_match.match_type = match_type_str
+
                     if existing_match.status != current_db_status:
                         if current_db_status == "Finished":
-                            t1_id = item["opponents"][0]["opponent"]["id"]
-                            t2_id = item["opponents"][1]["opponent"]["id"]
+                            t1_id = team1_obj.get("id")
+                            t2_id = team2_obj.get("id")
                             t1_score, t2_score = 0, 0
-                            for res in item.get('results', []):
-                                if res.get('team_id') == t1_id:
-                                    t1_score = res.get('score', 0)
-                                elif res.get('team_id') == t2_id:
-                                    t2_score = res.get('score', 0)
+                            for res in item.get("results", []):
+                                if res.get("team_id") == t1_id:
+                                    t1_score = res.get("score", 0)
+                                elif res.get("team_id") == t2_id:
+                                    t2_score = res.get("score", 0)
                             existing_match.final_score = f"{t1_score}:{t2_score}"
                         existing_match.status = current_db_status
                 else:
-                    new_match = Match(
-                        tournament_name=final_tournament_name,
-                        team1=item["opponents"][0]["opponent"]["name"],
-                        team2=item["opponents"][1]["opponent"]["name"],
-                        team1_logo=team1_logo,
-                        team2_logo=team2_logo,
-                        date=date_str,
-                        time=time_str,
-                        match_type=match_type_str,
-                        status=current_db_status
+                    db.session.add(
+                        Match(
+                            tournament_name=final_tournament_name,
+                            team1=team1_name,
+                            team2=team2_name,
+                            team1_logo=team1_logo,
+                            team2_logo=team2_logo,
+                            date=date_str,
+                            time=time_str,
+                            status=current_db_status,
+                            match_type=match_type_str,
+                        )
                     )
-                    db.session.add(new_match)
-                    print(f"[BG-TASK] Added: {new_match.team1} vs {new_match.team2}")
+
             db.session.commit()
             print("[BG-TASK] DATABASE UPDATED SUCCESSFULLY")
+
     except Exception as e:
         print(f"[BG-TASK] ERROR: {e}")
 scheduler = BackgroundScheduler()
