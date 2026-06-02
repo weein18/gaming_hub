@@ -758,6 +758,14 @@ def auto_fetch_pandascore_matches():
             return league_name
         return "Unknown Tournament"
 
+    def normalize_logo_url(url):
+        if not url:
+            return ""
+        url = str(url).strip()
+        if url.startswith("http://"):
+            return "https://" + url[len("http://"):]
+        return url
+
     try:
         res_upcoming = requests.get(url_upcoming, timeout=15)
         res_past = requests.get(url_past, timeout=15)
@@ -796,7 +804,6 @@ def auto_fetch_pandascore_matches():
                     tournament_name=tournament_name_api,
                 )
 
-                # Keep major / notable tournaments
                 league_tier = (league.get("tier") or "").lower()
                 upper_name = api_tournament_name.upper()
                 is_target = (league_tier in ["s", "a"]) or any(
@@ -815,7 +822,7 @@ def auto_fetch_pandascore_matches():
                 if not is_target:
                     continue
 
-                tournament_logo = (
+                tournament_logo = normalize_logo_url(
                     tournament_api.get("image_url")
                     or series.get("image_url")
                     or league.get("image_url")
@@ -838,8 +845,16 @@ def auto_fetch_pandascore_matches():
 
                 if existing_tournament:
                     final_tournament_name = existing_tournament.name
+
+                    # Fix old stored non-https logos
+                    if existing_tournament.image_url and existing_tournament.image_url.startswith("http://"):
+                        existing_tournament.image_url = normalize_logo_url(existing_tournament.image_url)
+
+                    # Fill missing logo
                     if tournament_logo and not existing_tournament.image_url:
                         existing_tournament.image_url = tournament_logo
+
+                    # Update prize only when we got better value
                     if final_prize_pool != "TBD" and (
                         not existing_tournament.prize_pool or existing_tournament.prize_pool == "TBD"
                     ):
@@ -870,8 +885,8 @@ def auto_fetch_pandascore_matches():
 
                 team1_name = team1_obj.get("name") or "TBD"
                 team2_name = team2_obj.get("name") or "TBD"
-                team1_logo = team1_obj.get("image_url") or ""
-                team2_logo = team2_obj.get("image_url") or ""
+                team1_logo = normalize_logo_url(team1_obj.get("image_url") or "")
+                team2_logo = normalize_logo_url(team2_obj.get("image_url") or "")
 
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
                 current_db_status = status_mapping.get(item.get("status", "not_started"), "Upcoming")

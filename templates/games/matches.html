@@ -44,9 +44,9 @@
                             z-index: 0;">
                 </div>
                 <img src="{{ tour.image_url if tour.image_url else url_for('static', filename='img/tournaments/default.png') }}"
-                    alt="{{ tour.name }} logo"
-                    style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45; z-index:0;"
-                    onerror="this.src='{{ url_for('static', filename='img/tournaments/default.png') }}'">
+                        alt="{{ tour.name }} logo"
+                        style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45; z-index:0;"
+                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/tournaments/default.png') }}';">
                 
                 <div style="position: relative; z-index: 2; padding: 40px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                     
