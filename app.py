@@ -15,6 +15,9 @@ import pytz
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
+from sqlalchemy import or_, func
+
+
 
 
 
@@ -222,12 +225,30 @@ def login():
 
 @app.route('/matches')
 def matches():
-    upcoming_tournament_names = db.session.query(Match.tournament_name).filter(
+    upcoming_names_raw = db.session.query(Match.tournament_name).filter(
         Match.status == 'Upcoming'
     ).distinct().all()
-    active_names = [t[0] for t in upcoming_tournament_names]
-    active_tournaments = Tournament.query.filter(Tournament.name.in_(active_names)).all()
-    return render_template('games/matches.html', tournaments=active_tournaments)
+    active_names = [n[0].strip() for n in upcoming_names_raw if n and n[0]]
+    tournaments_for_page = []
+    for name in active_names:
+        t = Tournament.query.filter(func.lower(Tournament.name) == name.lower()).first()
+        if not t:
+            t = Tournament.query.filter(
+                or_(
+                    Tournament.name.ilike(f"%{name}%"),
+                    func.lower(name).contains(func.lower(Tournament.name))
+                )
+            ).first()
+        if not t:
+            t = Tournament(
+                name=name,
+                prize_pool="TBD",
+                date="Ongoing",
+                xp_reward="100 XP",
+                image_url=""
+            )
+        tournaments_for_page.append(t)
+    return render_template('games/matches.html', tournaments=tournaments_for_page)
 
 @app.route('/profile/<username>')
 @login_required
