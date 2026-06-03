@@ -4,7 +4,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap');
 
     :root {
-        --accent: #ff3b3b;
+        --accent: #e30613;
         --accent-dim: rgba(255,59,59,0.12);
         --success: #30d158;
         --warning: #ff9f0a;
@@ -478,8 +478,9 @@
                 <!-- Team 1 -->
                 <div class="team-side">
                     <div class="team-logo-wrap">
-                        <img src="{{ url_for('static', filename='img/team_logos/' + (match.team1|lower|replace(' ','_') if match.team1 else 'default') + '.png') }}"
-                             onerror="this.src='https://via.placeholder.com/88?text=?'" alt="{{ match.team1 }}">
+                        <img src="{{ match.team1_logo if match.team1_logo else url_for('static', filename='img/team_logos/' + (match.team1|lower|replace(' ','_') if match.team1 else 'default') + '.png') }}"
+                                onerror="this.src='https://via.placeholder.com/88?text=?'"
+                                alt="{{ match.team1 }}">
                     </div>
                     <div class="team-name">{{ match.team1 }}</div>
                 </div>
@@ -497,8 +498,9 @@
                 <!-- Team 2 -->
                 <div class="team-side right">
                     <div class="team-logo-wrap">
-                        <img src="{{ url_for('static', filename='img/team_logos/' + (match.team2|lower|replace(' ','_') if match.team2 else 'default') + '.png') }}"
-                             onerror="this.src='https://via.placeholder.com/88?text=?'" alt="{{ match.team2 }}">
+                        <img src="{{ match.team2_logo if match.team2_logo else url_for('static', filename='img/team_logos/' + (match.team2|lower|replace(' ','_') if match.team2 else 'default') + '.png') }}"
+                                onerror="this.src='https://via.placeholder.com/88?text=?'"
+                                alt="{{ match.team2 }}">
                     </div>
                     <div class="team-name">{{ match.team2 }}</div>
                 </div>
