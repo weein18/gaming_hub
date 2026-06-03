@@ -5,513 +5,556 @@
 
     :root {
         --accent: #ff3b3b;
-        --accent-soft: rgba(255, 59, 59, 0.12);
-        --accent-border: rgba(255, 59, 59, 0.28);
+        --accent-dim: rgba(255,59,59,0.12);
         --success: #30d158;
-        --danger: #ff453a;
-        --glass-bg: rgba(28, 28, 30, 0.74);
-        --glass-bg-light: rgba(44, 44, 46, 0.58);
-        --glass-border: rgba(255, 255, 255, 0.09);
-        --text-primary: #fff;
-        --text-secondary: rgba(255, 255, 255, 0.56);
-        --text-tertiary: rgba(255, 255, 255, 0.33);
-        --radius-xl: 24px;
-        --radius-lg: 16px;
-        --radius-md: 12px;
-        --blur: blur(36px) saturate(190%);
-        --shadow-glass: 0 12px 36px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        --warning: #ff9f0a;
+        --glass-bg: rgba(28,28,30,0.72);
+        --glass-bg-light: rgba(44,44,46,0.55);
+        --glass-border: rgba(255,255,255,0.09);
+        --glass-shine: rgba(255,255,255,0.04);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255,255,255,0.55);
+        --text-tertiary: rgba(255,255,255,0.28);
+        --blur: blur(40px) saturate(200%);
+        --r-xl: 22px; --r-lg: 16px; --r-md: 12px;
+        --shadow-glass: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
     }
 
-    body {
-        font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #000; font-family: 'Geist', -apple-system, sans-serif; color: var(--text-primary); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-    .tour-bg {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        overflow: hidden;
+    /* ── Atmosphere ── */
+    .atmo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .atmo::before {
+        content: ''; position: absolute; top: -20%; left: -10%;
+        width: 65vw; height: 65vw; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,59,59,0.06) 0%, transparent 65%);
+        filter: blur(60px); animation: drift1 20s ease-in-out infinite;
     }
-    .tour-bg::before {
-        content: '';
-        position: absolute;
-        width: 70vw;
-        height: 70vw;
-        top: -25%;
-        left: -10%;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255, 59, 59, 0.08) 0%, transparent 65%);
-        filter: blur(60px);
+    .atmo::after {
+        content: ''; position: absolute; bottom: -10%; right: -15%;
+        width: 50vw; height: 50vw; border-radius: 50%;
+        background: radial-gradient(circle, rgba(10,132,255,0.04) 0%, transparent 65%);
+        filter: blur(60px); animation: drift2 26s ease-in-out infinite;
     }
-    .tour-bg::after {
-        content: '';
-        position: absolute;
-        width: 55vw;
-        height: 55vw;
-        right: -15%;
-        bottom: -10%;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(10, 132, 255, 0.05) 0%, transparent 65%);
-        filter: blur(60px);
-    }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,4%)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
 
-    .tour-page {
-        position: relative;
-        z-index: 1;
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 128px 24px 70px;
-    }
-
-    .tour-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 18px;
-        margin-bottom: 28px;
-    }
-    .tour-head-left { max-width: 980px; }
-    .tour-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
-        border-radius: 100px;
-        font-size: 0.58rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        font-weight: 800;
-        color: var(--accent);
-        background: var(--accent-soft);
-        border: 1px solid var(--accent-border);
-        margin-bottom: 14px;
-    }
-    .tour-kicker-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--accent);
-        box-shadow: 0 0 10px var(--accent);
-    }
-    .tour-title {
-        font-size: clamp(2.2rem, 4.6vw, 4.4rem);
-        font-weight: 900;
-        letter-spacing: -0.04em;
-        line-height: 0.95;
-        text-transform: uppercase;
-        margin: 0;
-    }
-    .tour-sub {
-        margin-top: 10px;
-        font-size: 0.72rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        font-weight: 700;
-        color: var(--text-tertiary);
-    }
-    .tour-head-right {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 16px;
-        border-radius: 999px;
-        font-size: 0.64rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        font-weight: 700;
-        color: var(--text-secondary);
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg-light);
-        backdrop-filter: blur(16px);
-        white-space: nowrap;
-    }
-
-    .day-tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 26px;
-    }
-    .day-tab {
-        text-decoration: none;
-        color: var(--text-secondary);
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg-light);
-        border-radius: 999px;
-        padding: 9px 16px;
-        font-size: 0.62rem;
-        letter-spacing: 0.13em;
-        text-transform: uppercase;
-        font-weight: 800;
-        transition: all 0.2s ease;
-    }
-    .day-tab:hover {
-        color: var(--text-primary);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-    .day-tab.active {
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent), #e30613);
-        border-color: rgba(255, 59, 59, 0.35);
-        box-shadow: 0 8px 24px rgba(255, 59, 59, 0.35);
-    }
-
-    .matches-wrap {
-        display: grid;
-        gap: 18px;
-    }
-
-    .match-shell {
-        position: relative;
-        border: 1px solid var(--glass-border);
+    /* ── Glass ── */
+    .glass {
         background: var(--glass-bg);
-        backdrop-filter: var(--blur);
-        border-radius: var(--radius-xl);
+        backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-xl);
         box-shadow: var(--shadow-glass);
-        overflow: hidden;
-        transition: border-color 0.25s ease, transform 0.25s ease;
+        position: relative; overflow: hidden;
+        transition: border-color 0.3s, box-shadow 0.3s;
     }
-    .match-shell:hover {
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-    }
-    .match-shell-head {
-        padding: 24px 26px 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-    }
-    .bo-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        border-radius: 999px;
-        padding: 5px 11px;
-        font-size: 0.55rem;
-        font-weight: 800;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        color: var(--text-tertiary);
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .status-pill {
-        border-radius: 999px;
-        padding: 5px 11px;
-        font-size: 0.55rem;
-        font-weight: 800;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--text-secondary);
-        background: rgba(255, 255, 255, 0.04);
-    }
-    .status-pill.live {
-        color: #fff;
-        border-color: rgba(255, 69, 58, 0.45);
-        background: rgba(255, 69, 58, 0.22);
-    }
-    .status-pill.finished {
-        color: #fff;
-        border-color: rgba(48, 209, 88, 0.45);
-        background: rgba(48, 209, 88, 0.2);
+    .glass::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--glass-shine) 0%, transparent 50%);
+        pointer-events: none; border-radius: inherit;
     }
 
-    .match-main {
-        display: grid;
-        grid-template-columns: 1fr 140px 1fr;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 26px 26px;
+    /* ── Page ── */
+    .page-wrap {
+        position: relative; z-index: 1;
+        max-width: 1100px; margin: 0 auto;
+        padding: 120px 24px 80px;
     }
-    .team {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .team.right {
-        justify-content: flex-end;
-        flex-direction: row-reverse;
-        text-align: right;
-    }
-    .team-logo {
-        width: 88px;
-        height: 88px;
-        border-radius: 20px;
-        padding: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.03);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    .team-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.12));
-    }
-    .team-name {
-        font-size: clamp(1.2rem, 2vw, 2rem);
-        letter-spacing: -0.03em;
-        font-weight: 850;
-        line-height: 1.06;
-        margin: 0;
-    }
-    .mid-info {
+
+    /* ── Tournament Header ── */
+    .tourn-header {
         text-align: center;
+        margin-bottom: 40px;
+        animation: fadeUp 0.5s ease both;
     }
-    .mid-vs {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 52px;
-        height: 28px;
-        border-radius: 999px;
-        font-size: 0.56rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        font-weight: 900;
-        color: var(--accent);
-        background: var(--accent-soft);
-        border: 1px solid var(--accent-border);
-        margin-bottom: 8px;
+    .tourn-eyebrow {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 5px 14px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(255,59,59,0.25);
+        border-radius: 100px;
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 18px;
     }
-    .mid-time {
-        font-size: 0.88rem;
-        font-weight: 700;
-        color: var(--text-secondary);
+    .tourn-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s infinite; }
+    .tourn-title {
+        font-size: clamp(2rem, 5vw, 4rem);
+        font-weight: 900; letter-spacing: -0.04em;
+        text-transform: uppercase; line-height: 1;
     }
 
-    .predict-wrap {
-        border-top: 1px solid rgba(255, 255, 255, 0.07);
-        padding: 18px 22px 22px;
+    /* ── Day selector ── */
+    .day-selector {
+        display: flex; align-items: center; justify-content: center;
+        gap: 8px; flex-wrap: wrap;
+        margin-bottom: 40px;
+        animation: fadeUp 0.5s ease 0.05s both;
     }
-    .predict-label {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-        gap: 10px;
+    .day-btn {
+        display: inline-flex; flex-direction: column; align-items: center;
+        padding: 10px 20px;
+        background: var(--glass-bg-light);
+        backdrop-filter: var(--blur);
+        border: 1px solid var(--glass-border);
+        border-radius: 100px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-family: inherit; font-size: 0.65rem; font-weight: 800;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        transition: all 0.25s;
+        cursor: pointer;
     }
-    .predict-title {
-        font-size: 0.6rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        font-weight: 800;
+    .day-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
+    .day-btn.active {
+        background: var(--accent); border-color: var(--accent);
+        color: #fff; box-shadow: 0 6px 20px rgba(255,59,59,0.35);
+    }
+    .day-btn-date { font-size: 0.52rem; font-weight: 600; opacity: 0.7; margin-top: 2px; }
+    .day-btn.active .day-btn-date { opacity: 0.85; }
+
+    /* ── Match list ── */
+    .matches-list { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Match Card ── */
+    .match-card {
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .match-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .match-card.finished { border-color: rgba(255,255,255,0.06); }
+    .match-card.live { border-color: rgba(255,59,59,0.35) !important; box-shadow: 0 0 0 1px rgba(255,59,59,0.15), var(--shadow-glass) !important; }
+
+    /* ── Match top bar ── */
+    .match-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .match-topbar-left { display: flex; align-items: center; gap: 10px; }
+    .match-type-badge {
+        display: inline-flex; align-items: center;
+        padding: 4px 10px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 100px;
+        font-size: 0.56rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--text-secondary);
+    }
+    .live-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        background: rgba(255,59,59,0.12);
+        border: 1px solid rgba(255,59,59,0.3);
+        border-radius: 100px;
+        font-size: 0.56rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--accent);
+    }
+    .live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 1.4s infinite; }
+    .upcoming-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        background: rgba(255,159,10,0.1);
+        border: 1px solid rgba(255,159,10,0.25);
+        border-radius: 100px;
+        font-size: 0.56rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--warning);
+    }
+    .finished-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 100px;
+        font-size: 0.56rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
         color: var(--text-tertiary);
     }
-    .result-pill {
-        font-size: 0.56rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        padding: 5px 10px;
-        border-radius: 999px;
-        border: 1px solid;
+
+    /* Result pill (WIN/LOSS) in topbar right */
+    .result-pill-win {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 14px;
+        background: rgba(48,209,88,0.12);
+        border: 1px solid rgba(48,209,88,0.3);
+        border-radius: 100px;
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: var(--success);
     }
-    .result-pill.win {
-        color: #fff;
-        background: rgba(48, 209, 88, 0.24);
-        border-color: rgba(48, 209, 88, 0.46);
-    }
-    .result-pill.loss {
-        color: #fff;
-        background: rgba(255, 69, 58, 0.24);
-        border-color: rgba(255, 69, 58, 0.46);
+    .result-pill-loss {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 14px;
+        background: rgba(255,59,59,0.12);
+        border: 1px solid rgba(255,59,59,0.3);
+        border-radius: 100px;
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: var(--accent);
     }
 
-    .predict-grid {
+    /* ── Match arena (teams) ── */
+    .match-arena {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
-        gap: 10px;
+        grid-template-columns: 1fr 160px 1fr;
+        align-items: center;
+        padding: 36px 32px 28px;
+        position: relative;
+        overflow: hidden;
     }
-    .pred-btn {
-        width: 100%;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.11);
-        background: rgba(255, 255, 255, 0.04);
+
+    /* Team glow orbs in background */
+    .match-arena::before {
+        content: '';
+        position: absolute; top: 0; left: 0; bottom: 0;
+        width: 45%;
+        background: radial-gradient(ellipse at left center, rgba(255,255,255,0.02) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .match-arena::after {
+        content: '';
+        position: absolute; top: 0; right: 0; bottom: 0;
+        width: 45%;
+        background: radial-gradient(ellipse at right center, rgba(255,255,255,0.02) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .team-side { display: flex; align-items: center; gap: 20px; position: relative; z-index: 1; }
+    .team-side.right { flex-direction: row-reverse; }
+
+    .team-logo-wrap {
+        width: 88px; height: 88px; flex-shrink: 0;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        padding: 14px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .match-card:hover .team-logo-wrap {
+        border-color: rgba(255,255,255,0.12);
+        box-shadow: 0 0 24px rgba(255,255,255,0.04);
+    }
+    .team-logo-wrap img {
+        width: 100%; height: 100%; object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.08));
+        transition: filter 0.3s;
+    }
+    .match-card:hover .team-logo-wrap img { filter: drop-shadow(0 0 14px rgba(255,255,255,0.18)); }
+
+    .team-name { font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 900; letter-spacing: -0.03em; }
+    .team-side.right .team-name { text-align: right; }
+
+    /* Center VS */
+    .arena-center { text-align: center; position: relative; z-index: 1; }
+    .vs-label {
+        font-size: 0.7rem; font-weight: 900;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--accent); display: block;
+        margin-bottom: 6px;
+    }
+    .match-time {
+        font-size: 1.1rem; font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text-primary);
+    }
+    .final-score-display {
+        font-size: 2rem; font-weight: 900;
+        letter-spacing: -0.04em;
+        color: var(--text-primary);
+        line-height: 1;
+    }
+
+    /* ── Prediction zone ── */
+    .predict-zone {
+        padding: 20px 24px 24px;
+        border-top: 1px solid rgba(255,255,255,0.04);
+        background: rgba(0,0,0,0.15);
+    }
+    .predict-zone-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 16px;
+    }
+    .predict-zone-label {
+        font-size: 0.55rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--text-tertiary);
+    }
+    .your-pick-pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        background: rgba(255,59,59,0.1);
+        border: 1px solid rgba(255,59,59,0.2);
+        border-radius: 100px;
+        font-size: 0.58rem; font-weight: 800;
+        color: var(--accent);
+    }
+
+    /* Score buttons grid */
+    .score-grid {
+        display: flex; gap: 8px; flex-wrap: wrap;
+    }
+
+    .score-btn {
+        flex: 1; min-width: 64px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px;
+        padding: 14px 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1.5px solid rgba(255,255,255,0.09);
+        border-radius: var(--r-md);
         color: var(--text-secondary);
-        font-size: 0.76rem;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-        padding: 12px 8px;
+        font-family: inherit; font-size: 1rem; font-weight: 800;
         cursor: pointer;
         transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
     }
-    .pred-btn:hover:not(:disabled) {
-        color: #fff;
-        border-color: rgba(255, 255, 255, 0.22);
-        transform: translateY(-1px);
+    .score-btn::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+        pointer-events: none;
     }
-    .pred-btn.active-pred {
-        color: #fff;
-        border-color: rgba(255, 59, 59, 0.45);
-        background: rgba(255, 59, 59, 0.24);
-        box-shadow: 0 0 14px rgba(255, 59, 59, 0.25);
+    .score-btn:hover:not(:disabled) {
+        background: rgba(255,59,59,0.1);
+        border-color: rgba(255,59,59,0.35);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,59,59,0.15);
     }
-    .pred-btn:disabled {
-        cursor: not-allowed;
+    .score-btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+
+    /* Selected */
+    .score-btn.selected {
+        background: rgba(255,59,59,0.15) !important;
+        border-color: var(--accent) !important;
+        color: var(--text-primary) !important;
+        box-shadow: 0 0 0 1px rgba(255,59,59,0.3), 0 6px 20px rgba(255,59,59,0.2) !important;
     }
-    .pred-btn:disabled:not([style*="background"]) {
-        opacity: 0.2;
-        filter: grayscale(1);
+    .score-btn.selected::after {
+        content: '✓';
+        position: absolute; top: 5px; right: 7px;
+        font-size: 0.5rem; font-weight: 900;
+        color: var(--accent); opacity: 0.8;
     }
 
-    .no-matches {
-        padding: 28px;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg-light);
-        color: var(--text-secondary);
-        text-align: center;
-        font-size: 0.9rem;
-        font-weight: 600;
+    /* Correct answer */
+    .score-btn.correct {
+        background: rgba(48,209,88,0.12) !important;
+        border-color: rgba(48,209,88,0.4) !important;
+        color: var(--success) !important;
+        box-shadow: 0 0 20px rgba(48,209,88,0.12) !important;
+    }
+    /* Wrong answer (user picked this) */
+    .score-btn.wrong {
+        background: rgba(255,59,59,0.12) !important;
+        border-color: rgba(255,59,59,0.4) !important;
+        color: var(--accent) !important;
+    }
+    /* Other options after finish */
+    .score-btn.faded {
+        opacity: 0.15;
+        pointer-events: none;
     }
 
-    @media (max-width: 980px) {
-        .tour-page { padding-left: 14px; padding-right: 14px; }
-        .tour-head { flex-direction: column; align-items: flex-start; }
-        .match-main { grid-template-columns: 1fr; gap: 14px; }
-        .team, .team.right {
-            justify-content: flex-start;
-            flex-direction: row;
-            text-align: left;
-        }
-        .mid-info { text-align: left; padding-left: 4px; }
+    .score-btn:disabled { cursor: not-allowed; pointer-events: none; }
+
+    /* Popularity bar under score */
+    .score-btn-pop {
+        font-size: 0.48rem; font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--text-tertiary);
+        transition: color 0.2s;
+    }
+    .score-btn:hover .score-btn-pop { color: rgba(255,59,59,0.7); }
+    .score-btn.selected .score-btn-pop { color: rgba(255,59,59,0.8); }
+
+    /* ── Analytics link ── */
+    .analytics-link {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--text-tertiary); text-decoration: none;
+        transition: color 0.2s, gap 0.2s;
+        margin-top: 14px;
+    }
+    .analytics-link:hover { color: var(--accent); gap: 9px; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    @keyframes popIn { 0%{transform:scale(0.85);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+    .match-card { animation: fadeUp 0.5s ease both; }
+    .match-card:nth-child(1) { animation-delay: 0.08s; }
+    .match-card:nth-child(2) { animation-delay: 0.14s; }
+    .match-card:nth-child(3) { animation-delay: 0.20s; }
+    .match-card:nth-child(4) { animation-delay: 0.26s; }
+    .match-card:nth-child(5) { animation-delay: 0.32s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+        .match-arena { grid-template-columns: 1fr 80px 1fr; padding: 24px 16px 20px; gap: 0; }
+        .team-logo-wrap { width: 56px; height: 56px; padding: 10px; border-radius: 14px; }
+        .team-name { font-size: 1rem; }
+        .team-side { gap: 10px; }
+        .score-btn { min-width: 50px; padding: 12px 6px; font-size: 0.9rem; }
+        .page-wrap { padding: 110px 14px 60px; }
     }
 </style>
 
-<div class="tour-bg"></div>
+<div class="atmo"></div>
 
-<div class="tour-page">
-    <div class="tour-head">
-        <div class="tour-head-left">
-            <div class="tour-kicker">
-                <span class="tour-kicker-dot"></span>
-                Official Event Hub
-            </div>
-            <h1 class="tour-title">{{ tournament_name.replace('-', ' ') }}</h1>
-            <div class="tour-sub">Choose match day and lock your score predictions</div>
+<div class="page-wrap">
+
+    <!-- ── Tournament Header ── -->
+    <div class="tourn-header">
+        <div class="tourn-eyebrow">
+            <span class="tourn-eyebrow-dot"></span>
+            Official Event Hub
         </div>
-        <div class="tour-head-right">
-            {{ all_dates|length }} day{% if all_dates|length != 1 %}s{% endif %} available
-        </div>
+        <div class="tourn-title">{{ tournament_name.replace('-', ' ').upper() }}</div>
     </div>
 
-    <div class="day-tabs">
+    <!-- ── Day Selector ── -->
+    {% if all_dates | length > 1 %}
+    <div class="day-selector">
         {% for date in all_dates %}
-            <a
-                href="{{ url_for('tournament', name=tournament_name, date=date) }}"
-                class="day-tab {% if date == current_date %}active{% endif %}"
-            >
-                Day {{ loop.index }} · {{ date }}
-            </a>
+        <a href="{{ url_for('tournament', name=tournament_name, date=date) }}"
+           class="day-btn {% if date == current_date %}active{% endif %}">
+            Day {{ loop.index }}
+            <span class="day-btn-date">{{ date }}</span>
+        </a>
         {% endfor %}
     </div>
+    {% endif %}
 
-    <div class="matches-wrap">
+    <!-- ── Match List ── -->
+    <div class="matches-list">
         {% for match in matches %}
-            <div class="match-shell">
-                <div class="match-shell-head">
-                    <div class="bo-pill">{{ match.match_type if match.match_type else "BO3" }}</div>
-                    <div class="status-pill {% if match.status == 'Live' %}live{% elif match.status == 'Finished' %}finished{% endif %}">
-                        {{ match.status if match.status else "Upcoming" }}
-                    </div>
+        {% set current_pred = user_preds.get(match.id) %}
+        {% set is_finished = (match.status == 'Finished') %}
+        {% set is_live = (not is_finished and match.is_started()) %}
+
+        <div class="glass match-card {% if is_finished %}finished{% elif is_live %}live{% endif %}"
+             onclick="window.location='{{ url_for('match_analytics', match_id=match.id) }}';">
+
+            <!-- Top bar -->
+            <div class="match-topbar">
+                <div class="match-topbar-left">
+                    <span class="match-type-badge">{{ match.match_type if match.match_type else 'BO3' }}</span>
+                    {% if is_live %}
+                        <span class="live-badge"><span class="live-dot"></span> Live</span>
+                    {% elif is_finished %}
+                        <span class="finished-badge">Finished</span>
+                    {% else %}
+                        <span class="upcoming-badge">Upcoming</span>
+                    {% endif %}
                 </div>
-
-                <div class="match-main" onclick="window.location='{{ url_for('match_analytics', match_id=match.id) }}';" style="cursor: pointer;">
-                    <div class="team">
-                        <div class="team-logo">
-                            <img
-                                src="{{ match.team1_logo if match.team1_logo else url_for('static', filename='img/team_logos/' + (match.team1|lower|replace(' ', '_') if match.team1 else 'default') + '.png') }}"
-                                alt="{{ match.team1 }}"
-                                onerror="this.src='https://via.placeholder.com/120?text=LOGO'"
-                            >
-                        </div>
-                        <h3 class="team-name">{{ match.team1 }}</h3>
-                    </div>
-
-                    <div class="mid-info">
-                        <div class="mid-vs">VS</div>
-                        <div class="mid-time">{{ match.time }}</div>
-                    </div>
-
-                    <div class="team right">
-                        <div class="team-logo">
-                            <img
-                                src="{{ match.team2_logo if match.team2_logo else url_for('static', filename='img/team_logos/' + (match.team2|lower|replace(' ', '_') if match.team2 else 'default') + '.png') }}"
-                                alt="{{ match.team2 }}"
-                                onerror="this.src='https://via.placeholder.com/120?text=LOGO'"
-                            >
-                        </div>
-                        <h3 class="team-name">{{ match.team2 }}</h3>
-                    </div>
-                </div>
-
-                <div class="predict-wrap" onclick="event.stopPropagation();">
-                    {% set current_pred = user_preds.get(match.id) %}
-                    <div class="predict-label">
-                        <span class="predict-title">Secure your prediction</span>
-                        {% if match.status == 'Finished' and current_pred %}
-                            <span class="result-pill {% if current_pred == match.final_score %}win{% else %}loss{% endif %}">
-                                {{ 'Win' if current_pred == match.final_score else 'Loss' }}
-                            </span>
-                        {% endif %}
-                    </div>
-
-                    <form action="{{ url_for('predict', match_id=match.id) }}" method="POST" class="predict-grid">
-                        {% if match.match_type == 'BO5' %}
-                            {% set scores = ['3-0', '3-1', '3-2', '2-3', '1-3', '0-3'] %}
-                        {% elif match.match_type == 'BO1' %}
-                            {% set scores = ['1-0', '0-1'] %}
+                <div>
+                    {% if is_finished and current_pred %}
+                        {% if current_pred == match.final_score %}
+                            <span class="result-pill-win">✓ Correct</span>
                         {% else %}
-                            {% set scores = ['2-0', '2-1', '1-2', '0-2'] %}
+                            <span class="result-pill-loss">✗ Wrong pick</span>
                         {% endif %}
+                    {% elif not is_finished and current_pred %}
+                        <span class="your-pick-pill">⚡ Picked: {{ current_pred }}</span>
+                    {% endif %}
+                </div>
+            </div>
 
+            <!-- Arena -->
+            <div class="match-arena">
+                <!-- Team 1 -->
+                <div class="team-side">
+                    <div class="team-logo-wrap">
+                        <img src="{{ url_for('static', filename='img/team_logos/' + (match.team1|lower|replace(' ','_') if match.team1 else 'default') + '.png') }}"
+                             onerror="this.src='https://via.placeholder.com/88?text=?'" alt="{{ match.team1 }}">
+                    </div>
+                    <div class="team-name">{{ match.team1 }}</div>
+                </div>
+
+                <!-- Center -->
+                <div class="arena-center">
+                    <span class="vs-label">VS</span>
+                    {% if is_finished and match.final_score %}
+                        <div class="final-score-display">{{ match.final_score }}</div>
+                    {% else %}
+                        <div class="match-time">{{ match.time }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Team 2 -->
+                <div class="team-side right">
+                    <div class="team-logo-wrap">
+                        <img src="{{ url_for('static', filename='img/team_logos/' + (match.team2|lower|replace(' ','_') if match.team2 else 'default') + '.png') }}"
+                             onerror="this.src='https://via.placeholder.com/88?text=?'" alt="{{ match.team2 }}">
+                    </div>
+                    <div class="team-name">{{ match.team2 }}</div>
+                </div>
+            </div>
+
+            <!-- Prediction zone -->
+            <div class="predict-zone" onclick="event.stopPropagation();">
+                <div class="predict-zone-header">
+                    <span class="predict-zone-label">
+                        {% if is_finished %}Match Result{% elif is_live %}Locked — Match in Progress{% else %}Secure Your Prediction{% endif %}
+                    </span>
+                </div>
+
+                <form action="{{ url_for('predict', match_id=match.id) }}" method="POST">
+                    {% if match.match_type == 'BO5' %}
+                        {% set scores = ['3-0', '3-1', '3-2', '2-3', '1-3', '0-3'] %}
+                    {% elif match.match_type == 'BO1' %}
+                        {% set scores = ['1-0', '0-1'] %}
+                    {% else %}
+                        {% set scores = ['2-0', '2-1', '1-2', '0-2'] %}
+                    {% endif %}
+
+                    <div class="score-grid">
                         {% for score in scores %}
-                            {% set btn_style = "" %}
-                            {% set is_match_finished = (match.status == 'Finished') %}
-                            {% set is_match_started = match.is_started() %}
                             {% set user_choice = (current_pred == score) %}
-                            {% set is_correct_score = (score == match.final_score) %}
+                            {% set is_correct = (score == match.final_score) %}
 
-                            {% if is_match_finished %}
-                                {% if is_correct_score %}
-                                    {% set btn_style = "background: rgba(48,209,88,0.25) !important; border-color: rgba(48,209,88,0.58) !important; color: #fff !important; opacity: 1 !important;" %}
-                                {% elif user_choice %}
-                                    {% set btn_style = "background: rgba(255,69,58,0.25) !important; border-color: rgba(255,69,58,0.58) !important; color: #fff !important; opacity: 1 !important;" %}
-                                {% else %}
-                                    {% set btn_style = "opacity: 0.15; pointer-events: none;" %}
-                                {% endif %}
-                            {% else %}
-                                {% if user_choice %}
-                                    {% set btn_style = "background: rgba(255,59,59,0.24) !important; border-color: rgba(255,59,59,0.46) !important; color: #fff !important;" %}
-                                {% endif %}
-                            {% endif %}
-
-                            <button
-                                name="predicted_score"
-                                value="{{ score }}"
-                                onclick="event.stopPropagation();"
-                                class="pred-btn {% if user_choice %}active-pred{% endif %}"
-                                {% if is_match_finished or is_match_started %} disabled {% endif %}
-                                style="{{ btn_style }}"
-                            >
+                            <button name="predicted_score" value="{{ score }}"
+                                    onclick="event.stopPropagation();"
+                                    {% if is_finished or is_live %} disabled {% endif %}
+                                    class="score-btn
+                                        {% if is_finished %}
+                                            {% if is_correct %}correct
+                                            {% elif user_choice %}wrong
+                                            {% else %}faded{% endif %}
+                                        {% elif user_choice %}selected
+                                        {% endif %}">
                                 {{ score }}
+                                {% if not is_finished %}
+                                    <span class="score-btn-pop">Pick</span>
+                                {% endif %}
                             </button>
                         {% endfor %}
-                    </form>
-                </div>
+                    </div>
+                </form>
+
+                <a href="{{ url_for('match_analytics', match_id=match.id) }}"
+                   class="analytics-link" onclick="event.stopPropagation();">
+                    View Analytics →
+                </a>
             </div>
-        {% else %}
-            <div class="no-matches">
-                No matches available for this day yet.
-            </div>
+
+        </div>
         {% endfor %}
     </div>
+
 </div>
+
 {% endblock %}
