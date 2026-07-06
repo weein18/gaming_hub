@@ -693,7 +693,10 @@ def user_history(username):
     if t_filter:
         query = query.filter(Match.tournament_name == t_filter)
     predictions = query.order_by(Match.id.desc()).all()
-    all_t = db.session.query(Match.tournament_name).distinct().all()
+    all_t = db.session.query(Match.tournament_name)\
+        .join(Prediction, Prediction.match_id == Match.id)\
+        .filter(Prediction.user_id == user.id)\
+        .distinct().all()
     tournaments = [t[0] for t in all_t if t[0]]
     return render_template('user/user_history.html', 
                            user=user, 
