@@ -1,101 +1,409 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container" style="padding-top: 140px; max-width: 1100px; margin: 0 auto; font-family: 'Rajdhani', sans-serif;">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; border-left: 5px solid var(--primary); padding-left: 25px;">
-        <div>
-            <h1 style="text-transform: uppercase; letter-spacing: -2px; color: white; margin: 0; font-size: 2.5rem;">Analytical <span class="highlight">Archive</span></h1>
-            <p style="font-size: 0.8rem; color: #666; font-weight: 800; letter-spacing: 3px; margin-top: 5px;">DOSSIER: {{ user.username.upper() }}</p>
-        </div>
-        <div style="display: flex; gap: 15px;">
-            <a href="?range=week" class="time-filter">WEEK</a>
-            <a href="?range=month" class="time-filter">MONTH</a>
-            <a href="{{ url_for('user_history', username=user.username) }}" class="time-filter active">ALL TIME</a>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;600;700&display=swap');
+
+    :root {
+        --accent: #e30613;
+        --accent-dim: rgba(227,6,19,0.12);
+        --success: #088226;
+        --warning: #ff9f0a;
+        --glass-bg: rgba(28,28,30,0.72);
+        --glass-border: rgba(255,255,255,0.09);
+        --glass-border-hover: rgba(255,255,255,0.16);
+        --glass-shine: rgba(255,255,255,0.04);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255,255,255,0.55);
+        --text-tertiary: rgba(255,255,255,0.28);
+        --blur: blur(40px) saturate(200%);
+        --r-xl: 22px; --r-lg: 16px; --r-md: 10px;
+        --shadow-glass: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+        --mono: 'Geist Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #000; font-family: 'Geist', -apple-system, sans-serif; color: var(--text-primary); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+    /* Atmosphere */
+    .atmo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .atmo-orb { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
+    .atmo-orb-1 {
+        width: 70vw; height: 70vw; top: -25%; left: -15%;
+        background: radial-gradient(circle, rgba(227,6,19,0.06) 0%, transparent 65%);
+        animation: drift1 22s ease-in-out infinite;
+    }
+    .atmo-orb-2 {
+        width: 55vw; height: 55vw; bottom: -15%; right: -10%;
+        background: radial-gradient(circle, rgba(10,132,255,0.04) 0%, transparent 65%);
+        animation: drift2 28s ease-in-out infinite;
+    }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,5%)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
+
+    .glass {
+        background: var(--glass-bg);
+        backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-xl);
+        box-shadow: var(--shadow-glass);
+        position: relative; overflow: hidden;
+    }
+    .glass::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--glass-shine) 0%, transparent 50%);
+        pointer-events: none; border-radius: inherit;
+    }
+
+    .page-wrap {
+        position: relative; z-index: 1;
+        max-width: 1100px; margin: 0 auto;
+        padding: 110px 24px 80px;
+    }
+
+    /* Header */
+    .page-header {
+        margin-bottom: 36px;
+        animation: fadeUp 0.4s ease both;
+    }
+    .page-eyebrow {
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 10px; display: block;
+    }
+    .page-title {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+        margin-bottom: 6px;
+    }
+    .page-subtitle {
+        font-size: 0.75rem; font-weight: 600;
+        color: var(--text-tertiary); letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    /* Controls bar */
+    .controls-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 14px;
+        margin-bottom: 28px;
+        animation: fadeUp 0.4s ease 0.05s both;
+    }
+
+    /* Time filters */
+    .time-filters { display: flex; gap: 6px; }
+    .time-btn {
+        padding: 7px 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 100px;
+        color: var(--text-tertiary);
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .time-btn:hover { background: rgba(255,255,255,0.07); color: var(--text-primary); }
+    .time-btn.active { background: var(--accent-dim); border-color: rgba(227,6,19,0.35); color: var(--accent); }
+
+    /* Tournament scroll */
+    .tournament-bar {
+        margin-bottom: 28px;
+        animation: fadeUp 0.4s ease 0.1s both;
+    }
+    .tournament-scroll {
+        display: flex; gap: 8px;
+        overflow-x: auto; padding-bottom: 4px;
+    }
+    .tournament-scroll::-webkit-scrollbar { height: 3px; }
+    .tournament-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+    .t-chip {
+        flex-shrink: 0;
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 100px;
+        color: var(--text-tertiary);
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .t-chip:hover { background: rgba(255,255,255,0.07); color: var(--text-primary); }
+    .t-chip.active { background: var(--accent-dim); border-color: rgba(227,6,19,0.35); color: var(--accent); }
+
+    /* Prediction list */
+    .pred-list {
+        display: flex; flex-direction: column; gap: 12px;
+        animation: fadeUp 0.4s ease 0.15s both;
+    }
+
+    /* Single prediction card */
+    .pred-card {
+        display: grid;
+        grid-template-columns: 160px 1fr auto;
+        align-items: center;
+        gap: 0;
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+        cursor: default;
+    }
+    .pred-card:hover {
+        border-color: var(--glass-border-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .pred-card.correct { border-color: rgba(8,130,38,0.25) !important; }
+    .pred-card.correct:hover { border-color: rgba(8,130,38,0.45) !important; }
+    .pred-card.wrong  { border-color: rgba(227,6,19,0.2) !important; }
+
+    /* Left: tournament info */
+    .pred-meta {
+        padding: 20px 20px;
+        border-right: 1px solid rgba(255,255,255,0.05);
+        height: 100%;
+        display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    }
+    .pred-tournament {
+        font-size: 0.52rem; font-weight: 800;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--accent);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pred-date {
+        font-size: 0.6rem; font-weight: 600;
+        color: var(--text-tertiary);
+        font-family: var(--mono);
+    }
+    .pred-type {
+        font-size: 0.52rem; font-weight: 800;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--text-tertiary);
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 4px;
+        padding: 2px 7px;
+        display: inline-block; width: fit-content;
+    }
+
+    /* Center: matchup */
+    .pred-matchup {
+        display: flex; align-items: center; justify-content: center;
+        gap: 16px; padding: 20px 24px;
+    }
+    .pred-team {
+        display: flex; align-items: center; gap: 10px;
+        flex: 1;
+    }
+    .pred-team.right { justify-content: flex-end; flex-direction: row-reverse; }
+    .pred-team-logo {
+        width: 38px; height: 38px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.08));
+        flex-shrink: 0;
+    }
+    .pred-team-name {
+        font-size: 0.9rem; font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+    }
+    .pred-team-name.picked {
+        color: var(--accent);
+    }
+
+    /* Score / VS center */
+    .pred-score-center {
+        text-align: center; min-width: 70px; flex-shrink: 0;
+    }
+    .pred-score {
+        font-size: 1.4rem; font-weight: 900;
+        letter-spacing: -0.04em;
+        font-family: var(--mono);
+        color: var(--text-primary);
+        line-height: 1;
+    }
+    .pred-score-label {
+        font-size: 0.45rem; font-weight: 800;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--text-tertiary);
+        margin-top: 3px;
+    }
+
+    /* Right: result pill */
+    .pred-result {
+        padding: 20px 24px;
+        border-left: 1px solid rgba(255,255,255,0.05);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 6px; min-width: 110px;
+    }
+    .result-label {
+        font-size: 0.45rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--text-tertiary);
+    }
+    .result-pick {
+        font-size: 0.95rem; font-weight: 900;
+        letter-spacing: -0.02em;
+        padding: 6px 16px;
+        border-radius: 8px;
+        border: 1px solid;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .result-pick.correct {
+        background: rgba(8,130,38,0.12);
+        border-color: rgba(8,130,38,0.4);
+        color: #2ecc71;
+        box-shadow: 0 0 16px rgba(8,130,38,0.15);
+    }
+    .result-pick.wrong {
+        background: rgba(227,6,19,0.1);
+        border-color: rgba(227,6,19,0.35);
+        color: var(--accent);
+    }
+    .result-pick.pending {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.1);
+        color: var(--text-tertiary);
+    }
+    .result-badge {
+        font-size: 0.5rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .result-badge.correct { color: #2ecc71; }
+    .result-badge.wrong   { color: var(--accent); }
+    .result-badge.pending { color: var(--text-tertiary); }
+
+    /* Empty state */
+    .empty-wrap {
+        text-align: center; padding: 80px 20px;
+        animation: fadeUp 0.4s ease both;
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.3; }
+    .empty-title { font-size: 1.1rem; font-weight: 800; color: var(--text-secondary); margin-bottom: 8px; }
+    .empty-sub { font-size: 0.75rem; color: var(--text-tertiary); font-weight: 500; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+    @media (max-width: 720px) {
+        .pred-card { grid-template-columns: 1fr; }
+        .pred-meta { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); flex-direction: row; align-items: center; justify-content: space-between; }
+        .pred-result { border-left: none; border-top: 1px solid rgba(255,255,255,0.05); flex-direction: row; justify-content: space-between; min-width: unset; }
+        .pred-team-name { font-size: 0.78rem; }
+        .controls-bar { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+        .pred-matchup { gap: 8px; padding: 16px 12px; }
+        .pred-team-logo { width: 28px; height: 28px; }
+        .pred-team-name { font-size: 0.7rem; }
+        .pred-score { font-size: 1.1rem; }
+    }
+</style>
+
+<div class="atmo">
+    <div class="atmo-orb atmo-orb-1"></div>
+    <div class="atmo-orb atmo-orb-2"></div>
+</div>
+
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+        <span class="page-eyebrow">EliteHub</span>
+        <h1 class="page-title">Prediction <span style="color:var(--accent)">Archive</span></h1>
+        <p class="page-subtitle">Dossier · {{ user.username }}</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-bar">
+        <div class="time-filters">
+            <a href="{{ url_for('user_history', username=user.username) }}"
+               class="time-btn {% if selected_range != 'week' and selected_range != 'month' %}active{% endif %}">All Time</a>
+            <a href="?range=month" class="time-btn {% if selected_range == 'month' %}active{% endif %}">Month</a>
+            <a href="?range=week"  class="time-btn {% if selected_range == 'week'  %}active{% endif %}">Week</a>
         </div>
     </div>
 
-    <div style="margin-bottom: 40px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
-        <div style="display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px;" class="tournament-scroll">
-            <a href="{{ url_for('user_history', username=user.username) }}" class="t-badge {% if not selected_tournament %}active{% endif %}">ALL EVENTS</a>
+    <!-- Tournament chips -->
+    <div class="tournament-bar">
+        <div class="tournament-scroll">
+            <a href="{{ url_for('user_history', username=user.username) }}"
+               class="t-chip {% if not selected_tournament %}active{% endif %}">All Events</a>
             {% for t_name in tournaments %}
-                <a href="{{ url_for('user_history', username=user.username, tournament=t_name) }}" 
-                   class="t-badge {% if selected_tournament == t_name %}active{% endif %}">
-                    {{ t_name.upper() }}
-                </a>
+                <a href="{{ url_for('user_history', username=user.username, tournament=t_name) }}"
+                   class="t-chip {% if selected_tournament == t_name %}active{% endif %}">{{ t_name }}</a>
             {% endfor %}
         </div>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 20px;">
+    <!-- Prediction cards -->
+    {% if predictions %}
+    <div class="pred-list">
         {% for pred in predictions %}
         {% set match = pred.match %}
         {% set is_done = match.status|lower in ['finished', 'closed'] or match.final_score %}
-        
-        <div class="match-row" style="background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); transition: 0.4s; overflow: hidden; display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center; padding: 20px;">
-            
-            <div style="padding-left: 10px;">
-                <div style="color: var(--primary); font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;">{{ match.tournament_name.upper() }}</div>
-                <!-- <div style="color: #444; font-size: 0.6rem; font-weight: 700; margin-top: 4px;">MATCH ID: #{{ match.id }}</div> -->
+        {% set picked_t1 = pred.prediction_score and match.team1.lower() in pred.prediction_score.lower() %}
+        <div class="glass pred-card {% if is_done %}{% if pred.is_correct %}correct{% else %}wrong{% endif %}{% endif %}">
+
+            <!-- Left: meta -->
+            <div class="pred-meta">
+                <span class="pred-tournament">{{ match.tournament_name }}</span>
+                <span class="pred-date">{{ match.date }} · {{ match.time }}</span>
+                <span class="pred-type">{{ match.match_type if match.match_type else 'BO3' }}</span>
             </div>
 
-            <div style="display: flex; align-items: center; justify-content: center; gap: 30px;">
-                <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-end;">
-                    <span style="font-weight: 700; color: white; font-size: 1.1rem;">{{ match.team1 }}</span>
-                    <img src="{{ url_for('static', filename='img/team_logos/' + match.team1|lower|replace(' ', '_') + '.png') }}" 
-                         onerror="this.src='/static/img/team_logos/default.png'" style="width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));">
+            <!-- Center: matchup -->
+            <div class="pred-matchup">
+                <div class="pred-team">
+                    <img class="pred-team-logo"
+                         src="{{ match.team1_logo if match.team1_logo else url_for('static', filename='img/team_logos/' + match.team1|lower|replace(' ','_') + '.png') }}"
+                         onerror="this.src='/static/img/team_logos/default.png'"
+                         alt="{{ match.team1 }}">
+                    <span class="pred-team-name {% if picked_t1 %}picked{% endif %}">{{ match.team1 }}</span>
                 </div>
 
-                <div style="text-align: center; min-width: 80px;">
-                    <div style="font-size: 1.8rem; font-weight: 900; color: white; letter-spacing: 4px; font-family: 'Rajdhani';">
-                        {{ match.final_score if is_done else 'VS' }}
-                    </div>
-                    <div style="font-size: 0.55rem; color: #555; font-weight: 800; letter-spacing: 2px;">{{ 'FINAL RESULT' if is_done else 'IN PROGRESS' }}</div>
+                <div class="pred-score-center">
+                    <div class="pred-score">{{ match.final_score if is_done else 'VS' }}</div>
+                    <div class="pred-score-label">{{ 'result' if is_done else 'upcoming' }}</div>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-start;">
-                    <img src="{{ url_for('static', filename='img/team_logos/' + match.team2|lower|replace(' ', '_') + '.png') }}" 
-                         onerror="this.src='/static/img/team_logos/default.png'" style="width: 45px; height: 45px; object-fit: contain;">
-                    <span style="font-weight: 700; color: white; font-size: 1.1rem;">{{ match.team2 }}</span>
+                <div class="pred-team right">
+                    <img class="pred-team-logo"
+                         src="{{ match.team2_logo if match.team2_logo else url_for('static', filename='img/team_logos/' + match.team2|lower|replace(' ','_') + '.png') }}"
+                         onerror="this.src='/static/img/team_logos/default.png'"
+                         alt="{{ match.team2 }}">
+                    <span class="pred-team-name {% if not picked_t1 %}picked{% endif %}">{{ match.team2 }}</span>
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; align-items: flex-end; padding-right: 15px;">
-                <span style="font-size: 0.55rem; color: #555; font-weight: 800; margin-bottom: 5px;">YOUR PICK</span>
-                <div style="
-                    padding: 8px 18px; border-radius: 6px; font-weight: 900; font-size: 1rem;
-                    {% if is_done %}
-                        {% if pred.is_correct %}
-                            background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.1);
-                        {% else %}
-                            background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444;
-                        {% endif %}
-                    {% else %}
-                        background: rgba(255,255,255,0.05); color: #888; border: 1px solid rgba(255,255,255,0.1);
-                    {% endif %}
-                ">
+            <!-- Right: result -->
+            <div class="pred-result">
+                <span class="result-label">Your Pick</span>
+                <span class="result-pick {% if is_done %}{% if pred.is_correct %}correct{% else %}wrong{% endif %}{% else %}pending{% endif %}">
                     {{ pred.prediction_score }}
-                </div>
+                </span>
+                {% if is_done %}
+                    <span class="result-badge {% if pred.is_correct %}correct{% else %}wrong{% endif %}">
+                        {{ '✓ Correct' if pred.is_correct else '✗ Wrong' }}
+                    </span>
+                {% else %}
+                    <span class="result-badge pending">Pending</span>
+                {% endif %}
             </div>
+
         </div>
         {% endfor %}
     </div>
+
+    {% else %}
+    <div class="empty-wrap">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">No predictions yet</div>
+        <div class="empty-sub">Head to the tournaments page and make your first pick.</div>
+    </div>
+    {% endif %}
+
 </div>
-
-<style>
-    .tournament-scroll::-webkit-scrollbar { height: 4px; }
-    .tournament-scroll::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-    
-    .t-badge {
-        padding: 8px 18px; background: rgba(255,255,255,0.03); color: #666;
-        text-decoration: none; border-radius: 8px; font-size: 0.75rem; font-weight: 800;
-        transition: 0.3s; border: 1px solid transparent;
-    }
-    .t-badge:hover { background: rgba(255,255,255,0.08); color: white; }
-    .t-badge.active { background: rgba(255, 111, 0, 0.15); color: var(--primary); border-color: var(--primary); }
-
-    .time-filter { text-decoration: none; color: #444; font-size: 0.75rem; font-weight: 800; border-bottom: 2px solid transparent; padding-bottom: 5px; transition: 0.3s; }
-    .time-filter:hover, .time-filter.active { color: white; border-color: var(--primary); }
-
-    .match-row:hover { transform: scale(1.01); background: rgba(255,255,255,0.05); border-color: rgba(255, 111, 0, 0.3); }
-</style>
 {% endblock %}
