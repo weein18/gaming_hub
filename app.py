@@ -964,5 +964,4 @@ def test_cron():
     return "ok"
 
 if __name__ == '__main__':
-    auto_fetch_pandascore_matches()
     app.run(debug=False)
