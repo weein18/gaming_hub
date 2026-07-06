@@ -133,18 +133,6 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# @app.after_request
-# def add_security_headers(response):
-#     # defens (Clickjacking)
-#     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-#     # defens( MIME-sniffing)
-#     response.headers['X-Content-Type-Options'] = 'nosniff'
-#     # filter XSS on old
-#     response.headers['X-XSS-Protection'] = '1; mode=block'
-#     # Content Security Policy (CSP)
-#     # defens against XSS
-#     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
-#     return response
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -753,13 +741,11 @@ def auto_fetch_pandascore_matches():
     if not token:
         print("[BG-TASK] Missing PANDASCORE_TOKEN")
         return
-
     def normalize_logo_url(url):
         if not url:
             return ""
         url = str(url).strip()
         return "https://" + url[len("http://"):] if url.startswith("http://") else url
-
     def format_prize_pool(raw):
         if not raw:
             return "TBD"
@@ -767,7 +753,6 @@ def auto_fetch_pandascore_matches():
             return f"${int(raw):,}"
         digits = re.sub(r"[^\d]", "", str(raw))
         return f"${int(digits):,}" if digits else str(raw).strip()
-
     status_mapping = {
         "finished": "Finished",
         "running": "Live",
@@ -775,21 +760,17 @@ def auto_fetch_pandascore_matches():
         "postponed": "Upcoming",
         "canceled": "Finished",
     }
-
     try:
         all_matches = []
-
         # Upcoming
         r = requests.get(f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100", timeout=15)
         if r.status_code == 200:
             all_matches += r.json()
-
         # Live
         r = requests.get(f"https://api.pandascore.co/csgo/matches/running?token={token}&per_page=50", timeout=15)
         if r.status_code == 200:
             all_matches += r.json()
-
-        # Past — paginate through ALL pages
+        # Past
         for page in range(1, 8):
             r = requests.get(f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=100&page={page}", timeout=15)
             if r.status_code != 200:
@@ -801,7 +782,6 @@ def auto_fetch_pandascore_matches():
             print(f"[BG-TASK] Past page {page}: {len(data)} matches")
 
         print(f"[BG-TASK] Total fetched: {len(all_matches)}")
-
         with app.app_context():
             for item in all_matches:
                 opponents = item.get("opponents") or []
@@ -809,14 +789,10 @@ def auto_fetch_pandascore_matches():
                     continue
                 if not opponents[0].get("opponent") or not opponents[1].get("opponent"):
                     continue
-
-                # --- BUG FIX: "serie" not "series" ---
                 league = item.get("league") or {}
                 serie = item.get("serie") or {}      # ← correct key
                 league_name = (league.get("name") or "").strip()
                 serie_name = (serie.get("full_name") or serie.get("name") or "").strip()
-
-                # --- BUG FIX: never use tournament sub-name alone ---
                 if serie_name:
                     if league_name.lower() in serie_name.lower():
                         api_tournament_name = serie_name
@@ -824,7 +800,6 @@ def auto_fetch_pandascore_matches():
                         api_tournament_name = f"{league_name} {serie_name}"
                 else:
                     api_tournament_name = league_name or "Unknown Tournament"
-
                 league_tier = (league.get("tier") or "").lower()
                 is_target = (league_tier in ["s", "a"]) or any(
                     kw in api_tournament_name.upper()
@@ -832,7 +807,6 @@ def auto_fetch_pandascore_matches():
                 )
                 if not is_target:
                     continue
-
                 tournament_logo = normalize_logo_url(
                     league.get("image_url") or serie.get("image_url") or ""
                 )
@@ -840,8 +814,6 @@ def auto_fetch_pandascore_matches():
                     serie.get("prizepool") or serie.get("prize_pool") or
                     league.get("prizepool") or league.get("prize_pool")
                 )
-
-                # Tournament lookup — fuzzy by league name
                 existing_tournament = Tournament.query.filter(
                     Tournament.name.ilike(f"%{league_name}%")
                 ).first()
@@ -880,14 +852,11 @@ def auto_fetch_pandascore_matches():
                 team2_logo = normalize_logo_url(team2_obj.get("image_url") or "")
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
                 current_db_status = status_mapping.get(item.get("status", "not_started"), "Upcoming")
-
-                # --- BUG FIX: lookup by team names only, not date/time ---
                 existing_match = Match.query.filter(
                     Match.team1.ilike(team1_name),
                     Match.team2.ilike(team2_name),
                     Match.status != "Finished"
                 ).first()
-
                 if existing_match:
                     existing_match.tournament_name = final_tournament_name
                     existing_match.date = date_str
@@ -929,7 +898,6 @@ def auto_fetch_pandascore_matches():
                             match_type=match_type_str,
                         ))
                         print(f"[BG-TASK] Added: {team1_name} vs {team2_name} ({current_db_status})")
-
             db.session.commit()
             print("[BG-TASK] DATABASE UPDATED SUCCESSFULLY")
     except Exception as e:
@@ -946,13 +914,13 @@ scheduler.start()
 @login_required
 def sync_api_now():
     if not getattr(current_user, 'is_admin', False):
-        flash("Admins only!", "danger")
+        flash("Admins only!")
         return redirect(url_for('index'))
     try:
         auto_fetch_pandascore_matches()
-        flash("✅ Sync complete! Matches, logos and tournaments updated.", "success")
+        flash("Sync complete! Matches, logos and tournaments updated.", "success")
     except Exception as e:
-        flash(f"❌ Sync failed: {e}", "danger")
+        flash(f"Sync failed: {e}")
     return redirect(url_for('matches'))
 
 @app.route('/debug-stale-matches')
