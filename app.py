@@ -50,6 +50,7 @@ app.config['MAIL_USE_SSL'] = False
 
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = 'elitehub040@gmail.com'
 
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -625,7 +626,7 @@ def forgot_password():
             try:
                 msg = Message(
                     subject='Password Reset Request — Elite Hub',
-                    sender=app.config['MAIL_USERNAME'],
+                    sender=app.config['MAIL_DEFAULT_SENDER'],
                     recipients=[email]
                 )
                 msg.body = f"Hello {user.username},\n\nTo reset your password, please click the secure link below:\n\n{link}\n\nThis link is valid for 30 minutes."
