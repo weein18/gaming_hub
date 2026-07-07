@@ -4,7 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from werkzeug.utils import secure_filename
-from flask_mail import Mail, Message
+# from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 import base64
 from sqlalchemy import or_
@@ -16,6 +16,7 @@ import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
 from sqlalchemy import or_, func
+import resend
 
 
 
@@ -48,16 +49,16 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax',
 )
 
-app.config['MAIL_SERVER'] = 'smtp-relay.brevo.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True 
+# app.config['MAIL_SERVER'] = 'smtp-relay.brevo.com'
+# app.config['MAIL_PORT'] = 465
+# app.config['MAIL_USE_TLS'] = False
+# app.config['MAIL_USE_SSL'] = True 
 
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = 'elitehub040@gmail.com'
+# app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+# app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+# app.config['MAIL_DEFAULT_SENDER'] = 'elitehub040@gmail.com'
 
-mail = Mail(app)
+# mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -560,38 +561,38 @@ def close_match(match_id):
 def how_it_works():
     return render_template('how_it_works.html')
 
-@app.route('/request-password-reset', methods=['POST'])
-@login_required
-def request_password_reset():
-    email = current_user.email
-    user = User.query.filter_by(email=email).first()
-    if user:
-        token = s.dumps(email, salt='password-reset-salt')
-        link = url_for('reset_password', token=token, _external=True)
+# @app.route('/request-password-reset', methods=['POST'])
+# @login_required
+# def request_password_reset():
+#     email = current_user.email
+#     user = User.query.filter_by(email=email).first()
+#     if user:
+#         token = s.dumps(email, salt='password-reset-salt')
+#         link = url_for('reset_password', token=token, _external=True)
         
-        try:
-            msg = Message(
-                subject='Password Reset Request — Command Center', 
-                sender=app.config['MAIL_DEFAULT_SENDER'], 
-                recipients=[email]
-            )
-            msg.body = f'''Hello {user.username},
+#         try:
+#             msg = Message(
+#                 subject='Password Reset Request — Command Center', 
+#                 sender=app.config['MAIL_DEFAULT_SENDER'], 
+#                 recipients=[email]
+#             )
+#             msg.body = f'''Hello {user.username},
 
-You requested a password reset from your Command Center dashboard. 
-To pick a new password, click on the link below:
+# You requested a password reset from your Command Center dashboard. 
+# To pick a new password, click on the link below:
 
-{link}
+# {link}
 
-This link will expire in 30 minutes. If you did not make this request, simply ignore this email.
-'''
-            mail.send(msg)
-            flash("Check your email inbox! We have dispatched a secure reset link.", "success")
-        except Exception as e:
-            print(f"!!! MAIL SENDING ERROR: {e}")
-            flash("Failed to send mail. Please verify mail server configuration.", "danger")
-    else:
-        flash("Account security context error. User not found.", "danger")
-    return redirect(url_for('dashboard'))
+# This link will expire in 30 minutes. If you did not make this request, simply ignore this email.
+# '''
+#             mail.send(msg)
+#             flash("Check your email inbox! We have dispatched a secure reset link.", "success")
+#         except Exception as e:
+#             print(f"!!! MAIL SENDING ERROR: {e}")
+#             flash("Failed to send mail. Please verify mail server configuration.", "danger")
+#     else:
+#         flash("Account security context error. User not found.", "danger")
+#     return redirect(url_for('dashboard'))
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -599,47 +600,44 @@ def forgot_password():
         email = request.form.get('email', '').strip()
         user = User.query.filter_by(email=email).first()
         if user:
-            def send_reset_email(user_email):
+            def send_email(user_email):
                 with app.app_context():
                     try:
+                        resend.api_key = os.getenv('RESEND_API_KEY')
                         token = s.dumps(user_email, salt='password-reset')
                         reset_url = url_for('reset_password', token=token, _external=True)
-                        msg = Message(
-                            subject='EliteHub — Password Reset',
-                            recipients=[user_email],
-                            html=f'''
-                            <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
-                                <h2 style="color:#e30613;">EliteHub</h2>
-                                <p>You requested a password reset. Click the button below:</p>
-                                <a href="{reset_url}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
-                                    Reset Password
-                                </a>
-                                <p style="color:#666;font-size:0.8rem;">This link expires in 30 minutes.</p>
-                            </div>
+                        resend.Emails.send({
+                            "from": "EliteHub <onboarding@resend.dev>",
+                            "to": user_email,
+                            "subject": "EliteHub — Password Reset",
+                            "html": f'''
+                                <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
+                                    <h2 style="color:#e30613;">EliteHub</h2>
+                                    <p>Click below to reset your password:</p>
+                                    <a href="{reset_url}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
+                                        Reset Password
+                                    </a>
+                                    <p style="color:#666;font-size:0.8rem;">Expires in 30 minutes.</p>
+                                </div>
                             '''
-                        )
-                        mail.send(msg)
-                        print(f"[MAIL] Reset email sent to {user_email}")
+                        })
+                        print(f"[MAIL] Sent to {user_email}")
                     except Exception as e:
                         print(f"[MAIL] Failed: {e}")
-                        import traceback
-                        traceback.print_exc()
             import threading
-            thread = threading.Thread(target=send_reset_email, args=(email,))
-            thread.daemon = True
-            thread.start()
+            threading.Thread(target=send_email, args=(email,), daemon=True).start()
         flash('If that email exists, a reset link has been sent.', 'info')
         return redirect(url_for('forgot_password'))
     return render_template('auth/forgot_password.html')
 
+
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     try:
-        email = s.loads(token, salt='password-reset', max_age=1800)  # 30 min
+        email = s.loads(token, salt='password-reset', max_age=1800)
     except Exception:
         flash('This reset link is invalid or has expired.', 'danger')
         return redirect(url_for('forgot_password'))
-
     if request.method == 'POST':
         new_pass = request.form.get('new_password', '')
         confirm = request.form.get('confirm_password', '')
