@@ -31,6 +31,11 @@ uri = os.getenv('DATABASE_URL', 'sqlite:///database.db')
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_size': 1,
+    'max_overflow': 0,
+    'pool_pre_ping': True,
+}
 app.config['SECRET_KEY'] = os.getenv('SECRET_ACCESS_KEY', 'default_local_secret')
 
 db = SQLAlchemy(app)
@@ -780,7 +785,7 @@ def auto_fetch_pandascore_matches():
         if r.status_code == 200:
             all_matches += r.json()
         # Past
-        for page in range(1, 8):
+        for page in range(1, 4):
             r = requests.get(f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=100&page={page}", timeout=15)
             if r.status_code != 200:
                 break
