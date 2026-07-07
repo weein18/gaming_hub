@@ -599,31 +599,38 @@ def forgot_password():
         email = request.form.get('email', '').strip()
         user = User.query.filter_by(email=email).first()
         if user:
-            try:
-                token = s.dumps(email, salt='password-reset')
-                reset_url = url_for('reset_password', token=token, _external=True)
-                msg = Message(
-                    subject='EliteHub — Password Reset',
-                    recipients=[email],
-                    html=f'''
-                    <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
-                        <h2 style="color:#e30613;">EliteHub</h2>
-                        <p>You requested a password reset. Click the button below:</p>
-                        <a href="{reset_url}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
-                            Reset Password
-                        </a>
-                        <p style="color:#666;font-size:0.8rem;">This link expires in 30 minutes. If you didn't request this, ignore this email.</p>
-                    </div>
-                    '''
-                )
-                mail.send(msg)
-                print(f"[MAIL] Reset email sent to {email}")
-            except Exception as e:
-                print(f"[MAIL] Failed to send reset email: {e}")
-        flash('If that email exists in our system, a reset link has been sent.', 'info')
+            def send_reset_email(user_email):
+                with app.app_context():
+                    try:
+                        token = s.dumps(user_email, salt='password-reset')
+                        reset_url = url_for('reset_password', token=token, _external=True)
+                        msg = Message(
+                            subject='EliteHub — Password Reset',
+                            recipients=[user_email],
+                            html=f'''
+                            <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
+                                <h2 style="color:#e30613;">EliteHub</h2>
+                                <p>You requested a password reset. Click the button below:</p>
+                                <a href="{reset_url}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
+                                    Reset Password
+                                </a>
+                                <p style="color:#666;font-size:0.8rem;">This link expires in 30 minutes.</p>
+                            </div>
+                            '''
+                        )
+                        mail.send(msg)
+                        print(f"[MAIL] Reset email sent to {user_email}")
+                    except Exception as e:
+                        print(f"[MAIL] Failed: {e}")
+                        import traceback
+                        traceback.print_exc()
+            import threading
+            thread = threading.Thread(target=send_reset_email, args=(email,))
+            thread.daemon = True
+            thread.start()
+        flash('If that email exists, a reset link has been sent.', 'info')
         return redirect(url_for('forgot_password'))
     return render_template('auth/forgot_password.html')
-
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
