@@ -44,9 +44,9 @@ app.config.update(
 )
 
 app.config['MAIL_SERVER'] = 'smtp-relay.brevo.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True 
 
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
@@ -588,59 +588,64 @@ This link will expire in 30 minutes. If you did not make this request, simply ig
         flash("Account security context error. User not found.", "danger")
     return redirect(url_for('dashboard'))
 
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    try:
-        email = s.loads(token, salt='password-reset-salt', max_age=1800)
-    except Exception as e:
-        print(f"!!! INVALID OR EXPIRED TOKEN: {e}")
-        flash("The reset link is invalid or has expired.", "danger")
-        return redirect(url_for('login'))
-    if request.method == 'POST':
-        new_pass = request.form.get('password')
-        confirm_pass = request.form.get('confirm_password')
-        if not new_pass or len(new_pass) < 8:
-            flash("New password is too short! Minimum 8 characters required.", "danger")
-            return render_template('auth/reset_password_form.html')
-        if new_pass != confirm_pass:
-            flash("Passwords do not match!", "danger")
-            return render_template('auth/reset_password_form.html')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            user.password = generate_password_hash(new_pass, method='pbkdf2:sha256')
-            db.session.commit()
-            flash("Your password has been successfully updated! Please log in.", "success")
-            return redirect(url_for('login'))
-    return render_template('auth/reset_password_form.html')
-
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form.get('email', '').strip().lower()
+        email = request.form.get('email', '').strip()
         user = User.query.filter_by(email=email).first()
-        
         if user:
-            token = s.dumps(email, salt='password-reset-salt')
-            link = url_for('reset_password', token=token, _external=True)
-            
             try:
+                token = s.dumps(email, salt='password-reset')
+                reset_url = url_for('reset_password', token=token, _external=True)
                 msg = Message(
-                    subject='Password Reset Request — Elite Hub',
-                    sender=app.config['MAIL_DEFAULT_SENDER'],
-                    recipients=[email]
+                    subject='EliteHub — Password Reset',
+                    recipients=[email],
+                    html=f'''
+                    <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
+                        <h2 style="color:#e30613;">EliteHub</h2>
+                        <p>You requested a password reset. Click the button below:</p>
+                        <a href="{reset_url}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
+                            Reset Password
+                        </a>
+                        <p style="color:#666;font-size:0.8rem;">This link expires in 30 minutes. If you didn't request this, ignore this email.</p>
+                    </div>
+                    '''
                 )
-                msg.body = f"Hello {user.username},\n\nTo reset your password, please click the secure link below:\n\n{link}\n\nThis link is valid for 30 minutes."
                 mail.send(msg)
-                flash("A secure recovery link has been sent to your email inbox.", "success")
-                return redirect(url_for('login'))
+                print(f"[MAIL] Reset email sent to {email}")
             except Exception as e:
-                print(f"!!! MAIL SENDING ERROR: {e}")
-                flash("Mail transmission failure. Please try again later.", "danger")
-        else:
-            flash("If this email exists in our system, a reset link has been dispatched.", "success")
-            return redirect(url_for('login'))
-            
+                print(f"[MAIL] Failed to send reset email: {e}")
+        flash('If that email exists in our system, a reset link has been sent.', 'info')
+        return redirect(url_for('forgot_password'))
     return render_template('auth/forgot_password.html')
+
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset', max_age=1800)  # 30 min
+    except Exception:
+        flash('This reset link is invalid or has expired.', 'danger')
+        return redirect(url_for('forgot_password'))
+
+    if request.method == 'POST':
+        new_pass = request.form.get('new_password', '')
+        confirm = request.form.get('confirm_password', '')
+        if len(new_pass) < 8:
+            flash('Password must be at least 8 characters.', 'danger')
+            return redirect(request.url)
+        if new_pass != confirm:
+            flash('Passwords do not match.', 'danger')
+            return redirect(request.url)
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('forgot_password'))
+        user.password = generate_password_hash(new_pass, method='pbkdf2:sha256')
+        db.session.commit()
+        flash('Password updated! You can now log in.', 'success')
+        return redirect(url_for('login'))
+    return render_template('auth/reset_password.html', token=token)
 
 @app.route('/leaderboard')
 @login_required
