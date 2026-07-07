@@ -922,7 +922,12 @@ def auto_fetch_pandascore_matches():
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12)
 scheduler.add_job(keep_alive, 'interval', minutes=14)
-scheduler.start()
+if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
+    try:
+        scheduler.start()
+        print("[SCHEDULER] Started successfully")
+    except Exception as e:
+        print(f"[SCHEDULER] Already running: {e}")
 
 @app.route('/sync-api-now')
 @login_required
