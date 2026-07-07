@@ -920,8 +920,8 @@ def auto_fetch_pandascore_matches():
         import traceback
         traceback.print_exc()
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12)
-scheduler.add_job(keep_alive, 'interval', minutes=14)
+scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12, start_date=datetime.now() + timedelta(minutes=2))
+scheduler.add_job(keep_alive, 'interval', minutes=13)
 if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
     try:
         scheduler.start()
