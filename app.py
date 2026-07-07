@@ -17,6 +17,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
 from sqlalchemy import or_, func
 import resend
+import threading
+
 
 
 
@@ -600,36 +602,33 @@ def forgot_password():
         email = request.form.get('email', '').strip()
         user = User.query.filter_by(email=email).first()
         if user:
-            def send_email(user_email):
-                with app.app_context():
-                    try:
-                        resend.api_key = os.getenv('RESEND_API_KEY')
-                        token = s.dumps(user_email, salt='password-reset')
-                        reset_url = url_for('reset_password', token=token, _external=True)
-                        resend.Emails.send({
-                            "from": "EliteHub <onboarding@resend.dev>",
-                            "to": user_email,
-                            "subject": "EliteHub — Password Reset",
-                            "html": f'''
-                                <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
-                                    <h2 style="color:#e30613;">EliteHub</h2>
-                                    <p>Click below to reset your password:</p>
-                                    <a href="{reset_url}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
-                                        Reset Password
-                                    </a>
-                                    <p style="color:#666;font-size:0.8rem;">Expires in 30 minutes.</p>
-                                </div>
-                            '''
-                        })
-                        print(f"[MAIL] Sent to {user_email}")
-                    except Exception as e:
-                        print(f"[MAIL] Failed: {e}")
-            import threading
-            threading.Thread(target=send_email, args=(email,), daemon=True).start()
+            token = s.dumps(email, salt='password-reset')
+            reset_url = url_for('reset_password', token=token, _external=True)
+            def send_email(user_email, reset_link):
+                try:
+                    resend.api_key = os.getenv('RESEND_API_KEY')
+                    resend.Emails.send({
+                        "from": "EliteHub <onboarding@resend.dev>",
+                        "to": user_email,
+                        "subject": "EliteHub — Password Reset",
+                        "html": f'''
+                            <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
+                                <h2 style="color:#e30613;">EliteHub</h2>
+                                <p>Click below to reset your password:</p>
+                                <a href="{reset_link}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
+                                    Reset Password
+                                </a>
+                                <p style="color:#666;font-size:0.8rem;">Expires in 30 minutes.</p>
+                            </div>
+                        '''
+                    })
+                    print(f"[MAIL] Sent to {user_email}")
+                except Exception as e:
+                    print(f"[MAIL] Failed: {e}")
+            threading.Thread(target=send_email, args=(email, reset_url), daemon=True).start()
         flash('If that email exists, a reset link has been sent.', 'info')
         return redirect(url_for('forgot_password'))
     return render_template('auth/forgot_password.html')
-
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
