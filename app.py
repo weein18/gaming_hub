@@ -611,8 +611,8 @@ def forgot_password():
             reset_url = url_for('reset_password', token=token, _external=True)
             def send_email(user_email, reset_link):
                 try:
-                    import requests as req
-                    response = req.post(
+                    import httpx
+                    response = httpx.post(
                         "https://api.brevo.com/v3/smtp/email",
                         headers={
                             "api-key": os.getenv("BREVO_API_KEY"),
