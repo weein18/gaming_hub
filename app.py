@@ -142,6 +142,7 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
+# !!! REGISTER !!!
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -201,6 +202,8 @@ def index():
     featured_matches = Match.query.filter_by(status='Upcoming').limit(3).all()    
     return render_template('index.html', stats=stats, featured_matches=featured_matches)
 
+# !!! LOGIN !!!
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -219,6 +222,8 @@ def login():
             flash('USER NOT FOUND!')
             print(f"User {username} not found in database.")
     return render_template('auth/login.html')
+
+# !!! MATCHES !!!
 
 @app.route('/matches')
 def matches():
@@ -609,7 +614,7 @@ def forgot_password():
                     resend.api_key = os.getenv('RESEND_API_KEY')
                     resend.Emails.send({
                         "from": "EliteHub <onboarding@resend.dev>",
-                        "to": user_email,
+                        "to": "elitehub040@gmail.com",
                         "subject": "EliteHub — Password Reset",
                         "html": f'''
                             <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
