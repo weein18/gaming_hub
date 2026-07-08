@@ -611,8 +611,7 @@ def forgot_password():
             reset_url = url_for('reset_password', token=token, _external=True)
             def send_email(user_email, reset_link):
                 try:
-                    import httpx
-                    response = httpx.post(
+                    response = requests.post(
                         "https://api.brevo.com/v3/smtp/email",
                         headers={
                             "api-key": os.getenv("BREVO_API_KEY"),
@@ -636,11 +635,13 @@ def forgot_password():
                     )
                     print(f"[MAIL] Brevo: {response.status_code} {response.text}")
                 except Exception as e:
+                    import traceback
                     print(f"[MAIL] Failed: {e}")
-            threading.Thread(target=send_email, args=(email, reset_url), daemon=True).start()
-        flash('If that email exists, a reset link has been sent.', 'info')
-        return redirect(url_for('forgot_password'))
-    return render_template('auth/forgot_password.html')
+                    traceback.print_exc()
+                    threading.Thread(target=send_email, args=(email, reset_url), daemon=True).start()
+                    flash('If that email exists, a reset link has been sent.', 'info')
+                    return redirect(url_for('forgot_password'))
+                return render_template('auth/forgot_password.html')
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
