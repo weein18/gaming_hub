@@ -601,7 +601,7 @@ def how_it_works():
 #         flash("Account security context error. User not found.", "danger")
 #     return redirect(url_for('dashboard'))
 
-@app.route('/forgot-password', methods=['GET', 'POST'])
+@app.route('/auth/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
