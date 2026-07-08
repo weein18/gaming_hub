@@ -611,23 +611,30 @@ def forgot_password():
             reset_url = url_for('reset_password', token=token, _external=True)
             def send_email(user_email, reset_link):
                 try:
-                    resend.api_key = os.getenv('RESEND_API_KEY')
-                    resend.Emails.send({
-                        "from": "EliteHub <onboarding@resend.dev>",
-                        "to": "elitehub040@gmail.com",
-                        "subject": "EliteHub — Password Reset",
-                        "html": f'''
-                            <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
-                                <h2 style="color:#e30613;">EliteHub</h2>
-                                <p>Click below to reset your password:</p>
-                                <a href="{reset_link}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
-                                    Reset Password
-                                </a>
-                                <p style="color:#666;font-size:0.8rem;">Expires in 30 minutes.</p>
-                            </div>
-                        '''
-                    })
-                    print(f"[MAIL] Sent to {user_email}")
+                    import requests as req
+                    response = req.post(
+                        "https://api.brevo.com/v3/smtp/email",
+                        headers={
+                            "api-key": os.getenv("BREVO_API_KEY"),
+                            "Content-Type": "application/json"
+                        },
+                        json={
+                            "sender": {"name": "EliteHub", "email": "elitehub040@gmail.com"},
+                            "to": [{"email": user_email}],
+                            "subject": "EliteHub — Password Reset",
+                            "htmlContent": f'''
+                                <div style="background:#000;padding:40px;font-family:sans-serif;color:white;">
+                                    <h2 style="color:#e30613;">EliteHub</h2>
+                                    <p>Click below to reset your password:</p>
+                                    <a href="{reset_link}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#e30613;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">
+                                        Reset Password
+                                    </a>
+                                    <p style="color:#666;font-size:0.8rem;">Expires in 30 minutes.</p>
+                                </div>
+                            '''
+                        }
+                    )
+                    print(f"[MAIL] Brevo: {response.status_code} {response.text}")
                 except Exception as e:
                     print(f"[MAIL] Failed: {e}")
             threading.Thread(target=send_email, args=(email, reset_url), daemon=True).start()
