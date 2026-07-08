@@ -714,12 +714,10 @@
                     <span class="stat-block-label">Security</span>
                     <div class="stat-block-title">Identity Protection</div>
                     <div class="stat-block-sub" style="margin-bottom: 14px;">Keep your account safe.</div>
-                    <form action="{{ url_for('request_password_reset') }}" method="POST">
-                        <button type="submit" class="security-btn">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            Reset Password
-                        </button>
-                    </form>
+                    <a href="{{ url_for('forgot_password') }}" class="security-btn">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M2 6h20"/></svg>
+                        Reset Password
+                    </a>
                 </div>
             </div>
 
