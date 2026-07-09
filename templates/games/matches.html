@@ -1,91 +1,505 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    .bg-grid {
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+        --accent: #e30613;
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255,255,255,0.55);
+        --text-tertiary: rgba(255,255,255,0.28);
+        --glass-bg: rgba(28,28,30,0.72);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: #000;
+        font-family: 'Geist', -apple-system, sans-serif;
+        color: var(--text-primary);
+        overflow-x: hidden;
+    }
+
+    /* ── ATMOSPHERE ─────────────────────── */
+    .atmo {
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: 
-            linear-gradient(rgba(227,6,19,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(227,6,19,0.02) 1px, transparent 1px);
-        background-size: 50px 50px;
-        z-index: -1;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
     }
+
+    .atmo-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+    }
+
+    .atmo-orb-1 {
+        width: 80vw;
+        height: 80vw;
+        top: -30%;
+        left: -20%;
+        background: radial-gradient(circle, rgba(255,59,59,0.08) 0%, transparent 65%);
+        animation: drift1 25s ease-in-out infinite;
+    }
+
+    .atmo-orb-2 {
+        width: 60vw;
+        height: 60vw;
+        bottom: -10%;
+        right: -15%;
+        background: radial-gradient(circle, rgba(10,132,255,0.05) 0%, transparent 65%);
+        animation: drift2 30s ease-in-out infinite;
+    }
+
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,4%)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
+
+    /* ── PAGE WRAPPER ──────────────────── */
+    .page-wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 140px 28px 100px;
+    }
+
+    /* ── HEADER ────────────────────────── */
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+        animation: fadeUp 0.8s ease both;
+    }
+
+    .header-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        background: rgba(255,59,59,0.1);
+        border: 1px solid rgba(255,59,59,0.3);
+        border-radius: 100px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 20px;
+    }
+
+    .eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .page-title {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        line-height: 0.95;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .page-title .hl {
+        background: linear-gradient(135deg, var(--accent), #ff8080);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+    }
+
+    /* ── TOURNAMENT GRID ──────────────── */
+    .tournament-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 24px;
+    }
+
     .tournament-card {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        border: 1px solid rgba(255,255,255,0.05);
-        background: rgba(10,10,10,0.6) !important;
-        backdrop-filter: blur(20px);
+        position: relative;
+        height: 480px;
+        border-radius: 24px;
+        overflow: hidden;
+        background: var(--glass-bg);
+        border: 1px solid rgba(255,255,255,0.08);
+        backdrop-filter: blur(40px);
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        animation: scaleUp 0.6s ease both;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
+
+    .tournament-card:nth-child(1) { animation-delay: 0.1s; }
+    .tournament-card:nth-child(2) { animation-delay: 0.15s; }
+    .tournament-card:nth-child(3) { animation-delay: 0.2s; }
+    .tournament-card:nth-child(4) { animation-delay: 0.25s; }
+    .tournament-card:nth-child(5) { animation-delay: 0.3s; }
+    .tournament-card:nth-child(6) { animation-delay: 0.35s; }
+
     .tournament-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        border-color: var(--primary);
-        box-shadow: 0 20px 40px rgba(227,6,19,0.15);
+        transform: translateY(-12px) scale(1.02);
+        border-color: rgba(255,59,59,0.4);
+        box-shadow: 0 20px 60px rgba(255,59,59,0.2), 0 0 40px rgba(255,59,59,0.15);
+    }
+
+    /* Background image */
+    .tournament-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .tournament-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.35;
+        transition: all 0.4s ease;
+    }
+
+    .tournament-card:hover .tournament-bg img {
+        opacity: 0.5;
+        transform: scale(1.05);
+    }
+
+    /* Gradient overlay */
+    .tournament-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(0,0,0,0.95) 0%,
+            rgba(0,0,0,0.8) 30%,
+            rgba(0,0,0,0.4) 70%,
+            transparent 100%
+        );
+        z-index: 1;
+    }
+
+    /* Content */
+    .tournament-content {
+        position: relative;
+        z-index: 2;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    /* Logo at top */
+    .tournament-logo-wrap {
+        width: 100%;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+    }
+
+    .tournament-logo-wrap img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 12px rgba(255,255,255,0.1));
+        transition: all 0.3s ease;
+    }
+
+    .tournament-card:hover .tournament-logo-wrap img {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 20px rgba(255,59,59,0.3));
+    }
+
+    /* Info badges */
+    .tournament-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-badge {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        font-size: 0.65rem;
+        font-weight: 700;
+    }
+
+    .info-label {
+        color: var(--text-tertiary);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-weight: 800;
+    }
+
+    /* Tournament name */
+    .tournament-name {
+        font-size: clamp(1.3rem, 3vw, 1.8rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+        line-height: 1.1;
+        margin-bottom: 12px;
+    }
+
+    /* Bottom action */
+    .tournament-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        margin-top: auto;
+    }
+
+    .tournament-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        background: rgba(255,59,59,0.1);
+        border: 1px solid rgba(255,59,59,0.25);
+        border-radius: 100px;
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+    }
+
+    .cta-arrow {
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .tournament-card:hover .cta-arrow {
+        gap: 12px;
+    }
+
+    /* ── ANIMATIONS ────────────────────── */
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes scaleUp {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    /* ── EMPTY STATE ────────────────────── */
+    .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        color: var(--text-tertiary);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* ── RESPONSIVE ────────────────────── */
+    @media (max-width: 1200px) {
+        .tournament-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-wrap {
+            padding: 120px 16px 80px;
+        }
+
+        .page-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+        }
+
+        .tournament-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .tournament-card {
+            height: 380px;
+        }
+
+        .tournament-content {
+            padding: 20px;
+        }
+
+        .tournament-logo-wrap {
+            height: 100px;
+            margin-bottom: 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-wrap {
+            padding: 100px 12px 60px;
+        }
+
+        .tournament-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tournament-card {
+            height: 350px;
+        }
+
+        .page-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+        }
     }
 </style>
 
-<div class="bg-grid"></div>
-
-<div class="main-container" style="padding-top: 130px;">
-    <div style="text-align: center; margin-bottom: 80px; position: relative;">
-        <span style="font-size: 0.7rem; color: var(--primary); font-weight: 900; letter-spacing: 5px; text-transform: uppercase;">EliteHub Professional</span>
-        <h1 style="font-size: 4.5rem; font-weight: 900; text-transform: uppercase; margin: 10px 0; letter-spacing: -3px; line-height: 0.9;">
-            Active <span style="color: var(--primary);">Tournaments</span>
-        </h1>
-        <div style="width: 60px; height: 4px; background: var(--primary); margin: 20px auto; border-radius: 2px;"></div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; max-width: 1300px; margin: 0 auto; padding: 0 20px;">
-        {% for tour in tournaments %}
-        <a href="{{ url_for('tournament', name=tour.name.lower().replace(' ', '-')) }}" style="text-decoration: none; color: inherit; display: block;">
-            <div class="tournament-card" style="position: relative; height: 500px; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column;">
-
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                            background: linear-gradient(to top, #000 15%, transparent 60%);
-                            z-index: 0;">
-                </div>
-                <img src="{{ tour.image_url if tour.image_url else url_for('static', filename='img/tournaments/default.png') }}"
-                        alt="{{ tour.name }} logo"
-                        style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45; z-index:0;"
-                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/tournaments/default.png') }}';">
-                
-                <div style="position: relative; z-index: 2; padding: 40px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
-                            <span style="font-size: 0.65rem; color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: block;">Start Date</span>
-                            <span style="font-size: 0.9rem; color: #fff; font-weight: 800;">{{ tour.date if tour.date else "TBD" }}</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h2 style="font-size: 2.8rem; font-weight: 900; text-transform: uppercase; margin: 0 0 20px 0; letter-spacing: -2px; line-height: 1;">
-                            {{ tour.name }}
-                        </h2>
-                        
-                        <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                            <span style="font-size: 0.6rem; color: #ffd700; border: 1px solid rgba(255,215,0,0.3); padding: 4px 10px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">
-                                S-TIER
-                            </span>
-                            <span style="font-size: 0.6rem; color: var(--primary); border: 1px solid rgba(227,6,19,0.3); padding: 4px 10px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">
-                                {{ tour.xp_reward if tour.xp_reward else "1,600" }} XP REWARD
-                            </span>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-                            <div>
-                                <div style="font-size: 0.55rem; color: #555; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">PRIZE POOL</div>
-                                <div style="font-size: 1.4rem; font-weight: 900; color: #fff;">{{ tour.prize_pool if tour.prize_pool else "$0" }}</div>
-                            </div>
-                            
-                            <div style="background: var(--primary); padding: 12px 30px; border-radius: 12px; color: white; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(227,6,19,0.2);">
-                                ENTER HUB
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
+<!-- Atmosphere -->
+<div class="atmo">
+    <div class="atmo-orb atmo-orb-1"></div>
+    <div class="atmo-orb atmo-orb-2"></div>
 </div>
+
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-eyebrow">
+            <span class="eyebrow-dot"></span>
+            Pro Series Hub
+        </div>
+        <h1 class="page-title">Active <span class="hl">Tournaments</span></h1>
+        <p class="page-subtitle">Join professional matches and earn XP rewards</p>
+    </div>
+
+    <!-- Tournament Grid -->
+    {% if tournaments %}
+        <div class="tournament-grid">
+            {% for tournament in tournaments %}
+                <a href="{{ url_for('tournament', name=tournament.name.lower().replace(' ', '-')) }}" class="tournament-card">
+                    
+                    <!-- Background image -->
+                    <div class="tournament-bg">
+                        <img src="{{ tournament.image_url if tournament.image_url else url_for('static', filename='img/tournaments/default.png') }}"
+                             onerror="this.src='{{ url_for('static', filename='img/tournaments/default.png') }}'"
+                             alt="{{ tournament.name }}">
+                    </div>
+
+                    <!-- Overlay -->
+                    <div class="tournament-overlay"></div>
+
+                    <!-- Content -->
+                    <div class="tournament-content">
+                        
+                        <!-- Tournament Logo -->
+                        <div class="tournament-logo-wrap">
+                            <img src="{{ tournament.image_url if tournament.image_url else url_for('static', filename='img/tournaments/default.png') }}"
+                                 onerror="this.src='{{ url_for('static', filename='img/tournaments/default.png') }}'"
+                                 alt="{{ tournament.name }} logo">
+                        </div>
+
+                        <!-- Tournament Name -->
+                        <h2 class="tournament-name">{{ tournament.name }}</h2>
+
+                        <!-- Info Badges -->
+                        <div class="tournament-info">
+                            {% if tournament.date and tournament.date != "Ongoing" %}
+                                <div class="info-badge">
+                                    <span class="info-label">📅 Date</span>
+                                    <span class="info-value">{{ tournament.date }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if tournament.prize_pool and tournament.prize_pool != "TBD" %}
+                                <div class="info-badge">
+                                    <span class="info-label">💰 Prize Pool</span>
+                                    <span class="info-value">{{ tournament.prize_pool }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if tournament.xp_reward %}
+                                <div class="info-badge">
+                                    <span class="info-label">⭐ XP Reward</span>
+                                    <span class="info-value">{{ tournament.xp_reward }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="tournament-footer">
+                            <span class="tournament-tag">S-TIER EVENT</span>
+                            <span class="cta-arrow">
+                                Enter
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </span>
+                        </div>
+
+                    </div>
+
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🎮</div>
+            <div class="empty-text">No active tournaments available. Check back soon!</div>
+        </div>
+    {% endif %}
+
+</div>
+
 {% endblock %}

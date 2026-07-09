@@ -840,6 +840,7 @@ def auto_fetch_pandascore_matches():
                 tournament_logo = normalize_logo_url(
                     league.get("image_url") or serie.get("image_url") or ""
                 )
+                tournament.image_url = tournament_logo
                 final_prize_pool = format_prize_pool(
                     serie.get("prizepool") or serie.get("prize_pool") or
                     league.get("prizepool") or league.get("prize_pool")
