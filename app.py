@@ -132,7 +132,7 @@ class Prediction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
     prediction_score = db.Column(db.String(10), nullable=False)
-    is_correct = db.Column(db.Boolean, default=False)
+    is_correct = db.Column(db.Boolean, default=None)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @login_manager.user_loader
