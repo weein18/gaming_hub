@@ -245,7 +245,7 @@ button {
 }
 
 /* Кнопка с аватаром и ником */
-/* .dropbtn {
+.dropbtn {
     background: rgba(255, 255, 255, 0.05);
     color: white;
     padding: 6px 15px;
@@ -257,60 +257,14 @@ button {
     align-items: center;
     gap: 10px;
     transition: 0.3s ease;
-} */
-
-/* Кнопка с аватаром и ником */
-.dropbtn {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    
-    /* Жесткие отступы и высота для идеального центра */
-    height: 40px;
-    padding: 0 16px 0 8px; /* Слева меньше, так как там круглый аватар */
-    font-size: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 25px;
-    cursor: pointer;
-    
-    /* Включаем Flexbox для идеального центрирования по осям X и Y */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    
-    /* Предотвращает искажения размеров рамки */
-    box-sizing: border-box; 
-    vertical-align: middle;
-    
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Красивое неоновое свечение строго по границам кнопки */
-.dropbtn:hover, .dropdown:hover .dropbtn {
-    border-color: #e30613; /* Твой красный */
-    background: rgba(227, 6, 19, 0.08);
-    /* Тень ровно описывает кнопку, без смещений */
-    box-shadow: 0 0 15px rgba(227, 6, 19, 0.5), inset 0 0 5px rgba(227, 6, 19, 0.2);
+.dropbtn:hover {
+    border-color: #e30613; /* Твой красный цвет */
+    background: rgba(227, 6, 19, 0.1);
 }
 
-/* Выравнивание аватара внутри кнопки */
-.user-avatar-circle {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: white;
-    font-weight: 800;
-    
-    /* Центрируем букву внутри аватара */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    
-    flex-shrink: 0; /* Чтобы аватар не сжимался */
-}
-
-/* Тот самый профессиональный кружочек (Avatar)
+/* Тот самый профессиональный кружочек (Avatar) */
 .user-avatar-circle {
     width: 28px;
     height: 28px;
@@ -323,7 +277,7 @@ button {
     font-weight: bold;
     font-size: 13px;
     box-shadow: 0 0 10px rgba(227, 6, 19, 0.3);
-} */
+}
 
 /* Выпадающая панель */
 .dropdown-content {
