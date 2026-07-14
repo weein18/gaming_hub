@@ -93,6 +93,7 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.Text, default='default.png')
     is_admin = db.Column(db.Boolean, default=False)
 class Match(db.Model):
+    pandascore_id = db.Column(db.Integer, default=None)
     id = db.Column(db.Integer, primary_key=True)
     tournament_name = db.Column(db.String(100), nullable=False, default='BLAST Rivals 2026 Season 1')
     team1 = db.Column(db.String(50), nullable=False)
@@ -677,31 +678,89 @@ def leaderboard():
 @app.route('/match/<int:match_id>')
 @login_required
 def match_analytics(match_id):
-    match = Match.query.get_or_404(match_id)
-    t1_past = Match.query.filter(
-        or_(Match.team1 == match.team1, Match.team2 == match.team1),
-        Match.status == "Finished",
-        Match.id != match_id
-    ).order_by(Match.id.desc()).limit(3).all()
-    t2_past = Match.query.filter(
-        or_(Match.team1 == match.team2, Match.team2 == match.team2),
-        Match.status == "Finished",
-        Match.id != match_id
-    ).order_by(Match.id.desc()).limit(3).all()
-    h2h = Match.query.filter(
-        or_(
-            (Match.team1 == match.team1) & (Match.team2 == match.team2),
-            (Match.team1 == match.team2) & (Match.team2 == match.team1)
-        ),
-        Match.status == "Finished",
-        Match.id != match_id
-    ).order_by(Match.id.desc()).limit(3).all()
-    return render_template ("match_analytics.html",
-                            match=match,
-                            t1_past=t1_past,
-                            t2_past=t2_past,
-                            h2h=h2h)
-
+    match = db.session.get(Match, match_id)
+    if not match:
+        flash("Match not found", "danger")
+        return redirect(url_for('matches'))
+    token = os.getenv("PANDASCORE_TOKEN", "")
+    api_match = None
+    t1_players = []
+    t2_players = []
+    t1_recent = []
+    t2_recent = []
+    maps_data = []
+    if token and match.pandascore_id:
+        try:
+            # Full match details
+            r = requests.get(
+                f"https://api.pandascore.co/matches/{match.pandascore_id}",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10
+            )
+            if r.status_code == 200:
+                api_match = r.json()
+                opponents = api_match.get("opponents") or []
+                # Players from each team
+                if len(opponents) >= 2:
+                    t1_id = opponents[0]["opponent"]["id"]
+                    t2_id = opponents[1]["opponent"]["id"]
+                    # Team 1 players
+                    r1 = requests.get(
+                        f"https://api.pandascore.co/csgo/teams/{t1_id}",
+                        headers={"Authorization": f"Bearer {token}"},
+                        timeout=10
+                    )
+                    if r1.status_code == 200:
+                        t1_players = r1.json().get("players") or []
+                    # Team 2 players
+                    r2 = requests.get(
+                        f"https://api.pandascore.co/csgo/teams/{t2_id}",
+                        headers={"Authorization": f"Bearer {token}"},
+                        timeout=10
+                    )
+                    if r2.status_code == 200:
+                        t2_players = r2.json().get("players") or []
+                    # Team 1 recent matches
+                    r3 = requests.get(
+                        f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?filter[status]=finished&per_page=5&sort=-begin_at",
+                        headers={"Authorization": f"Bearer {token}"},
+                        timeout=10
+                    )
+                    if r3.status_code == 200:
+                        t1_recent = r3.json()
+                    # Team 2 recent matches
+                    r4 = requests.get(
+                        f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?filter[status]=finished&per_page=5&sort=-begin_at",
+                        headers={"Authorization": f"Bearer {token}"},
+                        timeout=10
+                    )
+                    if r4.status_code == 200:
+                        t2_recent = r4.json()
+                # Maps data (for finished matches)
+                games = api_match.get("games") or []
+                for game in games:
+                    if game.get("finished"):
+                        maps_data.append({
+                            "map": (game.get("map") or {}).get("name", "Unknown"),
+                            "winner": (game.get("winner") or {}).get("name", ""),
+                            "t1_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t1_id), 0),
+                            "t2_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t2_id), 0),
+                        })
+        except Exception as e:
+            print(f"[ANALYTICS] API error: {e}")
+    user_prediction = Prediction.query.filter_by(
+        user_id=current_user.id, match_id=match_id
+    ).first()
+    return render_template('match_analytics.html',
+        match=match,
+        api_match=api_match,
+        t1_players=t1_players,
+        t2_players=t2_players,
+        t1_recent=t1_recent,
+        t2_recent=t2_recent,
+        maps_data=maps_data,
+        user_prediction=user_prediction,
+    )
 
 @app.route('/user/<username>/history')
 @login_required
@@ -888,6 +947,8 @@ def auto_fetch_pandascore_matches():
                     Match.status != "Finished"
                 ).first()
                 if existing_match:
+                    if not existing_match.pandascore_id:
+                        existing_match.pandascore_id = item.get("id")
                     existing_match.tournament_name = final_tournament_name
                     existing_match.date = date_str
                     existing_match.time = time_str
@@ -926,6 +987,7 @@ def auto_fetch_pandascore_matches():
                             time=time_str,
                             status=current_db_status,
                             match_type=match_type_str,
+                            pandascore_id=item.get("id")
                         ))
                         print(f"[BG-TASK] Added: {team1_name} vs {team2_name} ({current_db_status})")
             db.session.commit()
