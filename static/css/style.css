@@ -262,6 +262,7 @@ button {
 .dropbtn:hover {
     border-color: #e30613; /* Твой красный цвет */
     background: rgba(227, 6, 19, 0.1);
+    display: inline-flex
 }
 
 /* Тот самый профессиональный кружочек (Avatar) */
@@ -314,7 +315,7 @@ button {
 .dropdown-content a.logout-link:hover {
     background: rgba(227, 6, 19, 0.15);
     color: #ff4d4d !important;
-    display: flex
+    display: inline-flex
 }
 
 .dropdown-divider {
