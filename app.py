@@ -702,7 +702,6 @@ def match_analytics(match_id):
                             t2_past=t2_past,
                             h2h=h2h)
 
-from datetime import datetime, timedelta
 
 @app.route('/user/<username>/history')
 @login_required
@@ -907,9 +906,9 @@ def auto_fetch_pandascore_matches():
                                     t1_score = res.get("score", 0)
                                 elif res.get("team_id") == t2_id:
                                     t2_score = res.get("score", 0)
-                            existing_match.final_score = f"{t1_score}:{t2_score}"
-                        existing_match.status = current_db_status
-                        print(f"[BG-TASK] Updated: {team1_name} vs {team2_name} → {current_db_status}")
+                            final_score_str = f"{t1_score}:{t2_score}"
+                            existing_match.final_score = final_score_str
+                            existing_match.status = "Finished"
                 else:
                     already_done = Match.query.filter(
                         Match.team1.ilike(team1_name),

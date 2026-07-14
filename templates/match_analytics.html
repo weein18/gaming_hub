@@ -509,7 +509,7 @@
             {% if t1_past %}
                 {% set t1w = namespace(c=0) %}
                 {% for m in t1_past %}
-                    {% set sp = m.final_score.split('-') %}
+                    {% set sp = m.final_score.split(':') %}
                     {% set is_t1 = m.team1.lower() == match.team1.lower() %}
                     {% if (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}{% set t1w.c = t1w.c + 1 %}{% endif %}
                 {% endfor %}
@@ -526,7 +526,7 @@
                 </div>
 
                 {% for m in t1_past %}
-                    {% set sp = m.final_score.split('-') %}
+                    {% set sp = m.final_score.split(':') %}
                     {% set is_t1 = m.team1.lower() == match.team1.lower() %}
                     {% set won = (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
                     <div class="form-row">
@@ -550,7 +550,7 @@
             {% if t2_past %}
                 {% set t2w = namespace(c=0) %}
                 {% for m in t2_past %}
-                    {% set sp = m.final_score.split('-') %}
+                    {% set sp = m.final_score.split(':') %}
                     {% set is_t2 = m.team1.lower() == match.team2.lower() %}
                     {% if (is_t2 and sp[0]|int > sp[1]|int) or (not is_t2 and sp[1]|int > sp[0]|int) %}{% set t2w.c = t2w.c + 1 %}{% endif %}
                 {% endfor %}
@@ -567,7 +567,7 @@
                 </div>
 
                 {% for m in t2_past %}
-                    {% set sp = m.final_score.split('-') %}
+                    {% set sp = m.final_score.split(':') %}
                     {% set is_t2 = m.team1.lower() == match.team2.lower() %}
                     {% set won = (is_t2 and sp[0]|int > sp[1]|int) or (not is_t2 and sp[1]|int > sp[0]|int) %}
                     <div class="form-row">
@@ -591,7 +591,7 @@
             {% if h2h %}
                 {% set t1_h2h_w = namespace(c=0) %}
                 {% for m in h2h %}
-                    {% set sp = m.final_score.split('-') %}
+                    {% set sp = m.final_score.split(':') %}
                     {% set is_t1 = m.team1.lower() == match.team1.lower() %}
                     {% if (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
                         {% set t1_h2h_w.c = t1_h2h_w.c + 1 %}
@@ -615,7 +615,7 @@
 
                 <div class="h2h-grid">
                     {% for m in h2h %}
-                        {% set sp = m.final_score.split('-') %}
+                        {% set sp = m.final_score.split(':') %}
                         {% set is_t1 = m.team1.lower() == match.team1.lower() %}
                         {% set t1won = (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
                         <div class="h2h-result-card" style="border-color: {% if t1won %}rgba(255,59,59,0.2){% else %}rgba(255,255,255,0.07){% endif %}">
