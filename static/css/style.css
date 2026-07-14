@@ -308,14 +308,16 @@ button {
 .dropdown-content a:hover {
     background: rgba(255, 255, 255, 0.05);
     color: white !important;
-    display: inline-flex
+    display: inline-flex;
+    width: 100%
 }
 
 /* Красная подсветка для Logout */
 .dropdown-content a.logout-link:hover {
     background: rgba(227, 6, 19, 0.15);
     color: #ff4d4d !important;
-    display: inline-flex
+    display: inline-flex;
+    width: 100%
 }
 
 .dropdown-divider {
