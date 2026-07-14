@@ -245,7 +245,7 @@ button {
 }
 
 /* Кнопка с аватаром и ником */
-.dropbtn {
+/* .dropbtn {
     background: rgba(255, 255, 255, 0.05);
     color: white;
     padding: 6px 15px;
@@ -257,11 +257,33 @@ button {
     align-items: center;
     gap: 10px;
     transition: 0.3s ease;
+} */
+
+.dropbtn {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 6px 18px 6px 6px; /* Уменьшили левый отступ, чтобы компенсировать круглый аватар */
+    font-size: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    cursor: pointer;
+    
+    /* Идеальное центрирование */
+    display: inline-flex;  /* Делаем inline, чтобы кнопка не растягивалась на всю ширину */
+    align-items: center;   /* Центрируем аватар и текст по вертикали */
+    justify-content: center;
+    gap: 10px;
+    
+    height: 38px;          /* Фиксированная высота кнопки для точного позиционирования */
+    box-sizing: border-box;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dropbtn:hover {
-    border-color: #e30613; /* Твой красный цвет */
-    background: rgba(227, 6, 19, 0.1);
+.dropbtn:hover, .dropdown:hover .dropbtn {
+    border-color: var(--primary); /* Твой красный #e30613 */
+    background: rgba(227, 6, 19, 0.08);
+    /* Мягкий неоновый бокс */
+    box-shadow: 0 0 15px rgba(227, 6, 19, 0.4), inset 0 0 5px rgba(227, 6, 19, 0.2);
 }
 
 /* Тот самый профессиональный кружочек (Avatar) */
