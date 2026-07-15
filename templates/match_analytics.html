@@ -1,642 +1,354 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;600;700&display=swap');
-
     :root {
-        --accent: #e30613;
-        --accent-dim: rgba(255,59,59,0.12);
-        --success: #088226;
-        --warning: #ff9f0a;
-        --blue: #0a84ff;
-        --glass-bg: rgba(28,28,30,0.72);
-        --glass-bg-light: rgba(44,44,46,0.55);
-        --glass-border: rgba(255,255,255,0.09);
-        --glass-border-hover: rgba(255,255,255,0.16);
-        --glass-shine: rgba(255,255,255,0.04);
-        --text-primary: #ffffff;
-        --text-secondary: rgba(255,255,255,0.55);
+        --accent: #e30613; --accent-dim: rgba(227,6,19,0.1);
+        --success: #2ecc71;
+        --glass-bg: rgba(28,28,30,0.72); --glass-border: rgba(255,255,255,0.09);
+        --text-primary: #fff; --text-secondary: rgba(255,255,255,0.55);
         --text-tertiary: rgba(255,255,255,0.28);
         --blur: blur(40px) saturate(200%);
-        --r-xl: 22px; --r-lg: 16px; --r-md: 12px;
-        --shadow-glass: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
-        --mono: 'Geist Mono', 'Courier New', monospace;
+        --r-xl: 22px; --r-lg: 16px; --r-md: 10px;
+        --shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+        --mono: 'Geist Mono', monospace;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #000; font-family: 'Geist', -apple-system, sans-serif; color: var(--text-primary); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    body { background: #000; font-family: 'Geist', -apple-system, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-    /* ── Atmosphere ── */
     .atmo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .atmo-orb {
-        position: absolute; border-radius: 50%;
-        filter: blur(70px); pointer-events: none;
-    }
-    .atmo-orb-1 {
-        width: 70vw; height: 70vw; top: -25%; left: -15%;
-        background: radial-gradient(circle, rgba(255,59,59,0.065) 0%, transparent 65%);
-        animation: drift1 22s ease-in-out infinite;
-    }
-    .atmo-orb-2 {
-        width: 55vw; height: 55vw; bottom: -15%; right: -10%;
-        background: radial-gradient(circle, rgba(10,132,255,0.045) 0%, transparent 65%);
-        animation: drift2 28s ease-in-out infinite;
-    }
-    .atmo-orb-3 {
-        width: 35vw; height: 35vw; top: 35%; left: 45%;
-        background: radial-gradient(circle, rgba(255,59,59,0.025) 0%, transparent 65%);
-        animation: drift3 34s ease-in-out infinite;
-    }
-    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,5%)} }
-    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
-    @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-6%,4%)} }
+    .atmo-orb { position: absolute; border-radius: 50%; filter: blur(80px); }
+    .atmo-orb-1 { width: 70vw; height: 70vw; top: -20%; left: -15%; background: radial-gradient(circle, rgba(227,6,19,0.07) 0%, transparent 65%); animation: d1 22s ease-in-out infinite; }
+    .atmo-orb-2 { width: 55vw; height: 55vw; bottom: -15%; right: -10%; background: radial-gradient(circle, rgba(10,132,255,0.05) 0%, transparent 65%); animation: d2 28s ease-in-out infinite; }
+    @keyframes d1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,5%)} }
+    @keyframes d2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
 
-    /* ── Glass ── */
-    .glass {
-        background: var(--glass-bg);
-        backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--r-xl);
-        box-shadow: var(--shadow-glass);
-        position: relative; overflow: hidden;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .glass::before {
-        content: ''; position: absolute; inset: 0;
-        background: linear-gradient(135deg, var(--glass-shine) 0%, transparent 50%);
-        pointer-events: none; border-radius: inherit;
-    }
+    .glass { background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: var(--r-xl); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .glass::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%); pointer-events:none; border-radius:inherit; }
 
-    /* ── Page ── */
-    .page-wrap {
-        position: relative; z-index: 1;
-        max-width: 1200px; margin: 0 auto;
-        padding: 110px 24px 80px;
-    }
+    .page-wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 110px 24px 80px; }
 
-    /* ════════════════════════════════════════
-       MATCH HERO
-    ════════════════════════════════════════ */
-    .match-hero {
-        margin-bottom: 28px;
-        animation: fadeUp 0.5s ease both;
-    }
+    .back-link { display: inline-flex; align-items: center; gap: 7px; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+    .back-link:hover { color: var(--accent); }
 
-    /* Back link */
-    .back-link {
-        display: inline-flex; align-items: center; gap: 7px;
-        font-size: 0.6rem; font-weight: 800;
-        letter-spacing: 0.15em; text-transform: uppercase;
-        color: var(--text-tertiary); text-decoration: none;
-        margin-bottom: 22px;
-        transition: color 0.2s, gap 0.2s;
-    }
-    .back-link:hover { color: var(--accent); gap: 11px; }
+    /* HERO */
+    .hero { margin-bottom: 24px; animation: fadeUp 0.4s ease both; }
+    .hero-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 200px; }
+    .hero-grid::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg, rgba(227,6,19,0.05) 0%, transparent 40%, transparent 60%, rgba(10,132,255,0.04) 100%); pointer-events:none; }
+    .team-side { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 28px; position: relative; z-index: 1; }
+    .team-logo { width: 96px; height: 96px; object-fit: contain; filter: drop-shadow(0 0 24px rgba(255,255,255,0.1)); animation: float 4s ease-in-out infinite; }
+    .team-side:last-child .team-logo { animation-delay: -2s; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .team-name { font-size: clamp(1.2rem, 2.5vw, 1.9rem); font-weight: 900; letter-spacing: -0.03em; text-align: center; }
+    .wr-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); border-radius: 100px; font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); }
+    .dot { width: 5px; height: 5px; border-radius: 50%; }
+    .dot.g { background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .dot.r { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 
-    /* Hero card */
-    .hero-card {
-        padding: 0;
-        overflow: hidden;
-    }
+    .vs-center { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px; position: relative; z-index: 1; min-width: 150px; }
+    .vs-text { font-size: 2.5rem; font-weight: 900; color: var(--accent); line-height: 1; text-shadow: 0 0 40px rgba(227,6,19,0.4); }
+    .vs-score { font-size: 2rem; font-weight: 900; font-family: var(--mono); letter-spacing: -0.02em; }
+    .vs-meta { font-size: 0.52rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); text-align: center; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 100px; font-size: 0.52rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+    .status-pill.live { background: rgba(227,6,19,0.15); border: 1px solid rgba(227,6,19,0.4); color: var(--accent); }
+    .status-pill.live::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); animation: pulse 1.2s infinite; }
+    .status-pill.upcoming { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-tertiary); }
+    .status-pill.finished { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: var(--success); }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
-    /* Team strip — cinematic matchup */
-    .team-strip {
-        display: grid;
-        grid-template-columns: 1fr 200px 1fr;
-        align-items: center;
-        position: relative;
-        min-height: 240px;
-        overflow: hidden;
-    }
+    .info-bar { display: flex; align-items: center; justify-content: center; padding: 16px 28px; border-top: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; gap: 0; }
+    .info-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 0 22px; }
+    .info-item + .info-item { border-left: 1px solid rgba(255,255,255,0.05); }
+    .info-label { font-size: 0.44rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); }
+    .info-val { font-size: 0.78rem; font-weight: 700; }
+    .info-val.accent { color: var(--accent); }
 
-    /* Gradient sweeps from each side */
-    .team-strip::before {
-        content: '';
-        position: absolute; inset: 0;
-        background: linear-gradient(90deg,
-            rgba(255,59,59,0.05) 0%,
-            transparent 40%,
-            transparent 60%,
-            rgba(10,132,255,0.04) 100%);
-        pointer-events: none;
-    }
-
-    .team-col {
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        padding: 40px 32px;
-        position: relative; z-index: 1;
-        gap: 16px;
-    }
-
-    .team-logo-hero {
-        width: 110px; height: 110px;
-        object-fit: contain;
-        filter: drop-shadow(0 0 28px rgba(255,255,255,0.12));
-        transition: filter 0.4s ease;
-        animation: logoFloat 4s ease-in-out infinite;
-    }
-    .team-col:last-child .team-logo-hero { animation-delay: -2s; }
-    @keyframes logoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-
-    .team-name-hero {
-        font-size: clamp(1.4rem, 3vw, 2.2rem);
-        font-weight: 900;
-        letter-spacing: -0.04em;
-        text-align: center;
-    }
-
-    /* Win-rate badge under team name */
-    .team-wr-badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 4px 12px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.09);
-        border-radius: 100px;
-        font-size: 0.58rem; font-weight: 800;
-        letter-spacing: 0.12em; text-transform: uppercase;
-        color: var(--text-tertiary);
-    }
-    .wr-dot { width: 5px; height: 5px; border-radius: 50%; }
-    .wr-dot.green { background: var(--success); box-shadow: 0 0 6px var(--success); }
-    .wr-dot.red   { background: var(--accent);  box-shadow: 0 0 6px var(--accent); }
-
-    /* Center VS block */
-    .vs-center {
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        gap: 10px; position: relative; z-index: 1;
-        padding: 20px 0;
-    }
-    .vs-text {
-        font-size: 2.8rem; font-weight: 900;
-        letter-spacing: -0.04em;
-        color: var(--accent);
-        text-shadow: 0 0 40px rgba(255,59,59,0.4);
-        line-height: 1;
-    }
-    .match-time-hero {
-        font-size: 0.9rem; font-weight: 700;
-        color: var(--text-primary);
-        font-family: var(--mono);
-    }
-    .match-status-pill {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 5px 12px;
-        border-radius: 100px;
-        font-size: 0.58rem; font-weight: 800;
-        letter-spacing: 0.12em; text-transform: uppercase;
-    }
-    .pill-finished { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-tertiary); }
-    .pill-live     { background: rgba(255,59,59,0.12); border: 1px solid rgba(255,59,59,0.3); color: var(--accent); }
-    .pill-upcoming { background: rgba(255,159,10,0.1); border: 1px solid rgba(255,159,10,0.25); color: var(--warning); }
-    .live-pulse    { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 1.4s infinite; }
-
-    /* Final score big display */
-    .final-score-hero {
-        font-size: 3.5rem; font-weight: 900;
-        letter-spacing: -0.05em; line-height: 1;
-        font-family: var(--mono);
-        color: var(--text-primary);
-    }
-
-    /* Hero bottom bar */
-    .hero-bottom-bar {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 16px 32px;
-        border-top: 1px solid rgba(255,255,255,0.05);
-        background: rgba(0,0,0,0.15);
-    }
-    .hero-bottom-item { display: flex; flex-direction: column; gap: 3px; align-items: center; }
-    .hbi-label {
-        font-size: 0.5rem; font-weight: 800;
-        letter-spacing: 0.2em; text-transform: uppercase;
-        color: var(--text-tertiary);
-    }
-    .hbi-val { font-size: 0.82rem; font-weight: 800; color: var(--text-primary); }
-    .hbi-val.accent { color: var(--accent); }
-    .hbi-divider { width: 1px; height: 30px; background: rgba(255,255,255,0.07); }
-
-    /* ════════════════════════════════════════
-       MAIN GRID
-    ════════════════════════════════════════ */
-    .analytics-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        animation: fadeUp 0.5s ease 0.1s both;
-    }
+    /* GRID */
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .span-full { grid-column: 1 / -1; }
+    .section { padding: 24px 28px; animation: fadeUp 0.4s ease both; }
+    .section-title { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-tertiary); padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 18px; display: block; }
+    .section-title span { color: var(--accent); }
 
-    /* ── Section card ── */
-    .section-card { padding: 26px 28px; }
-    .section-label {
-        font-size: 0.52rem; font-weight: 800;
-        letter-spacing: 0.22em; text-transform: uppercase;
-        color: var(--text-tertiary); display: block;
-        margin-bottom: 20px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
+    /* PLAYERS */
+    .players-list { display: flex; flex-direction: column; gap: 8px; }
+    .player-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); transition: all 0.2s; }
+    .player-row:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+    .p-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+    .p-placeholder { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 900; color: rgba(255,255,255,0.15); flex-shrink: 0; }
+    .p-info { flex: 1; min-width: 0; }
+    .p-nick { font-size: 0.83rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .p-name { font-size: 0.58rem; font-weight: 500; color: var(--text-tertiary); margin-top: 2px; }
+    .p-nat { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; padding: 2px 7px; flex-shrink: 0; }
 
-    /* ── Form rows ── */
-    .form-row {
-        display: flex; align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.035);
-        gap: 12px;
-    }
-    .form-row:last-child { border-bottom: none; padding-bottom: 0; }
+    /* FORM */
+    .form-list { display: flex; flex-direction: column; gap: 7px; }
+    .form-row { display: flex; align-items: center; gap: 11px; padding: 9px 13px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); }
+    .form-badge { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.58rem; font-weight: 900; flex-shrink: 0; }
+    .form-badge.w { background: rgba(46,204,113,0.15); color: var(--success); border: 1px solid rgba(46,204,113,0.3); }
+    .form-badge.l { background: rgba(227,6,19,0.12); color: var(--accent); border: 1px solid rgba(227,6,19,0.25); }
+    .form-vs { flex: 1; font-size: 0.73rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .form-vs small { font-size: 0.56rem; color: var(--text-tertiary); margin-left: 6px; }
+    .form-score { font-size: 0.73rem; font-weight: 800; font-family: var(--mono); flex-shrink: 0; }
 
-    .form-result {
-        width: 22px; flex-shrink: 0;
-        font-size: 0.65rem; font-weight: 900;
-        letter-spacing: 0.05em;
-    }
-    .form-result.w { color: var(--success); }
-    .form-result.l { color: var(--accent); }
+    /* MAPS */
+    .maps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .map-card { padding: 18px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--r-lg); text-align: center; }
+    .map-name { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; }
+    .map-score { font-size: 1.7rem; font-weight: 900; font-family: var(--mono); margin-bottom: 6px; }
+    .map-winner { font-size: 0.52rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
 
-    .form-vs { flex: 1; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
-    .form-vs span { color: var(--text-tertiary); font-size: 0.7rem; }
+    /* PREDICT */
+    .predict-wrap { padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; }
+    .predict-label { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-tertiary); }
+    .predict-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .predict-btn { width: 100%; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-md); color: var(--text-secondary); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+    .predict-btn:hover { background: var(--accent-dim); border-color: rgba(227,6,19,0.4); color: var(--accent); }
+    .predict-done { padding: 14px; background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.25); border-radius: var(--r-md); color: var(--success); font-size: 0.68rem; font-weight: 800; text-align: center; letter-spacing: 0.1em; text-transform: uppercase; }
 
-    .form-score {
-        font-family: var(--mono);
-        font-size: 0.82rem; font-weight: 700;
-        color: var(--text-primary);
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 6px;
-        padding: 3px 9px;
-    }
+    .empty { padding: 30px; text-align: center; color: var(--text-tertiary); font-size: 0.73rem; font-weight: 600; }
 
-    /* Win rate bar */
-    .winrate-block { margin-bottom: 18px; }
-    .winrate-header {
-        display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 8px;
-    }
-    .winrate-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-tertiary); }
-    .winrate-pct { font-size: 0.8rem; font-weight: 900; }
-    .winrate-pct.green { color: var(--success); }
-    .winrate-pct.red { color: var(--accent); }
-    .winrate-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
-    .winrate-fill { height: 100%; border-radius: 100px; transition: width 1.2s cubic-bezier(0.25,1,0.5,1); }
-    .winrate-fill.green { background: linear-gradient(90deg, var(--success), #7fffb0); box-shadow: 0 0 10px rgba(48,209,88,0.4); }
-    .winrate-fill.red   { background: linear-gradient(90deg, var(--accent), #ff8080); box-shadow: 0 0 10px rgba(255,59,59,0.4); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-    /* Empty state */
-    .empty-state {
-        text-align: center; padding: 30px 0;
-        font-size: 0.75rem; color: var(--text-tertiary);
-        font-weight: 600; font-style: italic;
-    }
-
-    /* ── H2H ── */
-    .h2h-card {
-        padding: 28px 32px;
-        background: linear-gradient(135deg,
-            rgba(255,59,59,0.04) 0%,
-            rgba(28,28,30,0.72) 40%,
-            rgba(10,132,255,0.03) 100%) !important;
-    }
-    .h2h-label {
-        font-size: 0.52rem; font-weight: 800;
-        letter-spacing: 0.22em; text-transform: uppercase;
-        color: var(--accent); display: block;
-        margin-bottom: 24px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid rgba(255,59,59,0.12);
-    }
-    .h2h-grid {
-        display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
-    }
-    .h2h-result-card {
-        flex: 0 0 auto; min-width: 140px;
-        background: rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: var(--r-lg);
-        padding: 18px 20px;
-        text-align: center;
-        transition: border-color 0.25s, transform 0.25s;
-    }
-    .h2h-result-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-3px); }
-    .h2h-score {
-        font-size: 1.6rem; font-weight: 900;
-        letter-spacing: -0.04em;
-        font-family: var(--mono);
-        margin-bottom: 6px;
-    }
-    .h2h-date {
-        font-size: 0.55rem; font-weight: 700;
-        letter-spacing: 0.12em; text-transform: uppercase;
-        color: var(--text-tertiary);
-    }
-    .h2h-empty {
-        text-align: center; padding: 20px 0;
-        font-size: 0.82rem; color: var(--text-tertiary);
-        font-style: italic; font-weight: 500; width: 100%;
-    }
-
-    /* ── H2H Summary bar ── */
-    .h2h-summary {
-        display: flex; align-items: center; gap: 16px;
-        margin-bottom: 22px;
-    }
-    .h2h-team-label {
-        font-size: 0.65rem; font-weight: 800;
-        letter-spacing: 0.08em; text-transform: uppercase;
-        white-space: nowrap;
-    }
-    .h2h-bar-track {
-        flex: 1; height: 6px;
-        background: rgba(255,255,255,0.06);
-        border-radius: 100px; overflow: hidden;
-        position: relative;
-    }
-    .h2h-bar-t1 {
-        position: absolute; left: 0; top: 0; bottom: 0;
-        background: linear-gradient(90deg, var(--accent), #ff8080);
-        border-radius: 100px;
-        transition: width 1.2s cubic-bezier(0.25,1,0.5,1);
-        box-shadow: 0 0 10px rgba(255,59,59,0.4);
-    }
-
-    /* ── Animations ── */
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-    /* ── Responsive ── */
-    @media (max-width: 800px) {
-        .analytics-grid { grid-template-columns: 1fr; }
-        .team-strip { grid-template-columns: 1fr 100px 1fr; }
-        .team-logo-hero { width: 70px; height: 70px; }
-        .team-name-hero { font-size: 1.1rem; }
-        .vs-text { font-size: 2rem; }
-        .hero-bottom-bar { flex-wrap: wrap; gap: 14px; justify-content: center; }
-        .hbi-divider { display: none; }
-    }
-    @media (max-width: 540px) {
-        .page-wrap { padding: 100px 14px 60px; }
-        .team-strip { grid-template-columns: 1fr 70px 1fr; min-height: 180px; }
-        .team-col { padding: 24px 12px; }
-        .team-logo-hero { width: 52px; height: 52px; }
-        .team-name-hero { font-size: 0.9rem; }
+    @media (max-width: 760px) {
+        .main-grid { grid-template-columns: 1fr; }
+        .hero-grid { grid-template-columns: 1fr; min-height: unset; }
+        .vs-center { padding: 8px 16px; }
+        .info-item { padding: 0 10px; }
+        .predict-options { grid-template-columns: 1fr; }
     }
 </style>
 
 <div class="atmo">
     <div class="atmo-orb atmo-orb-1"></div>
     <div class="atmo-orb atmo-orb-2"></div>
-    <div class="atmo-orb atmo-orb-3"></div>
 </div>
 
 <div class="page-wrap">
-
-    <!-- Back -->
-    <a href="javascript:history.back()" class="back-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Back to Tournament
+    <a href="{{ url_for('matches') }}" class="back-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+        Back to matches
     </a>
 
-    <!-- ══ HERO CARD ══════════════════════════════════ -->
-    <div class="match-hero">
-        <div class="glass hero-card">
-
-            <!-- Team strip -->
-            <div class="team-strip">
+    <!-- HERO -->
+    <div class="hero">
+        <div class="glass" style="overflow:hidden;">
+            <div class="hero-grid">
                 <!-- Team 1 -->
-                <div class="team-col">
-                    <img class="team-logo-hero"
-                         src="{{ match.team1_logo if match.team1_logo else url_for('static', filename='img/team_logos/' + (match.team1|lower|replace(' ','_')) + '.png') }}"
-                         onerror="this.src='https://via.placeholder.com/110?text=?'" alt="{{ match.team1 }}">
-                    <div class="team-name-hero">{{ match.team1 }}</div>
-                    {% if t1_past %}
-                        {% set t1_wins = namespace(count=0) %}
-                        {% for m in t1_past %}
-                            {% set sp = m.final_score.split('-') %}
-                            {% set is_t1 = m.team1.lower() == match.team1.lower() %}
-                            {% if (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
-                                {% set t1_wins.count = t1_wins.count + 1 %}
-                            {% endif %}
+                <div class="team-side">
+                    <img class="team-logo"
+                         src="{{ match.team1_logo if match.team1_logo else url_for('static', filename='img/team_logos/default.png') }}"
+                         onerror="this.src='/static/img/team_logos/default.png'" alt="{{ match.team1 }}">
+                    <div class="team-name">{{ match.team1 }}</div>
+                    {% if t1_recent %}
+                        {% set ns = namespace(w=0) %}
+                        {% for m in t1_recent %}
+                            {% set winner = m.get('winner') %}
+                            {% if winner and winner.get('name') == match.team1 %}{% set ns.w = ns.w + 1 %}{% endif %}
                         {% endfor %}
-                        {% set t1_wr = (t1_wins.count / t1_past|length * 100)|round|int %}
-                        <div class="team-wr-badge">
-                            <span class="wr-dot {% if t1_wr >= 50 %}green{% else %}red{% endif %}"></span>
-                            {{ t1_wr }}% WR
-                        </div>
+                        {% set wr = (ns.w / t1_recent|length * 100)|round|int %}
+                        <div class="wr-badge"><span class="dot {% if wr >= 50 %}g{% else %}r{% endif %}"></span>{{ wr }}% WR (L{{ t1_recent|length }})</div>
                     {% endif %}
                 </div>
 
-                <!-- VS center -->
+                <!-- Center -->
                 <div class="vs-center">
-                    {% if match.status == 'Finished' and match.final_score %}
-                        <div class="final-score-hero">{{ match.final_score }}</div>
-                        <div class="match-status-pill pill-finished">Finished</div>
-                    {% elif match.is_started() %}
-                        <div class="vs-text">VS</div>
-                        <div class="match-status-pill pill-live"><span class="live-pulse"></span> Live</div>
-                        <div class="match-time-hero">{{ match.time }}</div>
+                    {% if match.status|lower == 'finished' and match.final_score %}
+                        <div class="vs-score">{{ match.final_score }}</div>
+                        <span class="status-pill finished">Finished</span>
+                    {% elif match.status|lower == 'live' %}
+                        <div class="vs-text">LIVE</div>
+                        <span class="status-pill live">In Progress</span>
                     {% else %}
                         <div class="vs-text">VS</div>
-                        <div class="match-status-pill pill-upcoming">Upcoming</div>
-                        <div class="match-time-hero">{{ match.time }}</div>
+                        <span class="status-pill upcoming">{{ match.date }} · {{ match.time }}</span>
                     {% endif %}
+                    <div class="vs-meta">{{ match.match_type if match.match_type else 'BO3' }}</div>
                 </div>
 
                 <!-- Team 2 -->
-                <div class="team-col">
-                    <img class="team-logo-hero"
-                         src="{{ match.team2_logo if match.team2_logo else url_for('static', filename='img/team_logos/' + (match.team2|lower|replace(' ','_')) + '.png') }}"
-                         onerror="this.src='https://via.placeholder.com/110?text=?'" alt="{{ match.team2 }}">
-                    <div class="team-name-hero">{{ match.team2 }}</div>
-                    {% if t2_past %}
-                        {% set t2_wins = namespace(count=0) %}
-                        {% for m in t2_past %}
-                            {% set sp = m.final_score.split('-') %}
-                            {% set is_t2 = m.team1.lower() == match.team2.lower() %}
-                            {% if (is_t2 and sp[0]|int > sp[1]|int) or (not is_t2 and sp[1]|int > sp[0]|int) %}
-                                {% set t2_wins.count = t2_wins.count + 1 %}
-                            {% endif %}
+                <div class="team-side">
+                    <img class="team-logo"
+                         src="{{ match.team2_logo if match.team2_logo else url_for('static', filename='img/team_logos/default.png') }}"
+                         onerror="this.src='/static/img/team_logos/default.png'" alt="{{ match.team2 }}">
+                    <div class="team-name">{{ match.team2 }}</div>
+                    {% if t2_recent %}
+                        {% set ns2 = namespace(w=0) %}
+                        {% for m in t2_recent %}
+                            {% set winner = m.get('winner') %}
+                            {% if winner and winner.get('name') == match.team2 %}{% set ns2.w = ns2.w + 1 %}{% endif %}
                         {% endfor %}
-                        {% set t2_wr = (t2_wins.count / t2_past|length * 100)|round|int %}
-                        <div class="team-wr-badge">
-                            <span class="wr-dot {% if t2_wr >= 50 %}green{% else %}red{% endif %}"></span>
-                            {{ t2_wr }}% WR
-                        </div>
+                        {% set wr2 = (ns2.w / t2_recent|length * 100)|round|int %}
+                        <div class="wr-badge"><span class="dot {% if wr2 >= 50 %}g{% else %}r{% endif %}"></span>{{ wr2 }}% WR (L{{ t2_recent|length }})</div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Bottom info bar -->
-            <div class="hero-bottom-bar">
-                <div class="hero-bottom-item">
-                    <span class="hbi-label">Match Type</span>
-                    <span class="hbi-val accent">{{ match.match_type if match.match_type else 'BO3' }}</span>
+            <!-- Info bar -->
+            <div class="info-bar">
+                <div class="info-item">
+                    <span class="info-label">Tournament</span>
+                    <span class="info-val accent">{{ match.tournament_name }}</span>
                 </div>
-                <div class="hbi-divider"></div>
-                <div class="hero-bottom-item">
-                    <span class="hbi-label">Tournament</span>
-                    <span class="hbi-val">{{ match.tournament_name }}</span>
+                <div class="info-item">
+                    <span class="info-label">Date</span>
+                    <span class="info-val">{{ match.date }}</span>
                 </div>
-                <div class="hbi-divider"></div>
-                <div class="hero-bottom-item">
-                    <span class="hbi-label">Date</span>
-                    <span class="hbi-val">{{ match.date }}</span>
+                <div class="info-item">
+                    <span class="info-label">Time</span>
+                    <span class="info-val">{{ match.time }}</span>
                 </div>
-                <div class="hbi-divider"></div>
-                <div class="hero-bottom-item">
-                    <span class="hbi-label">Time</span>
-                    <span class="hbi-val">{{ match.time }}</span>
+                <div class="info-item">
+                    <span class="info-label">Format</span>
+                    <span class="info-val">{{ match.match_type if match.match_type else 'BO3' }}</span>
                 </div>
-                {% if t1_past and t2_past %}
-                <div class="hbi-divider"></div>
-                <div class="hero-bottom-item">
-                    <span class="hbi-label">H2H Matches</span>
-                    <span class="hbi-val">{{ h2h | length }}</span>
+                {% if maps_data %}
+                <div class="info-item">
+                    <span class="info-label">Maps</span>
+                    <span class="info-val">{{ maps_data|length }}</span>
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- ══ ANALYTICS GRID ════════════════════════════ -->
-    <div class="analytics-grid">
+    <!-- MAIN GRID -->
+    <div class="main-grid">
 
-        <!-- ── Team 1 Recent Form ── -->
-        <div class="glass section-card">
-            <span class="section-label">{{ match.team1 }} — Recent Form</span>
-
-            {% if t1_past %}
-                {% set t1w = namespace(c=0) %}
-                {% for m in t1_past %}
-                    {% set sp = m.final_score.split(':') %}
-                    {% set is_t1 = m.team1.lower() == match.team1.lower() %}
-                    {% if (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}{% set t1w.c = t1w.c + 1 %}{% endif %}
-                {% endfor %}
-                {% set t1wr_pct = (t1w.c / t1_past|length * 100)|round|int %}
-
-                <div class="winrate-block">
-                    <div class="winrate-header">
-                        <span class="winrate-label">Win Rate (last {{ t1_past|length }})</span>
-                        <span class="winrate-pct {% if t1wr_pct >= 50 %}green{% else %}red{% endif %}">{{ t1wr_pct }}%</span>
+        <!-- T1 Roster -->
+        <div class="glass section" style="animation-delay:0.05s">
+            <span class="section-title"><span>01</span> — {{ match.team1 }} Roster</span>
+            {% if t1_players %}
+            <div class="players-list">
+                {% for p in t1_players %}
+                <div class="player-row">
+                    {% if p.get('image_url') %}
+                        <img class="p-avatar" src="{{ p.image_url }}"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.nickname }}">
+                        <div class="p-placeholder" style="display:none;">{{ (p.nickname or '?')[0]|upper }}</div>
+                    {% else %}
+                        <div class="p-placeholder">{{ (p.nickname or '?')[0]|upper }}</div>
+                    {% endif %}
+                    <div class="p-info">
+                        <div class="p-nick">{{ p.nickname }}</div>
+                        <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                     </div>
-                    <div class="winrate-track">
-                        <div class="winrate-fill {% if t1wr_pct >= 50 %}green{% else %}red{% endif %}" style="width:{{ t1wr_pct }}%"></div>
-                    </div>
+                    {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
                 </div>
-
-                {% for m in t1_past %}
-                    {% set sp = m.final_score.split(':') %}
-                    {% set is_t1 = m.team1.lower() == match.team1.lower() %}
-                    {% set won = (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
-                    <div class="form-row">
-                        <span class="form-result {% if won %}w{% else %}l{% endif %}">{{ 'W' if won else 'L' }}</span>
-                        <span class="form-vs">
-                            vs {{ m.team2 if is_t1 else m.team1 }}
-                            <span>· {{ m.date }}</span>
-                        </span>
-                        <span class="form-score">{{ m.final_score }}</span>
-                    </div>
                 {% endfor %}
-            {% else %}
-                <div class="empty-state">No historical data available</div>
-            {% endif %}
+            </div>
+            {% else %}<div class="empty">No roster data available</div>{% endif %}
         </div>
 
-        <!-- ── Team 2 Recent Form ── -->
-        <div class="glass section-card">
-            <span class="section-label">{{ match.team2 }} — Recent Form</span>
-
-            {% if t2_past %}
-                {% set t2w = namespace(c=0) %}
-                {% for m in t2_past %}
-                    {% set sp = m.final_score.split(':') %}
-                    {% set is_t2 = m.team1.lower() == match.team2.lower() %}
-                    {% if (is_t2 and sp[0]|int > sp[1]|int) or (not is_t2 and sp[1]|int > sp[0]|int) %}{% set t2w.c = t2w.c + 1 %}{% endif %}
-                {% endfor %}
-                {% set t2wr_pct = (t2w.c / t2_past|length * 100)|round|int %}
-
-                <div class="winrate-block">
-                    <div class="winrate-header">
-                        <span class="winrate-label">Win Rate (last {{ t2_past|length }})</span>
-                        <span class="winrate-pct {% if t2wr_pct >= 50 %}green{% else %}red{% endif %}">{{ t2wr_pct }}%</span>
+        <!-- T2 Roster -->
+        <div class="glass section" style="animation-delay:0.1s">
+            <span class="section-title"><span>02</span> — {{ match.team2 }} Roster</span>
+            {% if t2_players %}
+            <div class="players-list">
+                {% for p in t2_players %}
+                <div class="player-row">
+                    {% if p.get('image_url') %}
+                        <img class="p-avatar" src="{{ p.image_url }}"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.nickname }}">
+                        <div class="p-placeholder" style="display:none;">{{ (p.nickname or '?')[0]|upper }}</div>
+                    {% else %}
+                        <div class="p-placeholder">{{ (p.nickname or '?')[0]|upper }}</div>
+                    {% endif %}
+                    <div class="p-info">
+                        <div class="p-nick">{{ p.nickname }}</div>
+                        <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                     </div>
-                    <div class="winrate-track">
-                        <div class="winrate-fill {% if t2wr_pct >= 50 %}green{% else %}red{% endif %}" style="width:{{ t2wr_pct }}%"></div>
-                    </div>
+                    {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
                 </div>
-
-                {% for m in t2_past %}
-                    {% set sp = m.final_score.split(':') %}
-                    {% set is_t2 = m.team1.lower() == match.team2.lower() %}
-                    {% set won = (is_t2 and sp[0]|int > sp[1]|int) or (not is_t2 and sp[1]|int > sp[0]|int) %}
-                    <div class="form-row">
-                        <span class="form-result {% if won %}w{% else %}l{% endif %}">{{ 'W' if won else 'L' }}</span>
-                        <span class="form-vs">
-                            vs {{ m.team2 if is_t2 else m.team1 }}
-                            <span>· {{ m.date }}</span>
-                        </span>
-                        <span class="form-score">{{ m.final_score }}</span>
-                    </div>
                 {% endfor %}
-            {% else %}
-                <div class="empty-state">No historical data available</div>
-            {% endif %}
+            </div>
+            {% else %}<div class="empty">No roster data available</div>{% endif %}
         </div>
 
-        <!-- ── Head to Head ── -->
-        <div class="glass h2h-card span-full">
-            <span class="h2h-label">Head to Head History</span>
-
-            {% if h2h %}
-                {% set t1_h2h_w = namespace(c=0) %}
-                {% for m in h2h %}
-                    {% set sp = m.final_score.split(':') %}
-                    {% set is_t1 = m.team1.lower() == match.team1.lower() %}
-                    {% if (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
-                        {% set t1_h2h_w.c = t1_h2h_w.c + 1 %}
+        <!-- T1 Recent Form -->
+        <div class="glass section" style="animation-delay:0.15s">
+            <span class="section-title"><span>03</span> — {{ match.team1 }} Recent Form</span>
+            {% if t1_recent %}
+            <div class="form-list">
+                {% for m in t1_recent %}
+                    {% set opps = m.get('opponents', []) %}
+                    {% if opps|length >= 2 %}
+                        {% set winner = m.get('winner') %}
+                        {% set won = winner and winner.get('name') == match.team1 %}
+                        {% if opps[0].opponent.name == match.team1 %}{% set opp = opps[1].opponent.name %}{% else %}{% set opp = opps[0].opponent.name %}{% endif %}
+                        {% set results = m.get('results', []) %}
+                        <div class="form-row">
+                            <span class="form-badge {% if won %}w{% else %}l{% endif %}">{{ 'W' if won else 'L' }}</span>
+                            <span class="form-vs">vs {{ opp }}{% if m.get('begin_at') %}<small>· {{ m.begin_at[:10] }}</small>{% endif %}</span>
+                            {% if results|length >= 2 %}<span class="form-score">{{ results[0].score }}:{{ results[1].score }}</span>{% endif %}
+                        </div>
                     {% endif %}
                 {% endfor %}
-                {% set t1_h2h_pct = (t1_h2h_w.c / h2h|length * 100)|round|int %}
-
-                <!-- H2H summary bar -->
-                <div class="h2h-summary">
-                    <span class="h2h-team-label" style="color:var(--accent)">{{ match.team1 }}</span>
-                    <div class="h2h-bar-track">
-                        <div class="h2h-bar-t1" style="width:{{ t1_h2h_pct }}%"></div>
-                    </div>
-                    <span class="h2h-team-label" style="color:var(--text-secondary)">{{ match.team2 }}</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;font-size:0.6rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:20px;">
-                    <span style="color:var(--accent)">{{ t1_h2h_w.c }}W {{ h2h|length - t1_h2h_w.c }}L</span>
-                    <span>{{ h2h|length }} matches played</span>
-                    <span>{{ h2h|length - t1_h2h_w.c }}W {{ t1_h2h_w.c }}L</span>
-                </div>
-
-                <div class="h2h-grid">
-                    {% for m in h2h %}
-                        {% set sp = m.final_score.split(':') %}
-                        {% set is_t1 = m.team1.lower() == match.team1.lower() %}
-                        {% set t1won = (is_t1 and sp[0]|int > sp[1]|int) or (not is_t1 and sp[1]|int > sp[0]|int) %}
-                        <div class="h2h-result-card" style="border-color: {% if t1won %}rgba(255,59,59,0.2){% else %}rgba(255,255,255,0.07){% endif %}">
-                            <div class="h2h-score" style="color: {% if t1won %}var(--accent){% else %}var(--text-primary){% endif %}">
-                                {{ m.final_score }}
-                            </div>
-                            <div class="h2h-date">{{ m.date }}</div>
-                            <div style="font-size:0.52rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-top:6px;color:{% if t1won %}var(--accent){% else %}var(--text-tertiary){% endif %}">
-                                {{ match.team1 if t1won else match.team2 }} Win
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="h2h-grid">
-                    <div class="h2h-empty">First encounter this season — no head-to-head history</div>
-                </div>
-            {% endif %}
+            </div>
+            {% else %}<div class="empty">No recent matches found</div>{% endif %}
         </div>
+
+        <!-- T2 Recent Form -->
+        <div class="glass section" style="animation-delay:0.2s">
+            <span class="section-title"><span>04</span> — {{ match.team2 }} Recent Form</span>
+            {% if t2_recent %}
+            <div class="form-list">
+                {% for m in t2_recent %}
+                    {% set opps = m.get('opponents', []) %}
+                    {% if opps|length >= 2 %}
+                        {% set winner = m.get('winner') %}
+                        {% set won = winner and winner.get('name') == match.team2 %}
+                        {% if opps[0].opponent.name == match.team2 %}{% set opp = opps[1].opponent.name %}{% else %}{% set opp = opps[0].opponent.name %}{% endif %}
+                        {% set results = m.get('results', []) %}
+                        <div class="form-row">
+                            <span class="form-badge {% if won %}w{% else %}l{% endif %}">{{ 'W' if won else 'L' }}</span>
+                            <span class="form-vs">vs {{ opp }}{% if m.get('begin_at') %}<small>· {{ m.begin_at[:10] }}</small>{% endif %}</span>
+                            {% if results|length >= 2 %}<span class="form-score">{{ results[0].score }}:{{ results[1].score }}</span>{% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}<div class="empty">No recent matches found</div>{% endif %}
+        </div>
+
+        <!-- Maps -->
+        {% if maps_data %}
+        <div class="glass section span-full" style="animation-delay:0.25s">
+            <span class="section-title"><span>05</span> — Map Results</span>
+            <div class="maps-grid">
+                {% for map in maps_data %}
+                <div class="map-card">
+                    <div class="map-name">{{ map.map }}</div>
+                    <div class="map-score">{{ map.t1_score }} : {{ map.t2_score }}</div>
+                    <div class="map-winner">{{ map.winner }} Win</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Predict -->
+        {% if match.status|lower == 'upcoming' %}
+        <div class="glass span-full" style="animation-delay:0.3s">
+            <div class="predict-wrap">
+                <span class="predict-label">{% if user_prediction %}Your Prediction{% else %}Make Your Prediction{% endif %}</span>
+                {% if user_prediction %}
+                    <div class="predict-done">✓ You predicted: {{ user_prediction.prediction_score }}</div>
+                {% else %}
+                    <div class="predict-options">
+                        <form method="POST" action="{{ url_for('predict', match_id=match.id) }}">
+                            <input type="hidden" name="prediction" value="{{ match.team1 }}">
+                            <button type="submit" class="predict-btn">{{ match.team1 }}</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('predict', match_id=match.id) }}">
+                            <input type="hidden" name="prediction" value="{{ match.team2 }}">
+                            <button type="submit" class="predict-btn">{{ match.team2 }}</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
     </div>
 </div>
-
 {% endblock %}
