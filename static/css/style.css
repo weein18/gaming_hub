@@ -316,8 +316,7 @@ button {
 .dropdown-content a.logout-link:hover {
     background: rgba(227, 6, 19, 0.15);
     color: #ff4d4d !important;
-    display: inline-flex;
-    width: 100%
+    box-shadow: 0 0 15px rgba(227, 6, 19, 0.5), inset 0 0 5px rgba(227, 6, 19, 0.25);
 }
 
 .dropdown-divider {
