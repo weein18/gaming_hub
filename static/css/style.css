@@ -321,6 +321,11 @@ button {
     transition: 0.2s;
 }
 
+.dropdown-content a:last-child,
+.dropdown-content a.logout-link {
+    border-radius: 0 0 14px 14px;
+}
+
 .dropdown-content a:hover {
     background: rgba(255, 255, 255, 0.05);
     color: white !important;
@@ -332,13 +337,13 @@ button {
 .dropdown-content a.logout-link:hover {
     background: rgba(227, 6, 19, 0.15);
     color: #ff4d4d !important;
-    box-shadow: 0 0 15px rgba(227, 6, 19, 0.5), inset 0 0 5px rgba(227, 6, 19, 0.25);
+    border-radius: 0 0 14px 14px;
 }
 
 .dropdown-divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.05);
-    margin: 5px 0;
+    margin: 4px 0;
 }
 
 /* Показываем меню при наведении на контейнер */
