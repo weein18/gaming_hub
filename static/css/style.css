@@ -255,6 +255,7 @@ button {
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     transition: 0.3s ease;
 }
@@ -262,7 +263,7 @@ button {
 .dropbtn:hover {
     border-color: #e30613; /* Твой красный цвет */
     background: rgba(227, 6, 19, 0.1);
-    display: inline-flex
+    box-shadow: 0 0 12px rgba(227, 6, 19, 0.25);
 }
 
 /* Тот самый профессиональный кружочек (Avatar) */
@@ -281,7 +282,7 @@ button {
 }
 
 /* Выпадающая панель */
-.dropdown-content {
+/* .dropdown-content {
     display: none;
     position: absolute;
     right: 0;
@@ -293,6 +294,21 @@ button {
     border: 1px solid rgba(255, 255, 255, 0.08);
     margin-top: 10px;
     overflow: hidden;
+} */
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;        /* ← rounded corners */
+    min-width: 180px;
+    z-index: 1000;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
 }
 
 .dropdown-content a {
