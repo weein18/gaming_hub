@@ -86,7 +86,21 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✅ Correct: <b>{correct}</b> / {total} predictions",
             parse_mode="HTML"
         )
-# ── START BOT (runs in background thread) ──
+# ── START BOT ──
+# def run_bot():
+#     if not TELEGRAM_TOKEN:
+#         print("[BOT] No TELEGRAM_BOT_TOKEN set, skipping")
+#         return
+#     loop = asyncio.new_event_loop()
+#     asyncio.set_event_loop(loop)
+#     app_bot = Application.builder().token(TELEGRAM_TOKEN).build()
+#     app_bot.add_handler(CommandHandler("start", start))
+#     app_bot.add_handler(CommandHandler("link", link_command))
+#     app_bot.add_handler(CommandHandler("matches", matches_command))
+#     app_bot.add_handler(CommandHandler("stats", stats_command))
+#     print("[BOT] Starting...")
+#     app_bot.run_polling(allowed_updates=Update.ALL_TYPES)
+
 def run_bot():
     if not TELEGRAM_TOKEN:
         print("[BOT] No TELEGRAM_BOT_TOKEN set, skipping")
@@ -98,8 +112,12 @@ def run_bot():
     app_bot.add_handler(CommandHandler("link", link_command))
     app_bot.add_handler(CommandHandler("matches", matches_command))
     app_bot.add_handler(CommandHandler("stats", stats_command))
-    print("[BOT] Starting...")
-    app_bot.run_polling(allowed_updates=Update.ALL_TYPES)
+    print("[BOT] Starting polling loop...")
+    app_bot.run_polling(
+        allowed_updates=Update.ALL_TYPES,
+        close_loop=False,
+        stop_signals=None
+    )
 
 def start_bot_thread():
     thread = threading.Thread(target=run_bot, daemon=True)
