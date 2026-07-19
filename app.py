@@ -996,7 +996,6 @@ def auto_fetch_pandascore_matches():
         print(f"[BG-TASK] ERROR: {e}")
         import traceback
         traceback.print_exc()
-start_bot_thread()
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12, start_date=datetime.now() + timedelta(minutes=2))
 scheduler.add_job(keep_alive, 'interval', minutes=13)
@@ -1004,6 +1003,8 @@ if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
     try:
         scheduler.start()
         print("[SCHEDULER] Started successfully")
+        start_bot_thread()
+        print("[BOT] Thread launched")
     except Exception as e:
         print(f"[SCHEDULER] Already running: {e}")
 
