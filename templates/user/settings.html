@@ -39,7 +39,7 @@
                     <label>EMAIL ADDRESS</label>
                     <input type="email" name="email" value="{{ current_user.email }}" class="glass-input" required>
                 </div>
-                <!-- <div class="ig" style="grid-column:1/-1;">
+                <div class="ig" style="grid-column:1/-1;">
                     {% if current_user.telegram_chat_id %}
                         <label>Telegram</label>
                         <div style="padding:11px 14px;background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.25);border-radius:10px;color:#2ecc71;font-size:0.8rem;font-weight:700;">
@@ -60,7 +60,7 @@
                     alert(`Send this command to @YourBotName on Telegram:\n\n/link ${data.code}\n\nThe code expires when you generate a new one.`);
                 }
                 </script>
- -->
+
                 <div style="margin-top: 20px; margin-bottom: 20px;">
                     <button type="button" onclick="toggleSecurity()" id="secureBtn" class="liquid-btn" 
                             style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; font-size: 0.7rem;">
