@@ -39,6 +39,27 @@
                     <label>EMAIL ADDRESS</label>
                     <input type="email" name="email" value="{{ current_user.email }}" class="glass-input" required>
                 </div>
+                <div class="ig" style="grid-column:1/-1;">
+                    {% if current_user.telegram_chat_id %}
+                        <label>Telegram</label>
+                        <div style="padding:11px 14px;background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.25);border-radius:10px;color:#2ecc71;font-size:0.8rem;font-weight:700;">
+                            ✓ Connected as @{{ current_user.telegram_id }}
+                        </div>
+                    {% else %}
+                        <label>Telegram</label>
+                        <button type="button" onclick="connectTelegram()" class="gi" style="cursor:pointer;text-align:left;color:var(--text-tertiary);">
+                            Connect Telegram →
+                        </button>
+                    {% endif %}
+                </div>
+
+                <script>
+                async function connectTelegram() {
+                    const res = await fetch('/generate-telegram-code');
+                    const data = await res.json();
+                    alert(`Send this command to @YourBotName on Telegram:\n\n/link ${data.code}\n\nThe code expires when you generate a new one.`);
+                }
+                </script>
 
                 <div style="margin-top: 20px; margin-bottom: 20px;">
                     <button type="button" onclick="toggleSecurity()" id="secureBtn" class="liquid-btn" 

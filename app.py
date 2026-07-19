@@ -18,6 +18,7 @@ from functools import wraps
 from sqlalchemy import or_, func
 import resend
 import threading
+from bot import start_bot_thread
 
 
 
@@ -92,6 +93,9 @@ class User(UserMixin, db.Model):
     favorite_team = db.Column(db.String(50), default=' ')
     avatar = db.Column(db.Text, default='default.png')
     is_admin = db.Column(db.Boolean, default=False)
+    telegram_id = db.Column(db.String(50), default=None)
+    telegram_chat_id = db.Column(db.String(50), default=None)
+    telegram_link_code = db.Column(db.String(50), default=None)
 class Match(db.Model):
     pandascore_id = db.Column(db.Integer, default=None)
     id = db.Column(db.Integer, primary_key=True)
@@ -693,8 +697,7 @@ def match_analytics(match_id):
         try:
             # Full match details
             r = requests.get(
-                f"https://api.pandascore.co/matches/{match.pandascore_id}",
-                headers={"Authorization": f"Bearer {token}"},
+                f"https://api.pandascore.co/matches/{match.pandascore_id}?token={token}",
                 timeout=10
             )
             if r.status_code == 200:
@@ -706,32 +709,28 @@ def match_analytics(match_id):
                     t2_id = opponents[1]["opponent"]["id"]
                     # Team 1 players
                     r1 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t1_id}",
-                        headers={"Authorization": f"Bearer {token}"},
+                        f"https://api.pandascore.co/csgo/teams/{t1_id}?token={token}",
                         timeout=10
                     )
                     if r1.status_code == 200:
                         t1_players = r1.json().get("players") or []
                     # Team 2 players
                     r2 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t2_id}",
-                        headers={"Authorization": f"Bearer {token}"},
+                        f"https://api.pandascore.co/csgo/teams/{t2_id}?token={token}",
                         timeout=10
                     )
                     if r2.status_code == 200:
                         t2_players = r2.json().get("players") or []
                     # Team 1 recent matches
                     r3 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?filter[status]=finished&per_page=5&sort=-begin_at",
-                        headers={"Authorization": f"Bearer {token}"},
+                        f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
                     if r3.status_code == 200:
                         t1_recent = r3.json()
                     # Team 2 recent matches
                     r4 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?filter[status]=finished&per_page=5&sort=-begin_at",
-                        headers={"Authorization": f"Bearer {token}"},
+                        f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
                     if r4.status_code == 200:
@@ -997,6 +996,7 @@ def auto_fetch_pandascore_matches():
         print(f"[BG-TASK] ERROR: {e}")
         import traceback
         traceback.print_exc()
+start_bot_thread()
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12, start_date=datetime.now() + timedelta(minutes=2))
 scheduler.add_job(keep_alive, 'interval', minutes=13)
@@ -1055,6 +1055,16 @@ def debug_stale_matches():
 @app.route("/ping")
 def test_cron():
     return "ok"
+
+@app.route('/generate-telegram-code')
+@login_required
+def generate_telegram_code():
+    import secrets
+    code = secrets.token_hex(8)
+    current_user.telegram_link_code = code
+    db.session.commit()
+    from flask import jsonify
+    return jsonify({"code": code})
 
 if __name__ == '__main__':
     app.run(debug=False)
