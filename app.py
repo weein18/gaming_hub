@@ -997,7 +997,7 @@ def auto_fetch_pandascore_matches():
         import traceback
         traceback.print_exc()
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12, start_date=datetime.now() + timedelta(minutes=2))
+scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12, start_date=datetime.now() + timedelta(minutes=5))
 scheduler.add_job(keep_alive, 'interval', minutes=13)
 if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
     try:
@@ -1068,4 +1068,10 @@ def generate_telegram_code():
     return jsonify({"code": code})
 
 if __name__ == '__main__':
+    try:
+        from bot import start_bot_thread
+        start_bot_thread()
+        print("[BOT] Thread started from app.py")
+    except Exception as e:
+        print(f"[BOT-START-ERROR] Could not start bot thread: {e}")
     app.run(debug=False)
