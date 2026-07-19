@@ -1,173 +1,323 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container" style="display: flex; justify-content: center; align-items: flex-start; padding-top: 120px; min-height: 100vh;">
-    
-    <div class="glass-card" style="width: 100%; max-width: 800px; padding: 40px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: var(--primary); filter: blur(100px); opacity: 0.1; pointer-events: none;"></div>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;600;700&display=swap');
+    :root {
+        --accent: #e30613; --accent-dim: rgba(227,6,19,0.1);
+        --glass-bg: rgba(28,28,30,0.72); --glass-border: rgba(255,255,255,0.09);
+        --glass-shine: rgba(255,255,255,0.04);
+        --text-primary: #fff; --text-secondary: rgba(255,255,255,0.55);
+        --text-tertiary: rgba(255,255,255,0.28);
+        --blur: blur(40px) saturate(200%);
+        --r-xl: 22px; --r-lg: 16px; --r-md: 10px;
+        --shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+        --mono: 'Geist Mono', monospace;
+        --tg: #29b6f6; --tg-dim: rgba(41,182,246,0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #000; font-family: 'Geist', -apple-system, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-        <div style="margin-bottom: 40px; border-left: 5px solid var(--primary); padding-left: 20px;">
-            <h1 style="text-transform: uppercase; letter-spacing: -2px; font-size: 2.5rem; margin: 0;">Account <span class="highlight">Settings</span></h1>
-            <p style="font-size: 0.7rem; color: #555; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;">Update your digital presence</p>
+    .atmo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .atmo-orb { position: absolute; border-radius: 50%; filter: blur(70px); }
+    .atmo-orb-1 { width: 70vw; height: 70vw; top: -25%; left: -15%; background: radial-gradient(circle, rgba(227,6,19,0.06) 0%, transparent 65%); animation: d1 22s ease-in-out infinite; }
+    .atmo-orb-2 { width: 50vw; height: 50vw; bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(10,132,255,0.04) 0%, transparent 65%); animation: d2 28s ease-in-out infinite; }
+    @keyframes d1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,5%)} }
+    @keyframes d2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
+
+    .glass { background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: var(--r-xl); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .glass::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, var(--glass-shine) 0%, transparent 50%); pointer-events:none; border-radius:inherit; }
+
+    .page-wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 110px 24px 80px; animation: fadeUp 0.4s ease both; }
+
+    .page-eyebrow { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: block; }
+    .page-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 32px; }
+
+    .settings-layout { display: grid; grid-template-columns: 220px 1fr; gap: 20px; align-items: start; }
+
+    /* Avatar card */
+    .avatar-card { padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+    .avatar-ring { position: relative; width: 130px; height: 130px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--accent), rgba(255,255,255,0.1)); flex-shrink: 0; }
+    .avatar-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+    .avatar-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; color: rgba(255,255,255,0.06); }
+    .avatar-name { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+    .avatar-rank { font-size: 0.55rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-top: 2px; }
+    .avatar-upload-btn { display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; color: var(--text-secondary); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; width: 100%; }
+    .avatar-upload-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* Form card */
+    .form-card { padding: 32px 32px; }
+    .form-section { margin-bottom: 28px; }
+    .form-section-label { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-tertiary); padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; display: block; }
+    .form-section-label span { color: var(--accent); }
+
+    .input-row { display: grid; gap: 16px; margin-bottom: 16px; }
+    .input-row.two { grid-template-columns: 1fr 1fr; }
+    .input-row.one { grid-template-columns: 1fr; }
+    .ig { display: flex; flex-direction: column; gap: 7px; }
+    .ig label { font-size: 0.52rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); }
+    .gi { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-md); color: #fff; padding: 11px 14px; font-family: 'Geist', sans-serif; font-size: 0.88rem; font-weight: 500; outline: none; transition: border-color 0.2s, background 0.2s; }
+    .gi:focus { border-color: rgba(227,6,19,0.5); background: rgba(227,6,19,0.04); }
+    .gi::placeholder { color: rgba(255,255,255,0.2); }
+    textarea.gi { resize: none; height: 90px; }
+
+    /* Telegram section */
+    .tg-connected { display: flex; align-items: center; gap: 12px; padding: 13px 16px; background: rgba(41,182,246,0.07); border: 1px solid rgba(41,182,246,0.25); border-radius: var(--r-md); }
+    .tg-connected-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(41,182,246,0.15); border: 1px solid rgba(41,182,246,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tg-connected-info { flex: 1; }
+    .tg-connected-name { font-size: 0.85rem; font-weight: 700; color: var(--tg); }
+    .tg-connected-sub { font-size: 0.58rem; font-weight: 600; color: rgba(41,182,246,0.6); margin-top: 2px; }
+    .tg-connect-btn { display: flex; align-items: center; gap: 10px; padding: 13px 16px; background: var(--tg-dim); border: 1px solid rgba(41,182,246,0.25); border-radius: var(--r-md); color: var(--tg); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; width: 100%; }
+    .tg-connect-btn:hover { background: rgba(41,182,246,0.15); border-color: rgba(41,182,246,0.4); }
+
+    /* Telegram modal */
+    .tg-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .tg-modal-overlay.open { display: flex; animation: fadeUp 0.25s ease both; }
+    .tg-modal { background: rgba(18,18,20,0.95); border: 1px solid rgba(41,182,246,0.2); border-radius: 20px; padding: 32px; max-width: 420px; width: 100%; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+    .tg-modal-title { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .tg-modal-sub { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+    .tg-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+    .tg-step { display: flex; align-items: flex-start; gap: 12px; }
+    .tg-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--tg-dim); border: 1px solid rgba(41,182,246,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; color: var(--tg); flex-shrink: 0; margin-top: 1px; }
+    .tg-step-text { font-size: 0.78rem; font-weight: 500; color: var(--text-secondary); line-height: 1.5; }
+    .tg-step-text b { color: #fff; font-weight: 700; }
+    .tg-code-box { background: rgba(41,182,246,0.06); border: 1px solid rgba(41,182,246,0.2); border-radius: var(--r-md); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    .tg-code { font-family: var(--mono); font-size: 0.85rem; font-weight: 700; color: var(--tg); letter-spacing: 0.05em; }
+    .tg-copy-btn { padding: 6px 14px; background: rgba(41,182,246,0.15); border: 1px solid rgba(41,182,246,0.3); border-radius: 8px; color: var(--tg); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .tg-copy-btn:hover { background: rgba(41,182,246,0.25); }
+    .tg-open-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; background: var(--tg); border: none; border-radius: var(--r-md); color: #000; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: opacity 0.2s; margin-bottom: 10px; }
+    .tg-open-btn:hover { opacity: 0.88; }
+    .tg-modal-close { display: block; text-align: center; font-size: 0.65rem; color: var(--text-tertiary); cursor: pointer; margin-top: 8px; transition: color 0.2s; background: none; border: none; width: 100%; }
+    .tg-modal-close:hover { color: #fff; }
+
+    /* Password toggle */
+    .pw-toggle-btn { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-md); color: var(--text-tertiary); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .pw-toggle-btn:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
+    .pw-toggle-btn.open { border-color: rgba(227,6,19,0.4); color: var(--accent); background: var(--accent-dim); }
+    .pw-chevron { margin-left: auto; transition: transform 0.25s; }
+    .pw-toggle-btn.open .pw-chevron { transform: rotate(180deg); }
+    .pw-fields { display: none; margin-top: 14px; padding: 20px; background: rgba(0,0,0,0.2); border: 1px solid rgba(227,6,19,0.15); border-radius: var(--r-lg); }
+    .pw-fields.visible { display: block; animation: fadeUp 0.25s ease both; }
+
+    .save-btn { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: var(--r-md); color: #fff; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; margin-top: 8px; transition: opacity 0.2s, transform 0.2s; box-shadow: 0 8px 24px rgba(227,6,19,0.25); }
+    .save-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    @media (max-width: 680px) {
+        .settings-layout { grid-template-columns: 1fr; }
+        .avatar-card { flex-direction: row; text-align: left; padding: 20px; gap: 20px; }
+        .avatar-ring { width: 80px; height: 80px; flex-shrink: 0; }
+        .input-row.two { grid-template-columns: 1fr; }
+        .form-card { padding: 22px 18px; }
+    }
+</style>
+
+<!-- Telegram modal -->
+<div class="tg-modal-overlay" id="tgModal">
+    <div class="tg-modal">
+        <div class="tg-modal-title">🔗 Connect Telegram</div>
+        <div class="tg-modal-sub">Link your EliteHub account to get match notifications, stats and results directly in Telegram.</div>
+        <div class="tg-steps">
+            <div class="tg-step">
+                <div class="tg-step-num">1</div>
+                <div class="tg-step-text">Copy your personal link code below</div>
+            </div>
+            <div class="tg-step">
+                <div class="tg-step-num">2</div>
+                <div class="tg-step-text">Open the bot and send: <b>/link YOUR_CODE</b></div>
+            </div>
+            <div class="tg-step">
+                <div class="tg-step-num">3</div>
+                <div class="tg-step-text">Done! You'll receive a confirmation message</div>
+            </div>
         </div>
+        <div class="tg-code-box">
+            <span class="tg-code" id="tgCode">Generating...</span>
+            <button class="tg-copy-btn" onclick="copyCode()">Copy</button>
+        </div>
+        <a href="https://t.me/elitehubcs2_bot" target="_blank" class="tg-open-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.496.969z"/></svg>
+            Open EliteHub Bot
+        </a>
+        <button class="tg-modal-close" onclick="closeTgModal()">Close</button>
+    </div>
+</div>
 
-        <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px;">
-            
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                <div class="avatar-preview-container" style="position: relative; width: 180px; height: 180px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
+<div class="atmo">
+    <div class="atmo-orb atmo-orb-1"></div>
+    <div class="atmo-orb atmo-orb-2"></div>
+</div>
+
+<div class="page-wrap">
+    <span class="page-eyebrow">EliteHub</span>
+    <h1 class="page-title">Account <span style="color:var(--accent)">Settings</span></h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="settings-layout">
+
+            <!-- Avatar -->
+            <div class="glass avatar-card">
+                <div class="avatar-ring">
                     {% if current_user.avatar %}
-                        <img src="{{ user.avatar if 'data:' in user.avatar else url_for('static', filename='uploads/' + user.avatar) }}" 
-                                style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;">
+                        <img id="avatar-preview"
+                             src="{{ current_user.avatar if 'base64' in current_user.avatar else url_for('static', filename='uploads/' + current_user.avatar) }}"
+                             alt="Avatar">
                     {% else %}
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.05);">?</div>
+                        <div class="avatar-placeholder" id="avatar-placeholder">{{ current_user.username[0]|upper }}</div>
+                        <img id="avatar-preview" src="" alt="" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;">
                     {% endif %}
                 </div>
-                
-                <label class="liquid-btn" style="padding: 10px 20px; font-size: 0.7rem; cursor: pointer; text-align: center; width: 100%;">
-                    CHOOSE IMAGE
-                    <input type="file" name="avatar" accept="image/*" onchange="loadFile(event)" style="display: none;">
+                <div>
+                    <div class="avatar-name">{{ current_user.username }}</div>
+                    <div class="avatar-rank">{{ current_user.rank if current_user.rank else 'Silver I' }}</div>
+                </div>
+                <label class="avatar-upload-btn">
+                    ↑ Upload Photo
+                    <input type="file" name="avatar" accept="image/*" style="display:none" onchange="previewAvatar(event)">
                 </label>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                
-                <div class="input-group">
-                    <label>PUBLIC NICKNAME</label>
-                    <input type="text" name="username" value="{{ current_user.username }}" class="glass-input" required>
+            <!-- Form -->
+            <div class="glass form-card">
+
+                <!-- Profile -->
+                <div class="form-section">
+                    <span class="form-section-label"><span>01</span> — Profile</span>
+                    <div class="input-row two">
+                        <div class="ig">
+                            <label>Username</label>
+                            <input type="text" name="username" value="{{ current_user.username }}" class="gi" required>
+                        </div>
+                        <div class="ig">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ current_user.email }}" class="gi" required>
+                        </div>
+                    </div>
+                    <div class="input-row one">
+                        <div class="ig">
+                            <label>Biography</label>
+                            <textarea name="bio" class="gi">{{ current_user.bio if current_user.bio else '' }}</textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input type="email" name="email" value="{{ current_user.email }}" class="glass-input" required>
+                <!-- Gaming -->
+                <div class="form-section">
+                    <span class="form-section-label"><span>02</span> — Gaming</span>
+                    <div class="input-row two">
+                        <div class="ig">
+                            <label>Favorite Team</label>
+                            <input type="text" name="favorite_team"
+                                   value="{{ current_user.favorite_team if current_user.favorite_team else '' }}"
+                                   placeholder="e.g. NAVI" class="gi">
+                        </div>
+                        <div class="ig">
+                            <label>Steam URL</label>
+                            <input type="text" name="steam_url"
+                                   value="{{ current_user.steam_url if current_user.steam_url else '' }}"
+                                   placeholder="https://steamcommunity.com/..." class="gi">
+                        </div>
+                    </div>
                 </div>
-                <div class="ig" style="grid-column:1/-1;">
+
+                <!-- Telegram -->
+                <div class="form-section">
+                    <span class="form-section-label"><span>03</span> — Telegram</span>
                     {% if current_user.telegram_chat_id %}
-                        <label>Telegram</label>
-                        <div style="padding:11px 14px;background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.25);border-radius:10px;color:#2ecc71;font-size:0.8rem;font-weight:700;">
-                            ✓ Connected as @{{ current_user.telegram_id }}
+                        <div class="tg-connected">
+                            <div class="tg-connected-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#29b6f6"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.496.969z"/></svg>
+                            </div>
+                            <div class="tg-connected-info">
+                                <div class="tg-connected-name">@{{ current_user.telegram_id if current_user.telegram_id else 'Connected' }}</div>
+                                <div class="tg-connected-sub">✓ Notifications active</div>
+                            </div>
                         </div>
                     {% else %}
-                        <label>Telegram</label>
-                        <button type="button" onclick="connectTelegram()" class="gi" style="cursor:pointer;text-align:left;color:var(--text-tertiary);">
-                            Connect Telegram →
+                        <button type="button" class="tg-connect-btn" onclick="openTgModal()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.496.969z"/></svg>
+                            Connect Telegram — Get match notifications
                         </button>
                     {% endif %}
                 </div>
 
-                <script>
-                async function connectTelegram() {
-                    const res = await fetch('/generate-telegram-code');
-                    const data = await res.json();
-                    alert(`Send this command to @YourBotName on Telegram:\n\n/link ${data.code}\n\nThe code expires when you generate a new one.`);
-                }
-                </script>
-
-                <div style="margin-top: 20px; margin-bottom: 20px;">
-                    <button type="button" onclick="toggleSecurity()" id="secureBtn" class="liquid-btn" 
-                            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; font-size: 0.7rem;">
-                        <i class="fas fa-lock" style="margin-right: 10px;"></i> CHANGE PASSWORD
+                <!-- Security -->
+                <div class="form-section" style="margin-bottom:24px;">
+                    <span class="form-section-label"><span>04</span> — Security</span>
+                    <button type="button" class="pw-toggle-btn" id="pwBtn" onclick="togglePw()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Change Password
+                        <svg class="pw-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
-                    <div id="securityFields" style="display: none; margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--primary);">
-                        <div class="input-group" style="margin-bottom: 15px;">
-                            <label>CURRENT PASSWORD</label>
-                            <input type="password" name="old_password" class="glass-input" placeholder="Confirm old">
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="input-group">
-                                <label>NEW PASSWORD</label>
-                                <input type="password" name="new_password" class="glass-input" placeholder="Min. 8 chars">
-                            </div>
-                            <div class="input-group">
-                                <label>CONFIRM NEW</label>
-                                <input type="password" name="confirm_password" class="glass-input" placeholder="Repeat">
+                    <div class="pw-fields" id="pwFields">
+                        <div class="input-row one" style="margin-bottom:12px;">
+                            <div class="ig">
+                                <label>Current Password</label>
+                                <input type="password" name="old_password" placeholder="Enter current password" class="gi">
                             </div>
                         </div>
+                        <div class="input-row two">
+                            <div class="ig">
+                                <label>New Password</label>
+                                <input type="password" name="new_password" placeholder="Min. 8 chars" class="gi">
+                            </div>
+                            <div class="ig">
+                                <label>Confirm New</label>
+                                <input type="password" name="confirm_password" placeholder="Repeat" class="gi">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <script>
-                function toggleSecurity() {
-                    var fields = document.getElementById("securityFields");
-                    var btn = document.getElementById("secureBtn");
-                    if (fields.style.display === "none") {
-                        fields.style.display = "block";
-                        btn.innerHTML = "CANCEL PASSWORD CHANGE";
-                        btn.style.borderColor = "var(--primary)";
-                    } else {
-                        fields.style.display = "none";
-                        btn.innerHTML = '<i class="fas fa-lock" style="margin-right: 10px;"></i> CHANGE PASSWORD';
-                        btn.style.borderColor = "rgba(255,255,255,0.1)";
-                        // Очищаем поля, если юзер передумал
-                        document.getElementsByName("old_password")[0].value = "";
-                        document.getElementsByName("new_password")[0].value = "";
-                        document.getElementsByName("confirm_password")[0].value = "";
-                    }
-                }
-                </script> 
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="input-group">
-                        <label>Favorite Team</label>
-                        <input type="text" name="favorite_team" placeholder="Enter team name..." 
-                                value="{{ current_user.favorite_team if current_user else '' }}" 
-                                style="width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444;">
-                    </div>
-                    <div class="input-group">
-                        <label>STEAM URL</label>
-                        <input type="text" name="steam_url" value="{{ current_user.steam_url }}" class="glass-input" placeholder="https://steamcommunity.com/...">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>BIOGRAPHY</label>
-                    <textarea name="bio" class="glass-input" style="height: 100px; resize: none;">{{ current_user.bio }}</textarea>
-                </div>
-
-                <button type="submit" class="liquid-btn" style="margin-top: 10px; border: none; padding: 18px; font-weight: 900; background: var(--primary);">
-                    SAVE CONFIGURATION
-                </button>
+                <button type="submit" class="save-btn">Save Changes</button>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
-<style>
-    .input-group label {
-        display: block;
-        font-size: 0.6rem;
-        color: #555;
-        font-weight: 800;
-        letter-spacing: 2px;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-    }
-    .glass-input {
-        width: 100%;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 12px;
-        color: white;
-        padding: 12px 15px;
-        font-family: 'Rajdhani', sans-serif;
-        outline: none;
-        transition: 0.3s;
-    }
-    .glass-input:focus {
-        border-color: var(--primary);
-        background: rgba(227,6,19,0.05);
-    }
-    select.glass-input option {
-        background: #0f0f0f;
-        color: white;
-    }
-</style>
-
 <script>
-  var loadFile = function(event) {
-    var output = document.getElementById('output');
-    output.src = URL.createObjectURL(event.target.files[0]);
-    output.onload = function() {
-      URL.revokeObjectURL(output.src) 
+function togglePw() {
+    const btn = document.getElementById('pwBtn');
+    const fields = document.getElementById('pwFields');
+    const open = fields.classList.toggle('visible');
+    btn.classList.toggle('open', open);
+    if (!open) {
+        ['old_password','new_password','confirm_password'].forEach(n => {
+            const el = document.getElementsByName(n)[0];
+            if (el) el.value = '';
+        });
     }
-  };
+}
+function previewAvatar(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const preview = document.getElementById('avatar-preview');
+    const placeholder = document.getElementById('avatar-placeholder');
+    preview.src = url;
+    preview.style.display = 'block';
+    if (placeholder) placeholder.style.display = 'none';
+    preview.onload = () => URL.revokeObjectURL(url);
+}
+async function openTgModal() {
+    document.getElementById('tgModal').classList.add('open');
+    const res = await fetch('/generate-telegram-code');
+    const data = await res.json();
+    document.getElementById('tgCode').textContent = '/link ' + data.code;
+}
+function closeTgModal() {
+    document.getElementById('tgModal').classList.remove('open');
+}
+function copyCode() {
+    const code = document.getElementById('tgCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('.tg-copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+}
+document.getElementById('tgModal').addEventListener('click', function(e) {
+    if (e.target === this) closeTgModal();
+});
 </script>
 {% endblock %}
