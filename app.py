@@ -1068,10 +1068,4 @@ def generate_telegram_code():
     return jsonify({"code": code})
 
 if __name__ == '__main__':
-    try:
-        from bot import start_bot_thread
-        start_bot_thread()
-        print("[BOT] Thread started from app.py")
-    except Exception as e:
-        print(f"[BOT-START-ERROR] Could not start bot thread: {e}")
     app.run(debug=False)

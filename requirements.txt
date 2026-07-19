@@ -22,4 +22,4 @@ dnspython==2.7.0
 pytz
 apscheduler
 resend
-python-telegram-bot==20.7
+python-telegram-bot>=20.0
