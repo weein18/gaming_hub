@@ -303,7 +303,10 @@ async function openTgModal() {
     document.getElementById('tgModal').classList.add('open');
     const res = await fetch('/generate-telegram-code');
     const data = await res.json();
-    document.getElementById('tgCode').textContent = '/link ' + data.code;
+    const botUrl = 'https://t.me/elitehubcs2_bot?start=' + data.code;
+    document.getElementById('tgCode').textContent = 'Tap “Open EliteHub Bot” to connect';
+    const botButton = document.querySelector('.tg-open-btn');
+    botButton.href = botUrl;
 }
 function closeTgModal() {
     document.getElementById('tgModal').classList.remove('open');

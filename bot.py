@@ -37,25 +37,45 @@ def main_menu_keyboard(is_linked=False):
 
 # ── /START ──
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    from app import app, User
+    from app import app, db, User
     chat_id = str(update.effective_chat.id)
+    tg_username = update.effective_user.username or ""
+    name = update.effective_user.first_name or "there"
+    if context.args:
+        code = context.args[0].strip()
+        with app.app_context():
+            user = User.query.filter_by(telegram_link_code=code).first()
+            if user:
+                user.telegram_chat_id = chat_id
+                user.telegram_id = tg_username
+                user.telegram_link_code = None
+                db.session.commit()
+                await update.message.reply_text(
+                    f"✅ <b>Account linked!</b>\n\n"
+                    f"Welcome, <b>{user.username}</b>. "
+                    f"You’ll receive prediction reminders and results here.",
+                    parse_mode="HTML",
+                    reply_markup=main_menu_keyboard(is_linked=True),
+                )
+                return
     with app.app_context():
         user = User.query.filter_by(telegram_chat_id=chat_id).first()
         is_linked = user is not None
-    name = update.effective_user.first_name or "there"
     if is_linked:
         text = (
             f"👋 Welcome back, <b>{user.username}</b>!\n\n"
-            f"🏅 Rank: <b>{user.rank}</b> · ⭐ <b>{user.xp} XP</b>\n\n"
-            "What would you like to do?"
+            f"🏅 {user.rank} · ⭐ {user.xp} XP"
         )
     else:
         text = (
-            f"👋 Hey <b>{name}</b>, welcome to <b>EliteHub Bot</b>!\n\n"
-            "Track CS2 matches, get notified about results and manage your predictions — all from Telegram.\n\n"
-            "To get started, link your EliteHub account 👇"
+            f"👋 Hey <b>{name}</b>!\n\n"
+            "Link your EliteHub account to receive prediction reminders and results."
         )
-    await update.message.reply_text(text, parse_mode="HTML", reply_markup=main_menu_keyboard(is_linked))
+    await update.message.reply_text(
+        text,
+        parse_mode="HTML",
+        reply_markup=main_menu_keyboard(is_linked),
+    )
 
 # ── CALLBACKS ──
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):

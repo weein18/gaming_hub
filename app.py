@@ -18,7 +18,7 @@ from functools import wraps
 from sqlalchemy import or_, func
 import resend
 import threading
-from bot import start_bot_thread
+from bot import start_bot_thread, send_telegram_message
 
 
 
@@ -555,17 +555,28 @@ def close_match(match_id):
     match = db.session.get(Match, match_id)   
     if match and final_score:
         match.final_score = final_score
-        match.status = 'Finished'        
+        match.status = 'Finished'
         predictions = Prediction.query.filter_by(match_id=match_id).all()
+        telegram_notifications = []
         for pred in predictions:
-            if pred.prediction_score == final_score:
-                pred.is_correct = True
-                user = db.session.get(User, pred.user_id)
-                if user:
-                    user.xp += 100
-                else:
-                    print(f"Warning: User with ID {pred.user_id} not found for prediction {pred.id}")
+            user = db.session.get(User, pred.user_id)
+            is_correct = pred.prediction_score == final_score
+            pred.is_correct = is_correct
+            if user and is_correct:
+                user.xp += 100
+            if user and user.telegram_chat_id:
+                result_icon = "✅" if is_correct else "❌"
+                result_text = "Correct prediction! <b>+100 XP</b>" if is_correct else "Not this time — keep going."
+                telegram_notifications.append((
+                    user.telegram_chat_id,
+                    f"{result_icon} <b>Match result</b>\n\n"
+                    f"⚔️ <b>{match.team1}</b> {final_score} <b>{match.team2}</b>\n"
+                    f"Your prediction: <b>{pred.prediction_score}</b>\n\n"
+                    f"{result_text}"
+                ))
         db.session.commit()
+        for chat_id, text in telegram_notifications:
+            send_telegram_message(chat_id, text)      
         flash(f"Match {match.team1} vs {match.team2} closed with score {final_score}!") 
     return redirect(url_for('manage_matches'))
 
@@ -897,7 +908,7 @@ def auto_fetch_pandascore_matches():
                 tournament_logo = normalize_logo_url(
                     league.get("image_url") or serie.get("image_url") or ""
                 )
-                tournament.image_url = tournament_logo
+                # tournament.image_url = tournament_logo
                 final_prize_pool = format_prize_pool(
                     serie.get("prizepool") or serie.get("prize_pool") or
                     league.get("prizepool") or league.get("prize_pool")
