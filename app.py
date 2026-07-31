@@ -704,51 +704,111 @@ def match_analytics(match_id):
     t1_recent = []
     t2_recent = []
     maps_data = []
+    # if token and match.pandascore_id:
+    #     try:
+    #         # Full match details
+    #         r = requests.get(
+    #             f"https://api.pandascore.co/matches/{match.pandascore_id}?token={token}",
+    #             timeout=10
+    #         )
+    #         if r.status_code == 200:
+    #             api_match = r.json()
+    #             opponents = api_match.get("opponents") or []
+    #             # Players from each team
+    #             if len(opponents) >= 2:
+    #                 t1_id = opponents[0]["opponent"]["id"]
+    #                 t2_id = opponents[1]["opponent"]["id"]
+    #                 # Team 1 players
+    #                 r1 = requests.get(
+    #                     f"https://api.pandascore.co/csgo/teams/{t1_id}?token={token}",
+    #                     timeout=10
+    #                 )
+    #                 if r1.status_code == 200:
+    #                     t1_players = r1.json().get("players") or []
+    #                 # Team 2 players
+    #                 r2 = requests.get(
+    #                     f"https://api.pandascore.co/csgo/teams/{t2_id}?token={token}",
+    #                     timeout=10
+    #                 )
+    #                 if r2.status_code == 200:
+    #                     t2_players = r2.json().get("players") or []
+    #                 # Team 1 recent matches
+    #                 r3 = requests.get(
+    #                     f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
+    #                     timeout=10
+    #                 )
+    #                 if r3.status_code == 200:
+    #                     t1_recent = r3.json()
+    #                 # Team 2 recent matches
+    #                 r4 = requests.get(
+    #                     f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
+    #                     timeout=10
+    #                 )
+    #                 if r4.status_code == 200:
+    #                     t2_recent = r4.json()
+    #             # Maps data (for finished matches)
+    #             games = api_match.get("games") or []
+    #             for game in games:
+    #                 if game.get("finished"):
+    #                     maps_data.append({
+    #                         "map": (game.get("map") or {}).get("name", "Unknown"),
+    #                         "winner": (game.get("winner") or {}).get("name", ""),
+    #                         "t1_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t1_id), 0),
+    #                         "t2_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t2_id), 0),
+    #                     })
+    #     except Exception as e:
+    #         print(f"[ANALYTICS] API error: {e}")
+    print(f"[ANALYTICS] pandascore_id={match.pandascore_id}, token={bool(token)}")
     if token and match.pandascore_id:
         try:
-            # Full match details
             r = requests.get(
                 f"https://api.pandascore.co/matches/{match.pandascore_id}?token={token}",
                 timeout=10
             )
+            print(f"[ANALYTICS] Match API status: {r.status_code}")
             if r.status_code == 200:
                 api_match = r.json()
                 opponents = api_match.get("opponents") or []
-                # Players from each team
+                print(f"[ANALYTICS] Opponents: {len(opponents)}")
                 if len(opponents) >= 2:
                     t1_id = opponents[0]["opponent"]["id"]
                     t2_id = opponents[1]["opponent"]["id"]
-                    # Team 1 players
-                    r1 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t1_id}?token={token}",
-                        timeout=10
-                    )
+                    print(f"[ANALYTICS] t1_id={t1_id} t2_id={t2_id}")
+
+                    r1 = requests.get(f"https://api.pandascore.co/csgo/teams/{t1_id}?token={token}", timeout=10)
+                    print(f"[ANALYTICS] T1 players: {r1.status_code}")
                     if r1.status_code == 200:
                         t1_players = r1.json().get("players") or []
-                    # Team 2 players
-                    r2 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t2_id}?token={token}",
-                        timeout=10
-                    )
+                        print(f"[ANALYTICS] T1 count: {len(t1_players)}")
+
+                    r2 = requests.get(f"https://api.pandascore.co/csgo/teams/{t2_id}?token={token}", timeout=10)
+                    print(f"[ANALYTICS] T2 players: {r2.status_code}")
                     if r2.status_code == 200:
                         t2_players = r2.json().get("players") or []
-                    # Team 1 recent matches
+                        print(f"[ANALYTICS] T2 count: {len(t2_players)}")
+
                     r3 = requests.get(
                         f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
+                    print(f"[ANALYTICS] T1 recent: {r3.status_code}")
                     if r3.status_code == 200:
                         t1_recent = r3.json()
-                    # Team 2 recent matches
+                        print(f"[ANALYTICS] T1 recent count: {len(t1_recent)}")
+
                     r4 = requests.get(
                         f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
+                    print(f"[ANALYTICS] T2 recent: {r4.status_code}")
                     if r4.status_code == 200:
                         t2_recent = r4.json()
-                # Maps data (for finished matches)
+                        print(f"[ANALYTICS] T2 recent count: {len(t2_recent)}")
+
                 games = api_match.get("games") or []
+                print(f"[ANALYTICS] Games: {len(games)}")
                 for game in games:
+                    print(f"[ANALYTICS] Game: finished={game.get('finished')} results={game.get('results')}")
                     if game.get("finished"):
                         maps_data.append({
                             "map": (game.get("map") or {}).get("name", "Unknown"),
@@ -756,8 +816,12 @@ def match_analytics(match_id):
                             "t1_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t1_id), 0),
                             "t2_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t2_id), 0),
                         })
+            else:
+                print(f"[ANALYTICS] API failed: {r.text[:300]}")
         except Exception as e:
-            print(f"[ANALYTICS] API error: {e}")
+            print(f"[ANALYTICS] ERROR: {e}")
+            import traceback
+            traceback.print_exc()
     user_prediction = Prediction.query.filter_by(
         user_id=current_user.id, match_id=match_id
     ).first()
