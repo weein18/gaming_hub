@@ -690,8 +690,6 @@ def leaderboard():
     top_users = User.query.order_by(User.xp.desc()).limit(50).all()
     return render_template('user/leaderboard.html', users=top_users)
 
-@app.route('/match/<int:match_id>')
-@login_required
 def active_roster(players):
     active_players = [
         player for player in players
@@ -699,6 +697,9 @@ def active_roster(players):
         and player.get("active") is not False
     ]
     return active_players[:5]
+
+@app.route('/match/<int:match_id>')
+@login_required
 def match_analytics(match_id):
     match = db.session.get(Match, match_id)
     if not match:
