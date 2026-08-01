@@ -195,7 +195,15 @@ def run_bot():
         close_loop=False,
         stop_signals=None
     )
-
 def start_bot_thread():
-    thread = threading.Thread(target=run_bot, daemon=True)
-    thread.start()
+    import os
+    lock_file = '/tmp/elitehub_bot.lock'
+    if os.path.exists(lock_file):
+        print("[BOT] Another instance already running, skipping")
+        return
+    try:
+        open(lock_file, 'w').close()
+        thread = threading.Thread(target=run_bot, daemon=True)
+        thread.start()
+    except Exception as e:
+        print(f"[BOT] Failed to start: {e}")
