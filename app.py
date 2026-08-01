@@ -691,12 +691,7 @@ def leaderboard():
     return render_template('user/leaderboard.html', users=top_users)
 
 def active_roster(players):
-    active_players = [
-        player for player in players
-        if player.get("role") == "player"
-        and player.get("active") is not False
-    ]
-    return active_players[:5]
+    return players[:5]
 
 @app.route('/match/<int:match_id>')
 @login_required
@@ -792,7 +787,7 @@ def match_analytics(match_id):
                     r2 = requests.get(f"https://api.pandascore.co/teams/{t2_id}?token={token}", timeout=10)
                     print(f"[ANALYTICS] T2 players: {r2.status_code}")
                     if r2.status_code == 200:
-                        t2_players = r2.json().get("players") or []
+                        t2_players = active_roster(r2.json().get("players") or [])
                         print(f"[ANALYTICS] T2 count: {len(t2_players)}")
 
                     r3 = requests.get(
