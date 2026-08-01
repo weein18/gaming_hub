@@ -808,27 +808,35 @@ def match_analytics(match_id):
                 games = api_match.get("games") or []
                 print(f"[ANALYTICS] Games: {len(games)}")
                 for game in games:
-                    if game.get("finished"):
-                        print(f"[ANALYTICS] RAW GAME: {game}")
-                        winner_obj = game.get("winner") or {}
-                        winner_name = winner_obj.get("name", "")
-                        
-                        # Try results first, fall back to winner
-                        results = game.get("results") or []
-                        if results:
-                            t1_score = next((t["score"] for t in results if t.get("team_id") == t1_id), 0)
-                            t2_score = next((t["score"] for t in results if t.get("team_id") == t2_id), 0)
-                        else:
-                            # No results array — determine from winner
-                            t1_score = 1 if winner_obj.get("id") == t1_id else 0
-                            t2_score = 1 if winner_obj.get("id") == t2_id else 0
-
-                        maps_data.append({
-                            "map": (game.get("map") or {}).get("name", "Unknown"),
-                            "winner": winner_name,
-                            "t1_score": t1_score,
-                            "t2_score": t2_score,
-                        })
+                    if not game.get("finished"):
+                        continue
+                    game_id = game.get("id")
+                    game_response = requests.get(
+                        f"https://api.pandascore.co/csgo/games/{game_id}?token={token}",
+                        timeout=10
+                    )
+                    print(f"[ANALYTICS] Game {game_id} API status: {game_response.status_code}")
+                    if game_response.status_code != 200:
+                        continue
+                    game_data = game_response.json()
+                    print(f"[ANALYTICS] Full game {game_id}: {game_data}")
+                    map_data = game_data.get("map") or {}
+                    results = game_data.get("results") or []
+                    winner = game_data.get("winner") or {}
+                    t1_score = next(
+                        (result.get("score") for result in results if result.get("team_id") == t1_id),
+                        "—"
+                    )
+                    t2_score = next(
+                        (result.get("score") for result in results if result.get("team_id") == t2_id),
+                        "—"
+                    )
+                    maps_data.append({
+                        "map": map_data.get("name", "Map unavailable"),
+                        "winner": winner.get("name", ""),
+                        "t1_score": t1_score,
+                        "t2_score": t2_score,
+                    })
         except Exception as e:
             print(f"[ANALYTICS] ERROR: {e}")
             import traceback
