@@ -762,7 +762,7 @@ def match_analytics(match_id):
     if token and match.pandascore_id:
         try:
             r = requests.get(
-                f"https://api.pandascore.co/csgo/matches/{match.pandascore_id}?token={token}",
+                f"https://api.pandascore.co/matches/{match.pandascore_id}?token={token}",
                 timeout=10
             )
             print(f"[ANALYTICS] Match API status: {r.status_code}")
@@ -808,8 +808,8 @@ def match_analytics(match_id):
                 games = api_match.get("games") or []
                 print(f"[ANALYTICS] Games: {len(games)}")
                 for game in games:
-                    print(f"[ANALYTICS] Game: finished={game.get('finished')} results={game.get('results')}")
                     if game.get("finished"):
+                        print(f"[ANALYTICS] RAW GAME: {game}")
                         winner_obj = game.get("winner") or {}
                         winner_name = winner_obj.get("name", "")
                         
