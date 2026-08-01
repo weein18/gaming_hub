@@ -1089,8 +1089,11 @@ if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
     try:
         scheduler.start()
         print("[SCHEDULER] Started successfully")
-        start_bot_thread()
-        print("[BOT] Thread launched")
+        if os.getenv("RUN_TELEGRAM_BOT") == "true":
+            start_bot_thread()
+            print("[BOT] BOT IS WORKING THREAD LAUNCHED")
+        else:
+            print("[BOT] DISABELD")
     except Exception as e:
         print(f"[SCHEDULER] Already running: {e}")
 
