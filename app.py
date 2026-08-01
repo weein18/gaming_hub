@@ -775,20 +775,20 @@ def match_analytics(match_id):
                     t2_id = opponents[1]["opponent"]["id"]
                     print(f"[ANALYTICS] t1_id={t1_id} t2_id={t2_id}")
 
-                    r1 = requests.get(f"https://api.pandascore.co/csgo/teams/{t1_id}?token={token}", timeout=10)
+                    r1 = requests.get(f"https://api.pandascore.co/teams/{t1_id}?token={token}", timeout=10)
                     print(f"[ANALYTICS] T1 players: {r1.status_code}")
                     if r1.status_code == 200:
                         t1_players = r1.json().get("players") or []
                         print(f"[ANALYTICS] T1 count: {len(t1_players)}")
 
-                    r2 = requests.get(f"https://api.pandascore.co/csgo/teams/{t2_id}?token={token}", timeout=10)
+                    r2 = requests.get(f"https://api.pandascore.co/teams/{t2_id}?token={token}", timeout=10)
                     print(f"[ANALYTICS] T2 players: {r2.status_code}")
                     if r2.status_code == 200:
                         t2_players = r2.json().get("players") or []
                         print(f"[ANALYTICS] T2 count: {len(t2_players)}")
 
                     r3 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
+                        f"https://api.pandascore.co/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
                     print(f"[ANALYTICS] T1 recent: {r3.status_code}")
@@ -797,7 +797,7 @@ def match_analytics(match_id):
                         print(f"[ANALYTICS] T1 recent count: {len(t1_recent)}")
 
                     r4 = requests.get(
-                        f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
+                        f"https://api.pandascore.co/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
                     print(f"[ANALYTICS] T2 recent: {r4.status_code}")
@@ -810,14 +810,25 @@ def match_analytics(match_id):
                 for game in games:
                     print(f"[ANALYTICS] Game: finished={game.get('finished')} results={game.get('results')}")
                     if game.get("finished"):
+                        winner_obj = game.get("winner") or {}
+                        winner_name = winner_obj.get("name", "")
+                        
+                        # Try results first, fall back to winner
+                        results = game.get("results") or []
+                        if results:
+                            t1_score = next((t["score"] for t in results if t.get("team_id") == t1_id), 0)
+                            t2_score = next((t["score"] for t in results if t.get("team_id") == t2_id), 0)
+                        else:
+                            # No results array — determine from winner
+                            t1_score = 1 if winner_obj.get("id") == t1_id else 0
+                            t2_score = 1 if winner_obj.get("id") == t2_id else 0
+
                         maps_data.append({
                             "map": (game.get("map") or {}).get("name", "Unknown"),
-                            "winner": (game.get("winner") or {}).get("name", ""),
-                            "t1_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t1_id), 0),
-                            "t2_score": next((t["score"] for t in (game.get("results") or []) if t.get("team_id") == t2_id), 0),
+                            "winner": winner_name,
+                            "t1_score": t1_score,
+                            "t2_score": t2_score,
                         })
-            else:
-                print(f"[ANALYTICS] API failed: {r.text[:300]}")
         except Exception as e:
             print(f"[ANALYTICS] ERROR: {e}")
             import traceback
