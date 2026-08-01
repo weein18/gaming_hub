@@ -762,7 +762,7 @@ def match_analytics(match_id):
     if token and match.pandascore_id:
         try:
             r = requests.get(
-                f"https://api.pandascore.co/matches/{match.pandascore_id}?token={token}",
+                f"https://api.pandascore.co/csgo/matches/{match.pandascore_id}?token={token}",
                 timeout=10
             )
             print(f"[ANALYTICS] Match API status: {r.status_code}")
