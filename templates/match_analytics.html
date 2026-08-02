@@ -233,7 +233,21 @@
                             <div class="p-nick">{{ p.name }}</div>
                             <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                         </div>
-                        {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
+                        {% if p.get('nationality') %}
+                        <span class="p-nat" style="
+                            background: linear-gradient(135deg, 
+                                rgba(255,255,255,0.06) 0%, 
+                                rgba(255,255,255,0.02) 100%);
+                            border: 1px solid rgba(255,255,255,0.08);
+                            border-radius: 8px;
+                            padding: 4px 10px;
+                            display: flex; align-items: center; gap: 6px;
+                            font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em;
+                        ">
+                            {{ p.nationality | upper | replace('RU','🇷🇺') | replace('UA','🇺🇦') | replace('BY','🇧🇾') | replace('HU','🇭🇺') | replace('CZ','🇨🇿') | replace('IL','🇮🇱') | replace('FR','🇫🇷') | replace('DE','🇩🇪') | replace('DK','🇩🇰') | replace('SE','🇸🇪') | replace('FI','🇫🇮') | replace('NO','🇳🇴') | replace('PL','🇵🇱') | replace('BR','🇧🇷') | replace('US','🇺🇸') | replace('CA','🇨🇦') | replace('AU','🇦🇺') | replace('KZ','🇰🇿') | replace('TR','🇹🇷') | replace('RS','🇷🇸') | replace('SK','🇸🇰') | replace('RO','🇷🇴') | replace('HR','🇭🇷') | replace('SI','🇸🇮') | replace('BA','🇧🇦') | replace('MK','🇲🇰') | replace('ME','🇲🇪') | replace('AL','🇦🇱') | replace('PT','🇵🇹') | replace('ES','🇪🇸') | replace('IT','🇮🇹') | replace('NL','🇳🇱') | replace('BE','🇧🇪') | replace('AT','🇦🇹') | replace('CH','🇨🇭') | replace('GB','🇬🇧') | replace('GR','🇬🇷') | replace('MN','🇲🇳') | replace('GE','🇬🇪') | replace('AM','🇦🇲') | replace('AZ','🇦🇿') | replace('KG','🇰🇬') | replace('UZ','🇺🇿') | replace('LV','🇱🇻') | replace('LT','🇱🇹') | replace('EE','🇪🇪') | replace('MX','🇲🇽') | replace('AR','🇦🇷') | replace('CL','🇨🇱') | replace('CO','🇨🇴') | replace('PE','🇵🇪') | replace('VE','🇻🇪') | replace('CN','🇨🇳') | replace('KR','🇰🇷') | replace('JP','🇯🇵') | replace('TH','🇹🇭') | replace('SG','🇸🇬') | replace('ID','🇮🇩') | replace('VN','🇻🇳') | replace('IN','🇮🇳') | replace('PH','🇵🇭') | replace('ZA','🇿🇦') | replace('NG','🇳🇬') | replace('EG','🇪🇬') | replace('MA','🇲🇦') | replace('TN','🇹🇳') }}
+                            {{ p.nationality }}
+                        </span>
+                        {% endif %}
                     </div>
                 </a>
                 {% endfor %}
