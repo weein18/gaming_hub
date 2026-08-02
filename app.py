@@ -735,7 +735,7 @@ def match_analytics(match_id):
                         print(f"[ANALYTICS] T1 count: {len(t1_players)}")
 
                     r2 = requests.get(
-                        f"https://api.pandascore.co/cs2/players?token={token}&filter[team_id]={t2_id}&per_page=10",
+                        f"https://api.pandascore.co/csgo/players?token={token}&filter[team_id]={t2_id}&per_page=10",
                         timeout=10
                     )
                     print(f"[ANALYTICS] T2 players: {r2.status_code}")
@@ -744,7 +744,7 @@ def match_analytics(match_id):
                         print(f"[ANALYTICS] T2 count: {len(t2_players)}")
 
                     r3 = requests.get(
-                        f"https://api.pandascore.co/cs2/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
+                        f"https://api.pandascore.co/csgo/teams/{t1_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
                     print(f"[ANALYTICS] T1 recent: {r3.status_code}")
@@ -753,7 +753,7 @@ def match_analytics(match_id):
                         print(f"[ANALYTICS] T1 recent count: {len(t1_recent)}")
 
                     r4 = requests.get(
-                        f"https://api.pandascore.co/cs2/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
+                        f"https://api.pandascore.co/csgo/teams/{t2_id}/matches?token={token}&filter[status]=finished&per_page=5&sort=-begin_at",
                         timeout=10
                     )
                     print(f"[ANALYTICS] T2 recent: {r4.status_code}")
