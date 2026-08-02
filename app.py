@@ -726,13 +726,14 @@ def match_analytics(match_id):
                     print(f"[ANALYTICS] t1_id={t1_id} t2_id={t2_id}")
 
                     r1 = requests.get(
-                        f"https://api.pandascore.co/cs2/players?token={token}&filter[team_id]={t1_id}&per_page=10",
+                        f"https://api.pandascore.co/csgo/players?token={token}&filter[team_id]={t1_id}&per_page=10",
                         timeout=10
                     )
                     print(f"[ANALYTICS] T1 players: {r1.status_code}")
                     if r1.status_code == 200:
                         t1_players = active_roster(r1.json())
-                        print(f"[ANALYTICS] T1 count: {len(t1_players)}")
+                        for p in t1_players:
+                            print(f"[PLAYER] {p.get('nickname')} | image_url: {p.get('image_url')}")
 
                     r2 = requests.get(
                         f"https://api.pandascore.co/csgo/players?token={token}&filter[team_id]={t2_id}&per_page=10",
