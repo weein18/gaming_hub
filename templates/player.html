@@ -1,279 +1,611 @@
 {% extends "base.html" %}
 {% block content %}
+
 <style>
     :root {
-        --accent: #e30613; --accent-dim: rgba(227,6,19,0.1);
-        --glass-bg: rgba(28,28,30,0.72); --glass-border: rgba(255,255,255,0.09);
-        --text-primary: #fff; --text-secondary: rgba(255,255,255,0.55);
-        --text-tertiary: rgba(255,255,255,0.28);
-        --blur: blur(40px) saturate(200%);
-        --r-xl: 22px; --r-lg: 16px; --r-md: 10px;
-        --shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
-        --mono: 'Geist Mono', monospace;
-        --success: #2ecc71;
+        --accent: #e30613;
+        --accent-dim: rgba(227, 6, 19, 0.12);
+        --success: #38d982;
+        --bg: #050506;
+        --panel: rgba(24, 24, 27, 0.82);
+        --panel-soft: rgba(255, 255, 255, 0.025);
+        --line: rgba(255, 255, 255, 0.08);
+        --text: #ffffff;
+        --muted: rgba(255, 255, 255, 0.52);
+        --faint: rgba(255, 255, 255, 0.25);
+        --mono: "Geist Mono", monospace;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #000; font-family: 'Geist', -apple-system, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-    .atmo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .atmo-orb { position: absolute; border-radius: 50%; filter: blur(80px); }
-    .atmo-orb-1 { width: 70vw; height: 70vw; top: -20%; left: -15%; background: radial-gradient(circle, rgba(227,6,19,0.07) 0%, transparent 65%); animation: d1 22s ease-in-out infinite; }
-    .atmo-orb-2 { width: 55vw; height: 55vw; bottom: -15%; right: -10%; background: radial-gradient(circle, rgba(10,132,255,0.05) 0%, transparent 65%); animation: d2 28s ease-in-out infinite; }
-    @keyframes d1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(3%,5%)} }
-    @keyframes d2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-4%,-3%)} }
+    * {
+        box-sizing: border-box;
+    }
 
-    .glass { background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: var(--r-xl); box-shadow: var(--shadow); position: relative; overflow: hidden; }
-    .glass::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%); pointer-events:none; border-radius:inherit; }
+    body {
+        background: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+    }
 
-    .page-wrap { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 110px 24px 80px; }
+    .page-wrap {
+        position: relative;
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 112px 0 80px;
+    }
 
-    .back-link { display: inline-flex; align-items: center; gap: 7px; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
-    .back-link:hover { color: var(--accent); }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 22px;
+        color: var(--faint);
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: color 0.2s ease;
+    }
 
-    /* HERO */
-    .hero { margin-bottom: 20px; animation: fadeUp 0.4s ease both; }
-    .hero-inner { display: flex; align-items: center; gap: 36px; padding: 36px 40px; }
-    .player-photo-wrap { position: relative; flex-shrink: 0; }
-    .player-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.1); }
-    .player-photo-placeholder { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 3px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 900; color: rgba(255,255,255,0.15); flex-shrink: 0; }
-    .active-dot { position: absolute; bottom: 6px; right: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--success); border: 2px solid #000; box-shadow: 0 0 8px var(--success); }
+    .back-link:hover {
+        color: var(--accent);
+    }
 
-    .player-meta { flex: 1; min-width: 0; }
-    .player-nickname { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
-    .player-realname { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 16px; }
-    .player-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 100px; font-size: 0.55rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
-    .tag-team { background: var(--accent-dim); border: 1px solid rgba(227,6,19,0.3); color: var(--accent); }
-    .tag-nat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); }
-    .tag-game { background: rgba(10,132,255,0.1); border: 1px solid rgba(10,132,255,0.25); color: #64b5f6; }
-    .tag-active { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.25); color: var(--success); }
+    .panel {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: var(--panel);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
+    }
 
-    .team-logo-wrap { flex-shrink: 0; }
-    .team-logo { width: 80px; height: 80px; object-fit: contain; opacity: 0.7; filter: drop-shadow(0 0 20px rgba(255,255,255,0.05)); }
+    .profile-hero {
+        position: relative;
+        min-height: 300px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
 
-    /* GRID */
-    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .span-full { grid-column: 1/-1; }
-    .section { padding: 24px 28px; animation: fadeUp 0.4s ease both; }
-    .section-title { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-tertiary); padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 18px; display: block; }
-    .section-title span { color: var(--accent); }
+    .profile-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(90deg, rgba(5, 5, 6, 0.96) 0%, rgba(5, 5, 6, 0.78) 43%, rgba(5, 5, 6, 0.45) 100%),
+            var(--flag-image, none);
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        opacity: 0.95;
+        pointer-events: none;
+    }
 
-    /* INFO GRID */
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .info-item { padding: 14px 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); }
-    .info-label { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 5px; }
-    .info-val { font-size: 0.9rem; font-weight: 700; color: #fff; }
-    .info-val.accent { color: var(--accent); }
+    .profile-hero::after {
+        content: "";
+        position: absolute;
+        width: 440px;
+        height: 440px;
+        top: -220px;
+        right: -80px;
+        border-radius: 50%;
+        background: rgba(227, 6, 19, 0.16);
+        filter: blur(70px);
+        pointer-events: none;
+    }
 
-    /* RECENT MATCHES */
-    .match-list { display: flex; flex-direction: column; gap: 8px; }
-    .match-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); transition: all 0.2s; }
-    .match-row:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
-    .result-badge { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; flex-shrink: 0; }
-    .result-badge.w { background: rgba(46,204,113,0.15); color: var(--success); border: 1px solid rgba(46,204,113,0.3); }
-    .result-badge.l { background: rgba(227,6,19,0.12); color: var(--accent); border: 1px solid rgba(227,6,19,0.25); }
-    .result-badge.u { background: rgba(255,255,255,0.05); color: var(--text-tertiary); border: 1px solid rgba(255,255,255,0.08); }
-    .match-vs { flex: 1; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .match-vs small { font-size: 0.56rem; color: var(--text-tertiary); margin-left: 6px; }
-    .match-tournament { font-size: 0.58rem; font-weight: 600; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
-    .match-score { font-size: 0.75rem; font-weight: 800; font-family: var(--mono); flex-shrink: 0; color: #fff; }
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 30px;
+        min-height: 300px;
+        padding: 38px 42px;
+    }
 
-    .empty { padding: 30px; text-align: center; color: var(--text-tertiary); font-size: 0.75rem; }
+    .photo-wrap {
+        position: relative;
+        width: 142px;
+        height: 142px;
+        flex-shrink: 0;
+    }
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-    @media (max-width: 700px) {
-        .hero-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .main-grid { grid-template-columns: 1fr; }
-        .team-logo-wrap { display: none; }
-        .info-grid { grid-template-columns: 1fr; }
+    .player-photo,
+    .photo-placeholder {
+        width: 142px;
+        height: 142px;
+        border: 3px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42);
+    }
+
+    .photo-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 3.5rem;
+        font-weight: 900;
+    }
+
+    .status-dot {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        width: 18px;
+        height: 18px;
+        border: 3px solid #0c0c0e;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 13px var(--success);
+    }
+
+    .hero-eyebrow {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--accent);
+        font-size: 0.58rem;
+        font-weight: 900;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+    }
+
+    .player-name {
+        margin: 0;
+        font-size: clamp(2.7rem, 6vw, 5rem);
+        font-weight: 950;
+        letter-spacing: -0.065em;
+        line-height: 0.86;
+    }
+
+    .real-name {
+        margin: 13px 0 20px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border: 1px solid var(--line);
+        border-radius: 100px;
+        background: rgba(0, 0, 0, 0.18);
+        color: var(--muted);
+        font-size: 0.57rem;
+        font-weight: 850;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+    }
+
+    .tag.team {
+        border-color: rgba(227, 6, 19, 0.38);
+        background: var(--accent-dim);
+        color: #ff6970;
+    }
+
+    .tag.active {
+        border-color: rgba(56, 217, 130, 0.3);
+        background: rgba(56, 217, 130, 0.1);
+        color: var(--success);
+    }
+
+    .team-logo {
+        width: 108px;
+        height: 108px;
+        object-fit: contain;
+        opacity: 0.82;
+        filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.12));
+    }
+
+    .stats-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--line);
+    }
+
+    .stat {
+        min-height: 106px;
+        padding: 22px 24px;
+        background: rgba(21, 21, 24, 0.96);
+    }
+
+    .stat-label,
+    .section-title {
+        display: block;
+        color: var(--faint);
+        font-size: 0.53rem;
+        font-weight: 900;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+    }
+
+    .stat-label {
+        margin-bottom: 10px;
+    }
+
+    .stat-value {
+        font-family: var(--mono);
+        font-size: 1.55rem;
+        font-weight: 900;
+        letter-spacing: -0.07em;
+    }
+
+    .stat-value.win {
+        color: var(--success);
+    }
+
+    .stat-value.loss {
+        color: #ff5b64;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 16px;
+    }
+
+    .section {
+        padding: 27px;
+    }
+
+    .section-title {
+        margin-bottom: 20px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .section-title span {
+        color: var(--accent);
+    }
+
+    .identity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .identity-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.045);
+        border-radius: 10px;
+        background: var(--panel-soft);
+    }
+
+    .identity-label {
+        color: var(--faint);
+        font-size: 0.56rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .identity-value {
+        color: var(--text);
+        font-size: 0.78rem;
+        font-weight: 750;
+        text-align: right;
+    }
+
+    .recent-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .match-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 13px;
+        padding: 13px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.055);
+        border-radius: 11px;
+        background: var(--panel-soft);
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .match-row:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.045);
+    }
+
+    .result {
+        display: grid;
+        width: 27px;
+        height: 27px;
+        place-items: center;
+        border: 1px solid;
+        border-radius: 7px;
+        font-size: 0.63rem;
+        font-weight: 950;
+    }
+
+    .result.win {
+        border-color: rgba(56, 217, 130, 0.32);
+        background: rgba(56, 217, 130, 0.13);
+        color: var(--success);
+    }
+
+    .result.loss {
+        border-color: rgba(227, 6, 19, 0.3);
+        background: rgba(227, 6, 19, 0.12);
+        color: #ff5b64;
+    }
+
+    .result.unknown {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--faint);
+    }
+
+    .match-main {
+        min-width: 0;
+    }
+
+    .match-opponent {
+        overflow: hidden;
+        color: var(--text);
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .match-meta {
+        overflow: hidden;
+        margin-top: 4px;
+        color: var(--faint);
+        font-size: 0.57rem;
+        font-weight: 650;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .match-score {
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.86rem;
+        font-weight: 900;
+    }
+
+    .empty {
+        padding: 36px 18px;
+        color: var(--faint);
+        font-size: 0.78rem;
+        text-align: center;
+    }
+
+    @media (max-width: 760px) {
+        .page-wrap {
+            width: min(100% - 24px, 1120px);
+            padding-top: 100px;
+        }
+
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 22px;
+            padding: 30px 24px;
+        }
+
+        .team-logo {
+            display: none;
+        }
+
+        .stats-strip {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .player-name {
+            font-size: 3.15rem;
+        }
     }
 </style>
 
-<div class="atmo">
-    <div class="atmo-orb atmo-orb-1"></div>
-    <div class="atmo-orb atmo-orb-2"></div>
-</div>
+{% set record = namespace(wins=0, losses=0) %}
+{% for m in recent_matches %}
+    {% set winner = m.get('winner') %}
+    {% if winner and player.current_team %}
+        {% if winner.get('id') == player.current_team.id %}
+            {% set record.wins = record.wins + 1 %}
+        {% else %}
+            {% set record.losses = record.losses + 1 %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
 
 <div class="page-wrap">
-    <a href="javascript:history.back()" class="back-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
-        Back
-    </a>
+    <a href="javascript:history.back()" class="back-link">← Back</a>
 
-    <!-- HERO -->
-    <div class="hero">
-        <div class="glass hero-inner">
-            <!-- Photo -->
-            <div class="player-photo-wrap">
+    <section class="panel profile-hero"
+             {% if player.nationality %}
+             style="--flag-image: url('https://flagcdn.com/w640/{{ player.nationality|lower }}.png');"
+             {% endif %}>
+        <div class="hero-content">
+            <div class="photo-wrap">
                 {% if player.image_url %}
-                    <img class="player-photo" src="{{ player.image_url }}"
-                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ player.name }}">
-                    <div class="player-photo-placeholder" style="display:none;">{{ (player.name or '?')[0]|upper }}</div>
+                    <img class="player-photo"
+                         src="{{ player.image_url }}"
+                         alt="{{ player.name }}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="photo-placeholder" style="display:none;">
+                        {{ (player.name or '?')[0]|upper }}
+                    </div>
                 {% else %}
-                    <div class="player-photo-placeholder">{{ (player.name or '?')[0]|upper }}</div>
+                    <div class="photo-placeholder">
+                        {{ (player.name or '?')[0]|upper }}
+                    </div>
                 {% endif %}
+
                 {% if player.active %}
-                    <div class="active-dot" title="Active player"></div>
+                    <span class="status-dot"></span>
                 {% endif %}
             </div>
 
-            <!-- Info -->
-            <div class="player-meta">
-                <div class="player-nickname">{{ player.name }}</div>
-                <div class="player-realname">{{ player.first_name }} {{ player.last_name }}</div>
-                <div class="player-tags">
+            <div>
+                <span class="hero-eyebrow">CS2 Player Profile</span>
+                <h1 class="player-name">{{ player.name }}</h1>
+                <p class="real-name">{{ player.first_name or '' }} {{ player.last_name or '' }}</p>
+
+                <div class="tags">
                     {% if player.current_team %}
-                        <span class="tag tag-team">{{ player.current_team.name }}</span>
+                        <span class="tag team">{{ player.current_team.name }}</span>
                     {% endif %}
                     {% if player.nationality %}
-                        <span class="tag tag-nat">{{ player.nationality }}</span>
+                        <span class="tag">{{ player.nationality|upper }}</span>
                     {% endif %}
-                    {% if player.current_videogame %}
-                        <span class="tag tag-game">{{ player.current_videogame.name }}</span>
+                    {% if player.role %}
+                        <span class="tag">{{ player.role|title }}</span>
                     {% endif %}
                     {% if player.active %}
-                        <span class="tag tag-active">● Active</span>
+                        <span class="tag active">● Active</span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Team logo -->
             {% if player.current_team and player.current_team.image_url %}
-                <div class="team-logo-wrap">
-                    <img class="team-logo" src="{{ player.current_team.image_url }}" alt="{{ player.current_team.name }}">
-                </div>
+                <img class="team-logo"
+                     src="{{ player.current_team.image_url }}"
+                     alt="{{ player.current_team.name }}">
             {% endif %}
         </div>
-    </div>
+    </section>
 
-    <!-- GRID -->
-    <div class="main-grid">
+    <section class="stats-strip">
+        <div class="stat">
+            <span class="stat-label">Recent Matches</span>
+            <div class="stat-value">{{ recent_matches|length }}</div>
+        </div>
 
-        <!-- Player Details -->
-        <div class="glass section" style="animation-delay:0.05s">
-            <span class="section-title"><span>01</span> — Player Info</span>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Nickname</div>
-                    <div class="info-val accent">{{ player.name }}</div>
+        <div class="stat">
+            <span class="stat-label">Wins</span>
+            <div class="stat-value win">{{ record.wins }}</div>
+        </div>
+
+        <div class="stat">
+            <span class="stat-label">Losses</span>
+            <div class="stat-value loss">{{ record.losses }}</div>
+        </div>
+
+        <div class="stat">
+            <span class="stat-label">Win Rate</span>
+            <div class="stat-value">
+                {% if record.wins + record.losses > 0 %}
+                    {{ (record.wins / (record.wins + record.losses) * 100)|round|int }}%
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div class="content-grid">
+        <section class="panel section">
+            <span class="section-title"><span>01</span> — Identity</span>
+
+            <div class="identity-list">
+                <div class="identity-row">
+                    <span class="identity-label">Real name</span>
+                    <span class="identity-value">{{ player.first_name or '' }} {{ player.last_name or '' }}</span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Real Name</div>
-                    <div class="info-val">{{ player.first_name }} {{ player.last_name }}</div>
+
+                <div class="identity-row">
+                    <span class="identity-label">Nationality</span>
+                    <span class="identity-value">{{ player.nationality|upper if player.nationality else 'Unknown' }}</span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Nationality</div>
-                    <div class="info-val">{{ player.nationality or 'Unknown' }}</div>
+
+                <div class="identity-row">
+                    <span class="identity-label">Current team</span>
+                    <span class="identity-value">{{ player.current_team.name if player.current_team else 'Free agent' }}</span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Status</div>
-                    <div class="info-val" style="color:{% if player.active %}var(--success){% else %}var(--accent){% endif %}">
+
+                <div class="identity-row">
+                    <span class="identity-label">Role</span>
+                    <span class="identity-value">{{ player.role|title if player.role else 'Not listed' }}</span>
+                </div>
+
+                <div class="identity-row">
+                    <span class="identity-label">Status</span>
+                    <span class="identity-value" style="color:{% if player.active %}var(--success){% else %}var(--accent){% endif %}">
                         {{ 'Active' if player.active else 'Inactive' }}
-                    </div>
+                    </span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Current Team</div>
-                    <div class="info-val">{{ player.current_team.name if player.current_team else 'Free Agent' }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Game</div>
-                    <div class="info-val">{{ player.current_videogame.name if player.current_videogame else 'CS2' }}</div>
-                </div>
-                {% if player.role %}
-                <div class="info-item">
-                    <div class="info-label">Role</div>
-                    <div class="info-val">{{ player.role|title }}</div>
-                </div>
-                {% endif %}
-                {% if player.slug %}
-                <div class="info-item">
-                    <div class="info-label">Slug</div>
-                    <div class="info-val" style="font-family:var(--mono);font-size:0.75rem;">{{ player.slug }}</div>
-                </div>
-                {% endif %}
             </div>
-        </div>
+        </section>
 
-        <!-- Stats placeholder — PandaScore doesn't have career stats -->
-        <div class="glass section" style="animation-delay:0.1s">
-            <span class="section-title"><span>02</span> — Career</span>
-            <div class="info-grid">
-                <div class="info-item" style="grid-column:1/-1;">
-                    <div class="info-label">Recent Activity</div>
-                    <div class="info-val">{{ recent_matches|length }} matches in history</div>
-                </div>
-                {% set wins = namespace(c=0) %}
-                {% set losses = namespace(c=0) %}
-                {% for m in recent_matches %}
-                    {% set winner = m.get('winner') %}
-                    {% if winner %}
-                        {% set opps = m.get('opponents', []) %}
-                        {% if opps|length >= 2 %}
-                            {% set player_team_id = player.current_team.id if player.current_team else None %}
-                            {% if winner.get('id') == player_team_id %}
-                                {% set wins.c = wins.c + 1 %}
-                            {% else %}
-                                {% set losses.c = losses.c + 1 %}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                <div class="info-item">
-                    <div class="info-label">Recent Wins</div>
-                    <div class="info-val" style="color:var(--success)">{{ wins.c }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Recent Losses</div>
-                    <div class="info-val" style="color:var(--accent)">{{ losses.c }}</div>
-                </div>
-                {% if wins.c + losses.c > 0 %}
-                <div class="info-item" style="grid-column:1/-1;">
-                    <div class="info-label">Win Rate (last {{ recent_matches|length }})</div>
-                    <div class="info-val">{{ (wins.c / (wins.c + losses.c) * 100)|round|int }}%</div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+        <section class="panel section">
+            <span class="section-title"><span>02</span> — Recent Matches</span>
 
-        <!-- Recent Matches -->
-        <div class="glass section span-full" style="animation-delay:0.15s">
-            <span class="section-title"><span>03</span> — Recent Matches</span>
             {% if recent_matches %}
-                <div class="match-list">
+                <div class="recent-list">
                     {% for m in recent_matches %}
-                        {% set opps = m.get('opponents', []) %}
-                        {% if opps|length >= 2 %}
-                            {% set winner = m.get('winner') %}
-                            {% set player_team_id = player.current_team.id if player.current_team else -1 %}
-                            {% set won = winner and winner.get('id') == player_team_id %}
-                            {% set lost = winner and winner.get('id') != player_team_id %}
-                            {% if opps[0].opponent.id == player_team_id %}
-                                {% set opp_name = opps[1].opponent.name %}
+                        {% set opponents = m.get('opponents', []) %}
+                        {% set winner = m.get('winner') %}
+                        {% set results = m.get('results', []) %}
+                        {% set current_team_id = player.current_team.id if player.current_team else none %}
+
+                        {% if opponents|length >= 2 %}
+                            {% if opponents[0].opponent.id == current_team_id %}
+                                {% set opponent_name = opponents[1].opponent.name %}
                             {% else %}
-                                {% set opp_name = opps[0].opponent.name %}
+                                {% set opponent_name = opponents[0].opponent.name %}
                             {% endif %}
-                            {% set results = m.get('results', []) %}
+
+                            {% set won = winner and winner.get('id') == current_team_id %}
+                            {% set lost = winner and winner.get('id') != current_team_id %}
+
                             <div class="match-row">
-                                <span class="result-badge {% if won %}w{% elif lost %}l{% else %}u{% endif %}">
+                                <span class="result {% if won %}win{% elif lost %}loss{% else %}unknown{% endif %}">
                                     {% if won %}W{% elif lost %}L{% else %}?{% endif %}
                                 </span>
-                                <span class="match-vs">
-                                    vs {{ opp_name }}
-                                    {% if m.get('begin_at') %}<small>· {{ m.begin_at[:10] }}</small>{% endif %}
-                                </span>
-                                <span class="match-tournament">{{ (m.get('league') or {}).get('name', '') }}</span>
+
+                                <div class="match-main">
+                                    <div class="match-opponent">vs {{ opponent_name }}</div>
+                                    <div class="match-meta">
+                                        {{ (m.get('league') or {}).get('name', 'Tournament') }}
+                                        {% if m.get('begin_at') %} · {{ m.begin_at[:10] }}{% endif %}
+                                    </div>
+                                </div>
+
                                 {% if results|length >= 2 %}
-                                    <span class="match-score">{{ results[0].score }}:{{ results[1].score }}</span>
+                                    <span class="match-score">
+                                        {{ results[0].score }}:{{ results[1].score }}
+                                    </span>
                                 {% endif %}
                             </div>
                         {% endif %}
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="empty">No recent matches found</div>
+                <div class="empty">No recent match history is available for this player.</div>
             {% endif %}
-        </div>
-
+        </section>
     </div>
 </div>
+
 {% endblock %}
