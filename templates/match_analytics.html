@@ -223,13 +223,13 @@
                 <div class="player-row">
                     {% if p.get('image_url') %}
                         <img class="p-avatar" src="{{ p.image_url }}"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.nickname }}">
-                        <div class="p-placeholder" style="display:none;">{{ (p.nickname or '?')[0]|upper }}</div>
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
+                        <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
                     {% else %}
-                        <div class="p-placeholder">{{ (p.nickname or '?')[0]|upper }}</div>
+                        <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
                     {% endif %}
                     <div class="p-info">
-                        <div class="p-nick">{{ p.nickname }}</div>
+                        <div class="p-nick">{{ p.name }}</div>
                         <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                     </div>
                     {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
@@ -248,13 +248,13 @@
                 <div class="player-row">
                     {% if p.get('image_url') %}
                         <img class="p-avatar" src="{{ p.image_url }}"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.nickname }}">
-                        <div class="p-placeholder" style="display:none;">{{ (p.nickname or '?')[0]|upper }}</div>
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
+                        <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
                     {% else %}
-                        <div class="p-placeholder">{{ (p.nickname or '?')[0]|upper }}</div>
+                        <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
                     {% endif %}
                     <div class="p-info">
-                        <div class="p-nick">{{ p.nickname }}</div>
+                        <div class="p-nick">{{ p.name }}</div>
                         <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                     </div>
                     {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
