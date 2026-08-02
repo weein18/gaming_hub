@@ -220,20 +220,22 @@
             {% if t1_players %}
             <div class="players-list">
                 {% for p in t1_players %}
-                <div class="player-row">
-                    {% if p.get('image_url') %}
-                        <img class="p-avatar" src="{{ p.image_url }}"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
-                        <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
-                    {% else %}
-                        <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
-                    {% endif %}
-                    <div class="p-info">
-                        <div class="p-nick">{{ p.name }}</div>
-                        <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
+                <a href="{{ url_for('player_profile', player_id=p.id) }}" style="text-decoration:none;color:inherit;">
+                    <div class="player-row">
+                        {% if p.get('image_url') %}
+                            <img class="p-avatar" src="{{ p.image_url }}"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
+                            <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
+                        {% else %}
+                            <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
+                        {% endif %}
+                        <div class="p-info">
+                            <div class="p-nick">{{ p.name }}</div>
+                            <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
+                        </div>
+                        {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
                     </div>
-                    {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
-                </div>
+                </a>
                 {% endfor %}
             </div>
             {% else %}<div class="empty">No roster data available</div>{% endif %}
@@ -245,20 +247,22 @@
             {% if t2_players %}
             <div class="players-list">
                 {% for p in t2_players %}
-                <div class="player-row">
-                    {% if p.get('image_url') %}
-                        <img class="p-avatar" src="{{ p.image_url }}"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
-                        <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
-                    {% else %}
-                        <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
-                    {% endif %}
-                    <div class="p-info">
-                        <div class="p-nick">{{ p.name }}</div>
-                        <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
+                <a href="{{ url_for('player_profile', player_id=p.id) }}" style="text-decoration:none;color:inherit;">
+                    <div class="player-row">
+                        {% if p.get('image_url') %}
+                            <img class="p-avatar" src="{{ p.image_url }}"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
+                            <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
+                        {% else %}
+                            <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
+                        {% endif %}
+                        <div class="p-info">
+                            <div class="p-nick">{{ p.name }}</div>
+                            <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
+                        </div>
+                        {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
                     </div>
-                    {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
-                </div>
+                </a>
                 {% endfor %}
             </div>
             {% else %}<div class="empty">No roster data available</div>{% endif %}

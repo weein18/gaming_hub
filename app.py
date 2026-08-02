@@ -1080,14 +1080,11 @@ def sync_api_now():
 def debug_stale_matches():
     if not getattr(current_user, 'is_admin', False):
         return "Admins only", 403
-
     token = os.getenv("PANDASCORE_TOKEN", "")
     url_past = f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=60"
     res = requests.get(url_past, timeout=15)
-
     stale = Match.query.filter(Match.status != "Finished").all()
     api_matches = res.json() if res.status_code == 200 else []
-
     output = {
         "stale_db_matches": [
             {"id": m.id, "team1": m.team1, "team2": m.team2, "date": m.date, "time": m.time, "status": m.status, "tournament": m.tournament_name}
@@ -1106,6 +1103,45 @@ def debug_stale_matches():
     }
     from flask import jsonify
     return jsonify(output)
+
+@app.route('/player/<int:player_id>')
+@login_required
+def player_profile(player_id):
+    token = os.getenv("PANDASCORE_TOKEN", "")
+    player = None
+    stats = None
+    recent_matches = []
+    if token:
+        try:
+            r = requests.get(
+                f"https://api.pandascore.co/players/{player_id}?token={token}",
+                timeout=10
+            )
+            if r.status_code == 200:
+                player = r.json()
+            r2 = requests.get(
+                f"https://api.pandascore.co/cs2/players/{player_id}/stats?token={token}",
+                timeout=10
+            )
+            if r2.status_code == 200:
+                stats = r2.json()
+                print(f"[PLAYER STATS] {stats}")
+            r3 = requests.get(
+                f"https://api.pandascore.co/players/{player_id}/matches?token={token}&filter[status]=finished&per_page=8&sort=-begin_at",
+                timeout=10
+            )
+            if r3.status_code == 200:
+                recent_matches = r3.json()
+        except Exception as e:
+            print(f"[PLAYER] ERROR: {e}")
+    if not player:
+        flash("Player not found", "danger")
+        return redirect(url_for('matches'))
+    return render_template('player.html',
+        player=player,
+        stats=stats,
+        recent_matches=recent_matches,
+    )
 
 @app.route("/ping")
 def test_cron():
