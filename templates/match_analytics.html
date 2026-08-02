@@ -434,17 +434,31 @@
         {% if match.status|lower == 'upcoming' %}
         <div class="glass span-full" style="animation-delay:0.3s">
             <div class="predict-wrap">
-                <span class="predict-label">{% if user_prediction %}Your Prediction{% else %}Make Your Prediction{% endif %}</span>
+                <span class="predict-label">
+                    {% if user_prediction %}
+                        Your Prediction
+                    {% elif match.is_started() %}
+                        Predictions Closed
+                    {% else %}
+                        Make Your Prediction
+                    {% endif %}
+                </span>
                 {% if user_prediction %}
-                    <div class="predict-done">✓ You predicted: {{ user_prediction.prediction_score }}</div>
+                    <div class="predict-done">
+                        ✓ You predicted: {{ user_prediction.prediction_score }}
+                    </div>
+                {% elif match.is_started() %}
+                    <div class="predict-done">
+                        🔒 Predictions are closed — this match has started.
+                    </div>
                 {% else %}
                     <div class="predict-options">
                         <form method="POST" action="{{ url_for('predict', match_id=match.id) }}">
-                            <input type="hidden" name="prediction" value="{{ match.team1 }}">
+                            <input type="hidden" name="predicted_score" value="{{ match.team1 }}">
                             <button type="submit" class="predict-btn">{{ match.team1 }}</button>
                         </form>
                         <form method="POST" action="{{ url_for('predict', match_id=match.id) }}">
-                            <input type="hidden" name="prediction" value="{{ match.team2 }}">
+                            <input type="hidden" name="predicted_score" value="{{ match.team2 }}">
                             <button type="submit" class="predict-btn">{{ match.team2 }}</button>
                         </form>
                     </div>
