@@ -733,7 +733,7 @@ def match_analytics(match_id):
                     if r1.status_code == 200:
                         t1_players = active_roster(r1.json())
                         for p in t1_players:
-                            print(f"[PLAYER] {p.get('nickname')} | image_url: {p.get('image_url')}")
+                            print(f"[PLAYER FULL] {p}")
 
                     r2 = requests.get(
                         f"https://api.pandascore.co/csgo/players?token={token}&filter[team_id]={t2_id}&per_page=10",
