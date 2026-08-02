@@ -1123,6 +1123,7 @@ def player_profile(player_id):
                 f"https://api.pandascore.co/cs2/players/{player_id}/stats?token={token}",
                 timeout=10
             )
+            print(f"[PLAYER] stats status: {r2.status_code}, text: {r2.text[:200]}")
             if r2.status_code == 200:
                 stats = r2.json()
                 print(f"[PLAYER STATS] {stats}")
