@@ -70,16 +70,93 @@
     .section-title span { color: var(--accent); }
 
     /* PLAYERS */
-    .players-list { display: flex; flex-direction: column; gap: 8px; }
-    .player-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); transition: all 0.2s; }
-    .player-row:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
-    .p-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
-    .p-placeholder { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 900; color: rgba(255,255,255,0.15); flex-shrink: 0; }
-    .p-info { flex: 1; min-width: 0; }
-    .p-nick { font-size: 0.83rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .p-name { font-size: 0.58rem; font-weight: 500; color: var(--text-tertiary); margin-top: 2px; }
-    .p-nat { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; padding: 2px 7px; flex-shrink: 0; }
+    /* PLAYERS */
+    .players-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
+    .player-row {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: var(--r-md);
+        transition: all 0.2s;
+    }
+
+    .player-row::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background-image: var(--flag-image, none);
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        opacity: 0.11;
+        filter: saturate(0.9) contrast(1.1);
+        pointer-events: none;
+    }
+
+    .player-row:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    .player-row > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .p-avatar {
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .p-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 50%;
+        background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.15);
+        font-size: 0.95rem;
+        font-weight: 900;
+        flex-shrink: 0;
+    }
+
+    .p-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .p-nick {
+        overflow: hidden;
+        font-size: 0.83rem;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .p-name {
+        margin-top: 2px;
+        color: var(--text-tertiary);
+        font-size: 0.58rem;
+        font-weight: 500;
+    }
     /* FORM */
     .form-list { display: flex; flex-direction: column; gap: 7px; }
     .form-row { display: flex; align-items: center; gap: 11px; padding: 9px 13px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); }
@@ -214,45 +291,42 @@
     <!-- MAIN GRID -->
     <div class="main-grid">
 
-        <!-- T1 Roster -->
+                <!-- T1 Roster -->
         <div class="glass section" style="animation-delay:0.05s">
             <span class="section-title"><span>01</span> — {{ match.team1 }} Roster</span>
             {% if t1_players %}
             <div class="players-list">
                 {% for p in t1_players %}
-                <a href="{{ url_for('player_profile', player_id=p.id) }}" style="text-decoration:none;color:inherit;">
-                    <div class="player-row">
+                <a href="{{ url_for('player_profile', player_id=p.id) }}"
+                   style="text-decoration:none; color:inherit;">
+                    <div class="player-row"
+                         {% if p.get('nationality') %}
+                         style="--flag-image: url('https://flagcdn.com/w320/{{ p.nationality|lower }}.png');"
+                         {% endif %}>
                         {% if p.get('image_url') %}
-                            <img class="p-avatar" src="{{ p.image_url }}"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
-                            <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
+                            <img class="p-avatar"
+                                 src="{{ p.image_url }}"
+                                 alt="{{ p.name }}"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="p-placeholder" style="display:none;">
+                                {{ (p.name or '?')[0]|upper }}
+                            </div>
                         {% else %}
-                            <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
+                            <div class="p-placeholder">
+                                {{ (p.name or '?')[0]|upper }}
+                            </div>
                         {% endif %}
                         <div class="p-info">
                             <div class="p-nick">{{ p.name }}</div>
                             <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                         </div>
-                        {% if p.get('nationality') %}
-                        <span class="p-nat" style="
-                            background: linear-gradient(135deg, 
-                                rgba(255,255,255,0.06) 0%, 
-                                rgba(255,255,255,0.02) 100%);
-                            border: 1px solid rgba(255,255,255,0.08);
-                            border-radius: 8px;
-                            padding: 4px 10px;
-                            display: flex; align-items: center; gap: 6px;
-                            font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em;
-                        ">
-                            {{ p.nationality | upper | replace('RU','🇷🇺') | replace('UA','🇺🇦') | replace('BY','🇧🇾') | replace('HU','🇭🇺') | replace('CZ','🇨🇿') | replace('IL','🇮🇱') | replace('FR','🇫🇷') | replace('DE','🇩🇪') | replace('DK','🇩🇰') | replace('SE','🇸🇪') | replace('FI','🇫🇮') | replace('NO','🇳🇴') | replace('PL','🇵🇱') | replace('BR','🇧🇷') | replace('US','🇺🇸') | replace('CA','🇨🇦') | replace('AU','🇦🇺') | replace('KZ','🇰🇿') | replace('TR','🇹🇷') | replace('RS','🇷🇸') | replace('SK','🇸🇰') | replace('RO','🇷🇴') | replace('HR','🇭🇷') | replace('SI','🇸🇮') | replace('BA','🇧🇦') | replace('MK','🇲🇰') | replace('ME','🇲🇪') | replace('AL','🇦🇱') | replace('PT','🇵🇹') | replace('ES','🇪🇸') | replace('IT','🇮🇹') | replace('NL','🇳🇱') | replace('BE','🇧🇪') | replace('AT','🇦🇹') | replace('CH','🇨🇭') | replace('GB','🇬🇧') | replace('GR','🇬🇷') | replace('MN','🇲🇳') | replace('GE','🇬🇪') | replace('AM','🇦🇲') | replace('AZ','🇦🇿') | replace('KG','🇰🇬') | replace('UZ','🇺🇿') | replace('LV','🇱🇻') | replace('LT','🇱🇹') | replace('EE','🇪🇪') | replace('MX','🇲🇽') | replace('AR','🇦🇷') | replace('CL','🇨🇱') | replace('CO','🇨🇴') | replace('PE','🇵🇪') | replace('VE','🇻🇪') | replace('CN','🇨🇳') | replace('KR','🇰🇷') | replace('JP','🇯🇵') | replace('TH','🇹🇭') | replace('SG','🇸🇬') | replace('ID','🇮🇩') | replace('VN','🇻🇳') | replace('IN','🇮🇳') | replace('PH','🇵🇭') | replace('ZA','🇿🇦') | replace('NG','🇳🇬') | replace('EG','🇪🇬') | replace('MA','🇲🇦') | replace('TN','🇹🇳') }}
-                            {{ p.nationality }}
-                        </span>
-                        {% endif %}
                     </div>
                 </a>
                 {% endfor %}
             </div>
-            {% else %}<div class="empty">No roster data available</div>{% endif %}
+            {% else %}
+                <div class="empty">No roster data available</div>
+            {% endif %}
         </div>
 
         <!-- T2 Roster -->
@@ -261,26 +335,38 @@
             {% if t2_players %}
             <div class="players-list">
                 {% for p in t2_players %}
-                <a href="{{ url_for('player_profile', player_id=p.id) }}" style="text-decoration:none;color:inherit;">
-                    <div class="player-row">
+                <a href="{{ url_for('player_profile', player_id=p.id) }}"
+                   style="text-decoration:none; color:inherit;">
+                    <div class="player-row"
+                         {% if p.get('nationality') %}
+                         style="--flag-image: url('https://flagcdn.com/w320/{{ p.nationality|lower }}.png');"
+                         {% endif %}>
                         {% if p.get('image_url') %}
-                            <img class="p-avatar" src="{{ p.image_url }}"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="{{ p.name }}">
-                            <div class="p-placeholder" style="display:none;">{{ (p.name or '?')[0]|upper }}</div>
+                            <img class="p-avatar"
+                                 src="{{ p.image_url }}"
+                                 alt="{{ p.name }}"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="p-placeholder" style="display:none;">
+                                {{ (p.name or '?')[0]|upper }}
+                            </div>
                         {% else %}
-                            <div class="p-placeholder">{{ (p.name or '?')[0]|upper }}</div>
+                            <div class="p-placeholder">
+                                {{ (p.name or '?')[0]|upper }}
+                            </div>
                         {% endif %}
                         <div class="p-info">
                             <div class="p-nick">{{ p.name }}</div>
                             <div class="p-name">{{ p.first_name }} {{ p.last_name }}</div>
                         </div>
-                        {% if p.get('nationality') %}<span class="p-nat">{{ p.nationality }}</span>{% endif %}
                     </div>
                 </a>
                 {% endfor %}
             </div>
-            {% else %}<div class="empty">No roster data available</div>{% endif %}
+            {% else %}
+                <div class="empty">No roster data available</div>
+            {% endif %}
         </div>
+
 
         <!-- T1 Recent Form -->
         <div class="glass section" style="animation-delay:0.15s">
