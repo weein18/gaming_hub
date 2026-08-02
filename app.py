@@ -1113,8 +1113,6 @@ def player_profile(player_id):
     recent_matches = []
     if token:
         try:
-            print(f"[PLAYER] r1={r.status_code}, r2={r2.status_code}, r3={r3.status_code}")
-            print(f"[PLAYER] player_id={player_id}, token={bool(token)}")
             r = requests.get(
                 f"https://api.pandascore.co/players/{player_id}?token={token}",
                 timeout=10
@@ -1134,6 +1132,9 @@ def player_profile(player_id):
             )
             if r3.status_code == 200:
                 recent_matches = r3.json()
+            print(f"[PLAYER] r1={r.status_code}, r2={r2.status_code}, r3={r3.status_code}")
+            print(f"[PLAYER] player_id={player_id}, token={bool(token)}")
+
         except Exception as e:
             print(f"[PLAYER] ERROR: {e}")
     if not player:
