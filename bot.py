@@ -4,6 +4,14 @@ import threading
 from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
+
 def get_token():
     return os.getenv("TELEGRAM_BOT_TOKEN")
 
@@ -177,6 +185,28 @@ async def link_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=main_menu_keyboard(is_linked=True)
         )
 
+MAINTENANCE_TEXT = (
+    "🚧 <b>EliteHub Bot is being rebuilt</b>\n\n"
+    "I’m working on a better version with match reminders, "
+    "prediction updates, and player stats.\n\n"
+    "The bot will be available again soon. Thanks for your patience!"
+)
+
+async def maintenance_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        MAINTENANCE_TEXT,
+        parse_mode="HTML",
+    )
+
+async def maintenance_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message:
+        await update.message.reply_text(
+            MAINTENANCE_TEXT,
+            parse_mode="HTML",
+        )
+
+
+
 # ── RUN ──
 def run_bot():
     token = get_token()
@@ -186,9 +216,13 @@ def run_bot():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     bot_app = Application.builder().token(token).build()
-    bot_app.add_handler(CommandHandler("start", start))
-    bot_app.add_handler(CommandHandler("link", link_command))
-    bot_app.add_handler(CallbackQueryHandler(button_handler))
+    bot_app.add_handler(CommandHandler("start", maintenance_start))
+    bot_app.add_handler(
+    MessageHandler(
+        filters.ALL & ~filters.StatusUpdate.ALL,
+        maintenance_reply,
+    )
+)
     print("[BOT] Starting polling loop...")
     bot_app.run_polling(
         allowed_updates=Update.ALL_TYPES,
