@@ -36,7 +36,7 @@ function mainMenu(isLinked) {
 const backBtn = { inline_keyboard: [[{ text: "⬅️ Back", callback_data: "back_home"}]]};
 
 if (bot) {
-    bot.onText(/\/start(.*)/, async (msg, match) => {
+    bot.onText(/\/link (.+)/, async (msg, match) => {
         const chatId = String(msg.chat.id);
         const code = match[1].trim();
         const name = msg.from.first_name || "there";
@@ -128,7 +128,7 @@ if (bot) {
                 : `👋 Hey <b>${name}</b>!\n\nWhat would you like to do?`;
             return bot.editMessageText(text, {
                 chat_id: chatId, message_id: query.message.message_id,
-                parse_mode: "HTML", reply_markup: mainMeny(isLinked)
+                parse_mode: "HTML", reply_markup: mainMenu(isLinked)
             });
         }
     });
@@ -136,4 +136,4 @@ if (bot) {
 } else {
     console.log("[BOT] No token set, skipping");
 }
-modeule.exports = { sendMessage};
+module.exports = { sendMessage};
