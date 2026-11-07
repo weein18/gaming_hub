@@ -42,12 +42,12 @@ if (bot) {
         const name = msg.from.first_name || "there";
         if (code) {
             const user = await pool.query(
-                "SELECT * FROM 'user' WHERE telegram_link_code = $1", [code]
+                `SELECT * FROM "user" WHERE telegram_link_code = $1`, [code]
             );
             if (user.rows.length > 0) {
                 const u = user.rows[0];
                 await pool.query(
-                    "UPDATE 'user' SET telegram_chat_id=$1, telegram_id=$2, telegram_link_code=NULL WHERE id=$3",
+                    `UPDATE "user" SET telegram_chat_id=$1, telegram_id=$2, telegram_link_code=NULL WHERE id=$3`,
                     [chatId, msg.from.username || "", u.id]
                 );
                 return bot.sendMessage(chatId,
@@ -57,7 +57,7 @@ if (bot) {
             }
         }
         const user = await pool.query(
-            "SELECT * FROM 'user' WHERE telegram_chat_id = $1", [chatId]
+            `SELECT * FROM "user" WHERE telegram_chat_id = $1`, [chatId]
         );
         const isLinked = user.rows.length > 0;
         const text = isLinked
@@ -91,7 +91,7 @@ if (bot) {
         }
         if (data === "stats") {
             const user = await pool.query(
-                'SELECT * FROM "user" WHERE telegram_chat_id=$1', [chatId]
+                `SELECT * FROM "user" WHERE telegram_chat_id=$1`, [chatId]
             );
             if(!user.rows.length) {
                 return bot.editMessageText("❌ Account not linked.", {
@@ -120,7 +120,7 @@ if (bot) {
             );
         }
         if (data === "back_home") {
-            const user = await pool.query("SELECT * FROM 'user' WHERE telegram_chat_id=$1", [chatId]);
+            const user = await pool.query(`SELECT * FROM "user" WHERE telegram_chat_id=$1`, [chatId]);
             const isLinked = user.rows.length > 0;
             const name = query.from.first_name || "there";
             const text = isLinked
