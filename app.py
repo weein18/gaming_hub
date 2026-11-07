@@ -18,7 +18,6 @@ from functools import wraps
 from sqlalchemy import or_, func
 import resend
 import threading
-from bot import start_bot_thread, send_telegram_message
 
 
 
@@ -139,6 +138,20 @@ class Prediction(db.Model):
     prediction_score = db.Column(db.String(10), nullable=False)
     is_correct = db.Column(db.Boolean, default=None)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class TelegramNotification(db.Model):
+    """Messages queued by Flask and delivered by the JavaScript bot worker."""
+    __tablename__ = 'telegram_notification'
+
+    id = db.Column(db.Integer, primary_key=True)
+    chat_id = db.Column(db.String(50), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    claimed_at = db.Column(db.DateTime, nullable=True)
+    sent_at = db.Column(db.DateTime, nullable=True)
+    attempts = db.Column(db.Integer, default=0, nullable=False)
+    last_error = db.Column(db.Text, nullable=True)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -557,7 +570,6 @@ def close_match(match_id):
         match.final_score = final_score
         match.status = 'Finished'
         predictions = Prediction.query.filter_by(match_id=match_id).all()
-        telegram_notifications = []
         for pred in predictions:
             user = db.session.get(User, pred.user_id)
             is_correct = pred.prediction_score == final_score
@@ -567,16 +579,16 @@ def close_match(match_id):
             if user and user.telegram_chat_id:
                 result_icon = "✅" if is_correct else "❌"
                 result_text = "Correct prediction! <b>+100 XP</b>" if is_correct else "Not this time — keep going."
-                telegram_notifications.append((
-                    user.telegram_chat_id,
-                    f"{result_icon} <b>Match result</b>\n\n"
-                    f"⚔️ <b>{match.team1}</b> {final_score} <b>{match.team2}</b>\n"
-                    f"Your prediction: <b>{pred.prediction_score}</b>\n\n"
-                    f"{result_text}"
+                db.session.add(TelegramNotification(
+                    chat_id=user.telegram_chat_id,
+                    message=(
+                        f"{result_icon} <b>Match result</b>\n\n"
+                        f"⚔️ <b>{match.team1}</b> {final_score} <b>{match.team2}</b>\n"
+                        f"Your prediction: <b>{pred.prediction_score}</b>\n\n"
+                        f"{result_text}"
+                    ),
                 ))
         db.session.commit()
-        for chat_id, text in telegram_notifications:
-            send_telegram_message(chat_id, text)      
         flash(f"Match {match.team1} vs {match.team2} closed with score {final_score}!") 
     return redirect(url_for('manage_matches'))
 
@@ -1054,11 +1066,7 @@ if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
     try:
         scheduler.start()
         print("[SCHEDULER] Started successfully")
-        if os.getenv("RUN_TELEGRAM_BOT") == "true":
-            start_bot_thread()
-            print("[BOT] BOT IS WORKING THREAD LAUNCHED")
-        else:
-            print("[BOT] DISABELD")
+        print("[BOT] Telegram polling is handled by the JavaScript worker")
     except Exception as e:
         print(f"[SCHEDULER] Already running: {e}")
 

@@ -1,0 +1,17 @@
+{
+  "name": "elitehub-telegram-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EliteHub Telegram bot worker",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.66.0",
+    "pg": "^8.13.0"
+  }
+}
