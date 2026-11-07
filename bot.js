@@ -136,4 +136,6 @@ if (bot) {
 } else {
     console.log("[BOT] No token set, skipping");
 }
+bot.on("polling_error", (e) => console.log("[BOT] polling error:", e.message));
+process.on("unhandledRejection", (e) => console.log("[BOT] unhandled:", e));
 module.exports = { sendMessage};
