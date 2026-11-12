@@ -4,3 +4,6 @@ __pycache__/
 .env
 static/uploads/*
 !static/uploads/.gitkeep
+node_modules/
+dist/
+venv/

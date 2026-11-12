@@ -1,5 +1,31 @@
-const TelegramBot = require("node-telegram-bot-api");
-const { Pool } = require("pg");
+import TelegramBot from "node-telegram-bot-api";
+import { Pool } from "pg";
+
+interface UserRow {
+    id: number;
+    username: string;
+    rank: string;
+    xp: number;
+    telegram_chat_id: string | null;
+    telegram_id: string | null;
+    telegram_link_code: string | null;
+}
+
+interface MatchRow {
+    team1: string;
+    team2: string;
+    date: string;
+    time: string;
+    match_type: string;
+    tournament_name: string;
+    status: string;
+}
+
+interface NotificationRow {
+    id: number;
+    chat_id: string;
+    message: string;
+}
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const databaseUrl = process.env.DATABASE_URL;
@@ -12,7 +38,7 @@ const pool = new Pool({ connectionString: databaseUrl });
 const backButton = { inline_keyboard: [[{ text: "⬅️ Back", callback_data: "back_home" }]] };
 let isDispatchingNotifications = false;
 
-function escapeHtml(value) {
+function escapeHtml(value: unknown): string {
     return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -20,8 +46,8 @@ function escapeHtml(value) {
         .replaceAll('"', "&quot;");
 }
 
-function mainMenu(isLinked) {
-    const buttons = [[{ text: "🎮 Upcoming Matches", callback_data: "matches" }]];
+function mainMenu(isLinked: Boolean) {
+    const buttons: TelegramBot.InlineKeyboardButton[][] = [[{ text: "🎮 Upcoming Matches", callback_data: "matches" }]];
     if (isLinked) {
         buttons.push([{ text: "📊 My Stats", callback_data: "stats" }]);
         buttons.push([{ text: "🔗 Re-link Account", callback_data: "link_prompt" }]);
@@ -31,15 +57,15 @@ function mainMenu(isLinked) {
     return { inline_keyboard: buttons };
 }
 
-async function getLinkedUser(chatId) {
-    const result = await pool.query(
+async function getLinkedUser(chatId: number | string): Promise<UserRow | null> {
+    const result = await pool.query<UserRow>(
         'SELECT * FROM "user" WHERE telegram_chat_id = $1',
         [String(chatId)],
     );
     return result.rows[0] ?? null;
 }
 
-async function sendHome(chatId, firstName) {
+async function sendHome(chatId: number, firstName: string): Promise<void> {
     const user = await getLinkedUser(chatId);
     const text = user
         ? `👋 Welcome back, <b>${escapeHtml(user.username)}</b>!\n\n🏅 ${escapeHtml(user.rank)} · ⭐ ${user.xp} XP`
@@ -51,8 +77,8 @@ async function sendHome(chatId, firstName) {
     });
 }
 
-async function linkAccount(chatId, username, code) {
-    const result = await pool.query(
+async function linkAccount(chatId: number, username: string | undefined, code: string): Promise<boolean> {
+    const result = await pool.query<UserRow>(
         'SELECT * FROM "user" WHERE telegram_link_code = $1',
         [code],
     );
@@ -71,19 +97,23 @@ async function linkAccount(chatId, username, code) {
     return true;
 }
 
-bot.onText(/^\/start(?:\s+(.+))?$/, async (msg, match) => {
+bot.onText(/^\/start(?:\s+(.+))?$/, async (msg: TelegramBot.Message, match: RegExpExecArray | null) => {
     try {
-        const code = match[1]?.trim();
-        if (code && await linkAccount(msg.chat.id, msg.from.username, code)) return;
-        await sendHome(msg.chat.id, msg.from.first_name);
+        const code = match?.[1]?.trim();
+        const username = msg.from?.username;
+        const firstName = msg.from?.first_name || "";
+        if (code && username && await linkAccount(msg.chat.id, username, code)) return;
+        await sendHome(msg.chat.id, firstName);
     } catch (error) {
         console.error("[BOT] /start failed:", error);
     }
 });
 
-bot.onText(/^\/link\s+(.+)$/, async (msg, match) => {
+bot.onText(/^\/link\s+(.+)$/, async (msg: TelegramBot.Message, match: RegExpExecArray | null) => {
     try {
-        const linked = await linkAccount(msg.chat.id, msg.from.username, match[1].trim());
+        if(!match?.[1]) return;
+        const username = msg.from?.username;
+        const linked = await linkAccount(msg.chat.id, username, match[1].trim());
         if (!linked) {
             await bot.sendMessage(
                 msg.chat.id,
@@ -96,7 +126,8 @@ bot.onText(/^\/link\s+(.+)$/, async (msg, match) => {
     }
 });
 
-bot.on("callback_query", async (query) => {
+bot.on("callback_query", async (query: TelegramBot.CallbackQuery) => {
+    if(!query.message) return;
     const chatId = query.message?.chat.id;
     const messageId = query.message?.message_id;
     if (!chatId || !messageId) return;
@@ -105,7 +136,7 @@ bot.on("callback_query", async (query) => {
         await bot.answerCallbackQuery(query.id);
 
         if (query.data === "matches") {
-            const matches = await pool.query(
+            const matches = await pool.query<MatchRow>(
                 'SELECT * FROM "match" WHERE status = $1 ORDER BY date, time LIMIT 6',
                 ["Upcoming"],
             );
@@ -146,9 +177,9 @@ bot.on("callback_query", async (query) => {
             }
 
             const [total, correct, losses] = await Promise.all([
-                pool.query("SELECT COUNT(*) FROM prediction WHERE user_id = $1", [user.id]),
-                pool.query("SELECT COUNT(*) FROM prediction WHERE user_id = $1 AND is_correct = true", [user.id]),
-                pool.query("SELECT COUNT(*) FROM prediction WHERE user_id = $1 AND is_correct = false", [user.id]),
+                pool.query<{ count: string }>("SELECT COUNT(*) FROM prediction WHERE user_id = $1", [user.id]),
+                pool.query<{ count: string }>("SELECT COUNT(*) FROM prediction WHERE user_id = $1 AND is_correct = true", [user.id]),
+                pool.query<{ count: string }>("SELECT COUNT(*) FROM prediction WHERE user_id = $1 AND is_correct = false", [user.id]),
             ]);
             const totalCount = Number(total.rows[0].count);
             const correctCount = Number(correct.rows[0].count);
@@ -187,6 +218,7 @@ bot.on("callback_query", async (query) => {
 
         if (query.data === "back_home") {
             const user = await getLinkedUser(chatId);
+            const firstName = query.from.first_name || "there";
             const text = user
                 ? `👋 Welcome back, <b>${escapeHtml(user.username)}</b>!\n\nWhat would you like to do?`
                 : `👋 Hey <b>${escapeHtml(query.from.first_name || "there")}</b>!\n\nWhat would you like to do?`;
@@ -202,7 +234,7 @@ bot.on("callback_query", async (query) => {
     }
 });
 
-async function claimNotifications() {
+async function claimNotifications(): Promise<NotificationRow[]> {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
@@ -244,12 +276,13 @@ async function dispatchNotifications() {
                     "UPDATE telegram_notification SET sent_at = NOW(), claimed_at = NULL, last_error = NULL WHERE id = $1",
                     [notification.id],
                 );
-            } catch (error) {
+            } catch (error: any) {
+                const errorMessage = String(error?.message || error).slice(0, 2000);
                 await pool.query(
                     "UPDATE telegram_notification SET claimed_at = NULL, last_error = $1 WHERE id = $2",
                     [String(error.message).slice(0, 2000), notification.id],
                 );
-                console.error(`[BOT] Notification ${notification.id} failed:`, error.message);
+                console.error(`[BOT] Notification ${notification.id} failed:`, error?.message);
             }
         }
     } finally {
@@ -260,7 +293,7 @@ async function dispatchNotifications() {
 bot.on("polling_error", (error) => console.error("[BOT] Polling error:", error.message));
 process.on("unhandledRejection", (error) => console.error("[BOT] Unhandled rejection:", error));
 
-async function shutdown() {
+async function shutdown(): Promise<void> {
     console.log("[BOT] Shutting down...");
     await bot.stopPolling();
     await pool.end();

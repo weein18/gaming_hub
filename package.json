@@ -11,7 +11,11 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@types/node": "^26.6.6",
+    "@types/node-telegram-bot-api": "^0.64.15",
+    "@types/pg": "^8.23.1",
     "node-telegram-bot-api": "^0.66.0",
-    "pg": "^8.13.0"
+    "pg": "^8.13.0",
+    "typescript": "^7.0.2"
   }
 }
