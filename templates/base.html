@@ -9,7 +9,7 @@
     <title>{% block title %}Elite Gaming Hub{% endblock %}</title>
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
+    {% block extra_css %}{% endblock %}    
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
