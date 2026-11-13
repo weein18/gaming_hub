@@ -275,52 +275,8 @@
     </form>
 </div>
 
-<script>
-function togglePw() {
-    const btn = document.getElementById('pwBtn');
-    const fields = document.getElementById('pwFields');
-    const open = fields.classList.toggle('visible');
-    btn.classList.toggle('open', open);
-    if (!open) {
-        ['old_password','new_password','confirm_password'].forEach(n => {
-            const el = document.getElementsByName(n)[0];
-            if (el) el.value = '';
-        });
-    }
-}
-function previewAvatar(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    const preview = document.getElementById('avatar-preview');
-    const placeholder = document.getElementById('avatar-placeholder');
-    preview.src = url;
-    preview.style.display = 'block';
-    if (placeholder) placeholder.style.display = 'none';
-    preview.onload = () => URL.revokeObjectURL(url);
-}
-async function openTgModal() {
-    document.getElementById('tgModal').classList.add('open');
-    const res = await fetch('/generate-telegram-code');
-    const data = await res.json();
-    const botUrl = 'https://t.me/elitehubcs2_bot?start=' + data.code;
-    document.getElementById('tgCode').textContent = 'Tap “Open EliteHub Bot” to connect';
-    const botButton = document.querySelector('.tg-open-btn');
-    botButton.href = botUrl;
-}
-function closeTgModal() {
-    document.getElementById('tgModal').classList.remove('open');
-}
-function copyCode() {
-    const code = document.getElementById('tgCode').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-        const btn = document.querySelector('.tg-copy-btn');
-        btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy', 2000);
-    });
-}
-document.getElementById('tgModal').addEventListener('click', function(e) {
-    if (e.target === this) closeTgModal();
-});
-</script>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 {% endblock %}

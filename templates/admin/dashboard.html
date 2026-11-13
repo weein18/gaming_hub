@@ -228,34 +228,8 @@
 
 </div>
 
-<!-- Counter Animation Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const animateCounter = (element, target) => {
-            const duration = 2000;
-            let current = 0;
-            const increment = target / (duration / 16);
+{% endblock %}
 
-            const counter = () => {
-                current += increment;
-                if (current >= target) {
-                    element.textContent = target.toLocaleString();
-                } else {
-                    element.textContent = Math.floor(current).toLocaleString();
-                    requestAnimationFrame(counter);
-                }
-            };
-
-            counter();
-        };
-
-        document.querySelectorAll('[data-target]').forEach(el => {
-            const target = parseInt(el.dataset.target);
-            if (!isNaN(target)) {
-                animateCounter(el, target);
-            }
-        });
-    });
-</script>
-
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

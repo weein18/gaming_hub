@@ -286,71 +286,12 @@
 
 </div>
 
-<!-- Heatmap & Counter Animation Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ── Stat Counter Animation ──
-        const animateCounter = (element, target) => {
-            const duration = 2000;
-            let current = 0;
-            const increment = target / (duration / 16);
+{% endblock %}
 
-            const counter = () => {
-                current += increment;
-                if (current >= target) {
-                    element.textContent = target.toLocaleString();
-                } else {
-                    element.textContent = Math.floor(current).toLocaleString();
-                    requestAnimationFrame(counter);
-                }
-            };
+{% block extra_js %}
+    <script>
+        window.playerPredictionDates = {{ prediction_dates | tojson | safe }};
+    </script>
 
-            counter();
-        };
-
-        document.querySelectorAll('[data-target]').forEach(el => {
-            const target = parseInt(el.dataset.target);
-            if (!isNaN(target)) {
-                animateCounter(el, target);
-            }
-        });
-
-        // ── Heatmap Generation ──
-        const grid = document.getElementById('heatmapGrid');
-        if (!grid) return;
-
-        const rawDates = {{ prediction_dates | tojson }};
-
-        const counts = {};
-        rawDates.forEach(d => { counts[d] = (counts[d] || 0) + 1; });
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const totalDays = 26 * 7;
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - totalDays + 1);
-
-        const maxCount = Math.max(...Object.values(counts), 1);
-
-        for (let i = 0; i < totalDays; i++) {
-            const d = new Date(startDate);
-            d.setDate(startDate.getDate() + i);
-            const key = d.toISOString().slice(0, 10);
-            const c = counts[key] || 0;
-
-            let v = 0;
-            if (c > 0) v = Math.min(4, Math.ceil((c / maxCount) * 4));
-
-            const cell = document.createElement('div');
-            cell.className = 'hm-cell';
-            cell.setAttribute('data-v', v);
-
-            const label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-            cell.title = c > 0 ? `${c} prediction${c > 1 ? 's' : ''} on ${label}` : `No predictions on ${label}`;
-
-            grid.appendChild(cell);
-        }
-    });
-</script>
-
+    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
 {% endblock %}
