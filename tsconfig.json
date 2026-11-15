@@ -10,6 +10,9 @@
   },
   "include": [
     "bot.ts",
-    
+    "dashboard.ts",
+    "index.ts",
+    "profile.ts",
+    "settings.ts",
   ]
 }
