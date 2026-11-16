@@ -5,6 +5,7 @@
   "description": "EliteHub Telegram bot worker",
   "main": "bot.js",
   "scripts": {
+    "build:frontend": "tsc -p tsconfig.json",
     "start": "node bot.js"
   },
   "engines": {

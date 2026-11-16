@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-    "lib": ["ES2021"],
+    "lib": ["ES2021", "DOM"],
     "target": "ES2020",
     "module": "ESNext",
-    "outDir": "dist",
+    "rootDir": "static/ts",
+    "outDir": "static/js",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmitOnError": true
   },
   "include": [
-    "bot.ts",
-    "dashboard.ts",
-    "index.ts",
-    "profile.ts",
-    "settings.ts",
+    "static/ts/**/*.ts"
   ]
 }
