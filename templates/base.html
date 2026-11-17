@@ -7,11 +7,12 @@
     <meta name="description" content="Elitehub: The ultimate destination for CS2 match predictions, rankings, and eSports stats. Join now to climb to Global Elite!">
 
     <title>{% block title %}Elite Gaming Hub{% endblock %}</title>
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}    
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- <div id="loader" style="position:fixed; width:100%; height:100%; background:#0a0a0a; z-index:9999; display:flex; justify-content:center; align-items:center;">
         <div style="text-align:center;">
@@ -80,6 +81,10 @@
         <p style="color: #444; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px;">&copy; 2026 ELITEHUB TERMINAL</p>
         <a href="{{ url_for('privacy') }}" style="color: var(--primary); text-decoration: none; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">Privacy Policy</a>
     </footer>
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    <script id="flash-data" type="application/json">{{ msgs|tojson }}</script>
+    {% endwith %}
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
