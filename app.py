@@ -558,6 +558,31 @@ def manage_matches():
     active_matches = Match.query.filter_by(status='Upcoming').all()
     return render_template('admin/manage_matches.html', active_matches=active_matches)
 
+
+def settle_predictions(match, final_score):
+    """Marks every unsettled prediction of this match right/wrong, gives XP.
+    Returns a list of (chat_id, text) telegram notifications.
+    The caller must db.session.commit() and then send the notifications."""
+    notifications = []
+    for pred in Prediction.query.filter_by(match_id=match.id).all():
+        if pred.is_correct is not None:
+            continue
+        user = db.session.get(User, pred.user_id)
+        is_correct = pred.prediction_score == final_score
+        pred.is_correct = is_correct
+        if user and is_correct:
+            user.xp += 100
+        if user and user.telegram_chat_id:
+            icon = "✅" if is_correct else "❌"
+            result = "Correct prediction! <b>+100 XP</b>" if is_correct else "Not this time — keep going."
+            notifications.append((
+                user.telegram_chat_id,
+                f"{icon} <b>Match result</b>\n\n"
+                f"⚔️ <b>{match.team1}</b> {final_score} <b>{match.team2}</b>\n"
+                f"Your prediction: <b>{pred.prediction_score}</b>\n\n{result}"
+            ))
+    return notifications
+
 @app.route('/admin/close-match/<int:match_id>', methods=['POST'])
 @login_required
 def close_match(match_id):
@@ -569,25 +594,7 @@ def close_match(match_id):
     if match and final_score:
         match.final_score = final_score
         match.status = 'Finished'
-        predictions = Prediction.query.filter_by(match_id=match_id).all()
-        for pred in predictions:
-            user = db.session.get(User, pred.user_id)
-            is_correct = pred.prediction_score == final_score
-            pred.is_correct = is_correct
-            if user and is_correct:
-                user.xp += 100
-            if user and user.telegram_chat_id:
-                result_icon = "✅" if is_correct else "❌"
-                result_text = "Correct prediction! <b>+100 XP</b>" if is_correct else "Not this time — keep going."
-                db.session.add(TelegramNotification(
-                    chat_id=user.telegram_chat_id,
-                    message=(
-                        f"{result_icon} <b>Match result</b>\n\n"
-                        f"⚔️ <b>{match.team1}</b> {final_score} <b>{match.team2}</b>\n"
-                        f"Your prediction: <b>{pred.prediction_score}</b>\n\n"
-                        f"{result_text}"
-                    ),
-                ))
+        settle_predictions(match, final_score)
         db.session.commit()
         flash(f"Match {match.team1} vs {match.team2} closed with score {final_score}!") 
     return redirect(url_for('manage_matches'))
@@ -886,16 +893,40 @@ def normalize_logo_url(url):
         return ""
     return url.strip()
 
+def _ps_get(path, token, **params):
+    """One PandaScore request. Returns a list/dict or None on error."""
+    params["token"] = token
+    try:
+        r = requests.get(f"https://api.pandascore.co{path}", params=params, timeout=15)
+        return r.json() if r.status_code == 200 else None
+    except Exception as e:
+        print(f"[API] {path} failed: {e}")
+        return None
+
+
+def _score_from_item(item):
+    """'2:1' in the same order as opponents[0] : opponents[1]."""
+    opps = item.get("opponents") or []
+    if len(opps) < 2:
+        return ""
+    ids = [(o.get("opponent") or {}).get("id") for o in opps[:2]]
+    scores = {r.get("team_id"): r.get("score", 0) for r in (item.get("results") or [])}
+    return f"{scores.get(ids[0], 0)}:{scores.get(ids[1], 0)}"
+
+
 def auto_fetch_pandascore_matches():
     token = os.getenv("PANDASCORE_TOKEN", "")
     if not token:
         print("[BG-TASK] Missing PANDASCORE_TOKEN")
         return
+    from sqlalchemy import and_
+
     def normalize_logo_url(url):
         if not url:
             return ""
         url = str(url).strip()
         return "https://" + url[len("http://"):] if url.startswith("http://") else url
+
     def format_prize_pool(raw):
         if not raw:
             return "TBD"
@@ -903,44 +934,41 @@ def auto_fetch_pandascore_matches():
             return f"${int(raw):,}"
         digits = re.sub(r"[^\d]", "", str(raw))
         return f"${int(digits):,}" if digits else str(raw).strip()
-    status_mapping = {
-        "finished": "Finished",
-        "running": "Live",
-        "not_started": "Upcoming",
-        "postponed": "Upcoming",
-        "canceled": "Finished",
-    }
-    try:
-        all_matches = []
-        # Upcoming
-        r = requests.get(f"https://api.pandascore.co/csgo/matches/upcoming?token={token}&per_page=100", timeout=15)
-        if r.status_code == 200:
-            all_matches += r.json()
-        # Live
-        r = requests.get(f"https://api.pandascore.co/csgo/matches/running?token={token}&per_page=50", timeout=15)
-        if r.status_code == 200:
-            all_matches += r.json()
-        # Past
-        for page in range(1, 4):
-            r = requests.get(f"https://api.pandascore.co/csgo/matches/past?token={token}&per_page=100&page={page}", timeout=15)
-            if r.status_code != 200:
-                break
-            data = r.json()
-            if not data:
-                break
-            all_matches += data
-            print(f"[BG-TASK] Past page {page}: {len(data)} matches")
 
+    status_mapping = {
+        "finished": "Finished", "running": "Live", "not_started": "Upcoming",
+        "postponed": "Upcoming", "canceled": "Finished",
+    }
+    notifications = []
+    try:
+        all_matches, seen_ids = [], set()
+
+        def collect(data):
+            for m in data or []:
+                if m.get("id") not in seen_ids:
+                    seen_ids.add(m.get("id"))
+                    all_matches.append(m)
+
+        for page in (1, 2, 3):
+            data = _ps_get("/csgo/matches/upcoming", token, per_page=100, page=page)
+            collect(data)
+            if not data or len(data) < 100:
+                break
+        collect(_ps_get("/csgo/matches/running", token, per_page=50))
+        for page in (1, 2, 3):
+            data = _ps_get("/csgo/matches/past", token, per_page=100, page=page)
+            collect(data)
+            if not data or len(data) < 100:
+                break
         print(f"[BG-TASK] Total fetched: {len(all_matches)}")
+
         with app.app_context():
             for item in all_matches:
                 opponents = item.get("opponents") or []
-                if len(opponents) < 2:
-                    continue
-                if not opponents[0].get("opponent") or not opponents[1].get("opponent"):
+                if len(opponents) < 2 or not opponents[0].get("opponent") or not opponents[1].get("opponent"):
                     continue
                 league = item.get("league") or {}
-                serie = item.get("serie") or {}      # ← correct key
+                serie = item.get("serie") or {}
                 league_name = (league.get("name") or "").strip()
                 serie_name = (serie.get("full_name") or serie.get("name") or "").strip()
                 if serie_name:
@@ -957,30 +985,27 @@ def auto_fetch_pandascore_matches():
                 )
                 if not is_target:
                     continue
-                tournament_logo = normalize_logo_url(
-                    league.get("image_url") or serie.get("image_url") or ""
-                )
-                # tournament.image_url = tournament_logo
+                tournament_logo = normalize_logo_url(league.get("image_url") or serie.get("image_url") or "")
                 final_prize_pool = format_prize_pool(
                     serie.get("prizepool") or serie.get("prize_pool") or
                     league.get("prizepool") or league.get("prize_pool")
                 )
+
                 existing_tournament = Tournament.query.filter(
-                    Tournament.name.ilike(f"%{league_name}%")
+                    func.lower(Tournament.name) == api_tournament_name.lower()
                 ).first()
                 if existing_tournament:
                     final_tournament_name = existing_tournament.name
                     if tournament_logo and not existing_tournament.image_url:
                         existing_tournament.image_url = tournament_logo
-                    if final_prize_pool != "TBD" and not existing_tournament.prize_pool or existing_tournament.prize_pool == "TBD":
+                    if final_prize_pool != "TBD" and (
+                        not existing_tournament.prize_pool or existing_tournament.prize_pool == "TBD"
+                    ):
                         existing_tournament.prize_pool = final_prize_pool
                 else:
                     new_t = Tournament(
-                        name=api_tournament_name,
-                        prize_pool=final_prize_pool,
-                        date="Ongoing",
-                        xp_reward="100 XP",
-                        image_url=tournament_logo,
+                        name=api_tournament_name, prize_pool=final_prize_pool,
+                        date="Ongoing", xp_reward="100 XP", image_url=tournament_logo,
                     )
                     db.session.add(new_t)
                     db.session.flush()
@@ -995,73 +1020,104 @@ def auto_fetch_pandascore_matches():
                 date_str = local_time.strftime("%B %d")
                 time_str = local_time.strftime("%H:%M")
 
-                team1_obj = opponents[0]["opponent"]
-                team2_obj = opponents[1]["opponent"]
+                team1_obj, team2_obj = opponents[0]["opponent"], opponents[1]["opponent"]
                 team1_name = (team1_obj.get("name") or "TBD").strip()
                 team2_name = (team2_obj.get("name") or "TBD").strip()
                 team1_logo = normalize_logo_url(team1_obj.get("image_url") or "")
                 team2_logo = normalize_logo_url(team2_obj.get("image_url") or "")
                 match_type_str = f"BO{item.get('number_of_games', 3)}"
-                current_db_status = status_mapping.get(item.get("status", "not_started"), "Upcoming")
-                existing_match = Match.query.filter(
-                    Match.team1.ilike(team1_name),
-                    Match.team2.ilike(team2_name),
-                    Match.status != "Finished"
-                ).first()
+                api_status = item.get("status", "not_started")
+                current_db_status = status_mapping.get(api_status, "Upcoming")
+
+                existing_match = Match.query.filter_by(pandascore_id=item.get("id")).first()
+                if not existing_match:
+                    # old rows saved before pandascore_id existed: fall back to names
+                    existing_match = Match.query.filter(
+                        Match.pandascore_id.is_(None),
+                        Match.status != "Finished",
+                        or_(
+                            and_(Match.team1.ilike(team1_name), Match.team2.ilike(team2_name)),
+                            and_(Match.team1.ilike(team2_name), Match.team2.ilike(team1_name)),
+                        ),
+                    ).first()
+
                 if existing_match:
-                    if not existing_match.pandascore_id:
-                        existing_match.pandascore_id = item.get("id")
+                    if existing_match.status == "Finished":
+                        continue
+                    existing_match.pandascore_id = item.get("id")
                     existing_match.tournament_name = final_tournament_name
-                    existing_match.date = date_str
-                    existing_match.time = time_str
+                    existing_match.date, existing_match.time = date_str, time_str
                     existing_match.match_type = match_type_str
                     if team1_logo:
                         existing_match.team1_logo = team1_logo
                     if team2_logo:
                         existing_match.team2_logo = team2_logo
-                    if existing_match.status != current_db_status:
-                        if current_db_status == "Finished":
-                            t1_id = team1_obj.get("id")
-                            t2_id = team2_obj.get("id")
-                            t1_score, t2_score = 0, 0
-                            for res in item.get("results", []):
-                                if res.get("team_id") == t1_id:
-                                    t1_score = res.get("score", 0)
-                                elif res.get("team_id") == t2_id:
-                                    t2_score = res.get("score", 0)
-                            final_score_str = f"{t1_score}:{t2_score}"
-                            existing_match.final_score = final_score_str
-                            existing_match.status = "Finished"
+                    if current_db_status == "Finished":
+                        existing_match.final_score = _score_from_item(item)
+                        existing_match.status = "Finished"
+                        if api_status != "canceled":
+                            notifications += settle_predictions(existing_match, existing_match.final_score)
+                    elif current_db_status == "Live":
+                        existing_match.status = "Live"
+                        existing_match.final_score = _score_from_item(item)
+                    else:
+                        existing_match.status = "Upcoming"
                 else:
-                    already_done = Match.query.filter(
-                        Match.team1.ilike(team1_name),
-                        Match.team2.ilike(team2_name),
-                        Match.status == "Finished"
-                    ).first()
-                    if not already_done:
-                        db.session.add(Match(
-                            tournament_name=final_tournament_name,
-                            team1=team1_name,
-                            team2=team2_name,
-                            team1_logo=team1_logo,
-                            team2_logo=team2_logo,
-                            date=date_str,
-                            time=time_str,
-                            status=current_db_status,
-                            match_type=match_type_str,
-                            pandascore_id=item.get("id")
-                        ))
-                        print(f"[BG-TASK] Added: {team1_name} vs {team2_name} ({current_db_status})")
+                    db.session.add(Match(
+                        tournament_name=final_tournament_name,
+                        team1=team1_name, team2=team2_name,
+                        team1_logo=team1_logo, team2_logo=team2_logo,
+                        date=date_str, time=time_str,
+                        status=current_db_status, match_type=match_type_str,
+                        final_score=_score_from_item(item) if current_db_status != "Upcoming" else "",
+                        pandascore_id=item.get("id"),
+                    ))
+                    print(f"[BG-TASK] Added: {team1_name} vs {team2_name} ({current_db_status})")
             db.session.commit()
             print("[BG-TASK] DATABASE UPDATED SUCCESSFULLY")
+            # for chat_id, text in notifications:
+            #     send_telegram_message(chat_id, text)
     except Exception as e:
         db.session.rollback()
         print(f"[BG-TASK] ERROR: {e}")
         import traceback
         traceback.print_exc()
+
+
+def refresh_live_matches():
+    token = os.getenv("PANDASCORE_TOKEN", "")
+    if not token:
+        return
+    with app.app_context():
+        try:
+            live_in_db = Match.query.filter(Match.status == "Live", Match.pandascore_id.isnot(None)).all()
+            upcoming_soon = Match.query.filter(Match.status == "Upcoming", Match.pandascore_id.isnot(None)).all()
+            running = _ps_get("/csgo/matches/running", token, per_page=50) or []
+            running_by_id = {m["id"]: m for m in running}
+            notifications = []
+            for m in upcoming_soon:
+                if m.pandascore_id in running_by_id and m.is_started():
+                    m.status = "Live"
+                    m.final_score = _score_from_item(running_by_id[m.pandascore_id])
+            for m in live_in_db:
+                if m.pandascore_id in running_by_id:
+                    m.final_score = _score_from_item(running_by_id[m.pandascore_id])
+                else:
+                    item = _ps_get(f"/matches/{m.pandascore_id}", token)
+                    if item and item.get("status") == "finished":
+                        m.final_score = _score_from_item(item)
+                        m.status = "Finished"
+                        notifications += settle_predictions(m, m.final_score)
+            db.session.commit()
+            # for chat_id, text in notifications:
+            #     send_telegram_message(chat_id, text)
+        except Exception as e:
+            db.session.rollback()
+            print(f"[LIVE] ERROR: {e}")
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=auto_fetch_pandascore_matches, trigger="interval", hours=12, start_date=datetime.now() + timedelta(minutes=5))
 scheduler.add_job(keep_alive, 'interval', minutes=13)
+scheduler.add_job(refresh_live_matches, 'interval', minutes=3)
 if os.environ.get('WERKZEUG_RUN_MAIN') != 'false':
     try:
         scheduler.start()
@@ -1077,6 +1133,7 @@ def sync_api_now():
         flash("Admins only!")
         return redirect(url_for('index'))
     try:
+        db.session.close()
         auto_fetch_pandascore_matches()
         flash("Sync complete! Matches, logos and tournaments updated.", "success")
     except Exception as e:
@@ -1156,6 +1213,19 @@ def player_profile(player_id):
 @app.route("/ping")
 def test_cron():
     return "ok"
+
+@app.route('/api/matches/live')
+def api_matches_live():
+    from flask import jsonify
+    raw = request.args.get('ids', '')
+    ids = [int(x) for x in raw.split(',') if x.strip().isdigit()][:100]
+    if not ids:
+        return jsonify([])
+    rows = Match.query.filter(Match.id.in_(ids)).all()
+    return jsonify([
+        {"id": m.id, "status": m.status, "score": m.final_score or "", "time": m.time, "date": m.date}
+        for m in rows
+    ])
 
 @app.route('/generate-telegram-code')
 @login_required
