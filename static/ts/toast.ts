@@ -19,7 +19,7 @@ function showToast(message: string, kind: ToastKind = "info"): void {
 }
 
 (function showFlashedMessages(): void {
-    const el = document.getElementById("flash-show");
+    const el = document.getElementById("flash-data");
     if(!el || !el.textContent) return;
     try {
         const items = JSON.parse(el.textContent) as [string, string][];
@@ -29,7 +29,7 @@ function showToast(message: string, kind: ToastKind = "info"): void {
                 category === "success" ? "success" : "info";
             showToast(text, kind);
         });
-    } catch {
-
+    } catch (error) {
+        console.error("Could not display flashed messages:", error);
     }
 })();

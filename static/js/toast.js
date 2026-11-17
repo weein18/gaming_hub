@@ -17,7 +17,7 @@ function showToast(message, kind = "info") {
     }, 3500);
 }
 (function showFlashedMessages() {
-    const el = document.getElementById("flash-show");
+    const el = document.getElementById("flash-data");
     if (!el || !el.textContent)
         return;
     try {
@@ -28,6 +28,7 @@ function showToast(message, kind = "info") {
             showToast(text, kind);
         });
     }
-    catch {
+    catch (error) {
+        console.error("Could not display flashed messages:", error);
     }
 })();
